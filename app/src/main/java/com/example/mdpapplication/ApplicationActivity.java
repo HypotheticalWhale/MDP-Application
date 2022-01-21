@@ -21,7 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
+//Hello
 public class ApplicationActivity extends AppCompatActivity {
     Button b_on,b_off,b_discover,b_list,back_button;
     ListView list;
