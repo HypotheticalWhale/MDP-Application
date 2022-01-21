@@ -12,10 +12,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ public class ApplicationActivity extends AppCompatActivity {
     Button b_on,b_off,b_discover,b_list,back_button;
     ListView list;
     BluetoothAdapter bluetoothAdapter;
+
     private static final int REQUEST_ENABLED = 0;
     private static final int REQUEST_DISCOVERABLE = 0;
     ActivityResultLauncher<Intent> launchSomeActivity = registerForActivityResult(
@@ -82,12 +86,20 @@ public class ApplicationActivity extends AppCompatActivity {
                 //list paired devices
                 Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                 ArrayList<String> devices = new ArrayList<String>();
-                for(BluetoothDevice bt:pairedDevices){
-                    devices.add(bt.getName());
-                }
                 ArrayAdapter arrayAdapter = new ArrayAdapter(ApplicationActivity.this,android.R.layout.simple_list_item_1,devices);
                 list.setAdapter(arrayAdapter);
+                list.setOnItemClickListener(mDeviceClickListener);
+                if (pairedDevices.size() > 0) {
+                    for (BluetoothDevice mDevice : pairedDevices) {
+                        arrayAdapter.add(mDevice.getName() + "\n"
+                                + mDevice.getAddress());
+                    }
+                } else {
+                    String mNoDevices = "None Paired";// getResources().getText(R.string.none_paired).toString();
+                    arrayAdapter.add(mNoDevices);
                 }
+                }
+
         });
 
         back_button.setOnClickListener(new View.OnClickListener() {
@@ -99,4 +111,21 @@ public class ApplicationActivity extends AppCompatActivity {
         });
 
     }
+    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
+        public void onItemClick(AdapterView<?> mAdapterView, View mView,
+                                int mPosition, long mLong) {
+            bluetoothAdapter.cancelDiscovery();
+            String mDeviceInfo = ((TextView) mView).getText().toString();
+            String mDeviceAddress = mDeviceInfo
+                    .substring(mDeviceInfo.length() - 17);
+            Log.v("tag", "Device_Address " + mDeviceAddress);
+
+            Bundle mBundle = new Bundle();
+            mBundle.putString("DeviceAddress", mDeviceAddress);
+            Intent mBackIntent = new Intent();
+            mBackIntent.putExtras(mBundle);
+            setResult(Activity.RESULT_OK, mBackIntent);
+            finish();
+        }
+    };
 }
