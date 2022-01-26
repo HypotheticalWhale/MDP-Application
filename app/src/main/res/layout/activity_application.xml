@@ -6,81 +6,54 @@
     android:layout_height="match_parent"
     tools:context=".ApplicationActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="94dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="112dp"
-        android:text="Bluetooth Page"
-        android:textSize="30sp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintVertical_bias="0.0">
 
-    <Button
-        android:id="@+id/b_on"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textView"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="350dp"
-        android:text="ON"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/btSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bluetooth On/Off" />
 
-    <Button
-        android:id="@+id/b_off"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/b_on"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="350dp"
-        android:text="OFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/b_on" />
+        <Button
+            android:id="@+id/b_list"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="100dp"
+            android:text="Show paired devices" />
 
-    <Button
-        android:id="@+id/b_discover"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="100dp"
-        android:text="DISCOVERABLE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <ListView
+            android:id="@+id/pairedList"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_centerHorizontal="true"
+            />
 
-    <Button
-        android:id="@+id/b_list"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/b_discover"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="100dp"
-        android:text="LIST"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        <Button
+            android:id="@+id/b_scan"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="100dp"
+            android:text="Scan for devices" />
 
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="160dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/b_discover"
-        android:layout_marginEnd="2dp"
-        android:text="BACK"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ListView
+            android:id="@+id/scannedList"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_centerHorizontal="true" />
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="409dp"
-        android:layout_height="512dp"
-        android:layout_centerHorizontal="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
