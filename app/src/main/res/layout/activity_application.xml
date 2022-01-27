@@ -41,6 +41,24 @@
             android:layout_marginEnd="100dp"
             android:text="Show paired devices" />
 
+        <Button
+            android:id="@+id/b_connect"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="100dp"
+            android:text="Connect" />
+
+        <Button
+            android:id="@+id/b_test"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="100dp"
+            android:text="Test" />
+
         <ListView
             android:id="@+id/pairedList"
             android:layout_width="match_parent"
