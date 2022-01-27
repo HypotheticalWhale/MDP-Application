@@ -24,6 +24,15 @@
             android:text="Bluetooth On/Off" />
 
         <Button
+            android:id="@+id/b_discover"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="100dp"
+            android:text="Make device discoverable" />
+
+        <Button
             android:id="@+id/b_list"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
