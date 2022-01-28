@@ -3,6 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_application.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/bluetooth.xml" value="0.1925" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_baseline_bluetooth_24.xml" value="0.1925" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1925" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_application.xml" value="0.1" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main2.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main3.xml" value="0.12708333333333333" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/card_item.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/menu/menu.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_application.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.272760458202411" />
         <entry key="app/src/main/res/layout/activity_main3.xml" value="0.22239583333333332" />
@@ -15,5 +26,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.1793478260869565" />
+      </ProjectState>
+    </option>
   </component>
 </project>
