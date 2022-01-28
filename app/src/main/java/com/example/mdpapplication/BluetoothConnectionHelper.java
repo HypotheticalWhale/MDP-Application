@@ -17,6 +17,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -124,6 +127,7 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
                         showToast("Message received: " + receivedMessage);
+                        sendMessageToActivity(receivedMessage);
                         sendIntentBroadcast(EVENT_MESSAGE_RECEIVED);
                         break;
                     case MESSAGE_SENT:
@@ -186,7 +190,6 @@ public class BluetoothConnectionHelper extends Service {
             return;
         }
         setDeviceInfo(nRPIDeviceName, nRPIMACAddress);
-
     }
 
     public ArrayList<String> getDeviceList(){
@@ -693,6 +696,13 @@ public class BluetoothConnectionHelper extends Service {
     private void sendIntentBroadcast(String eventCode){
         Intent intent = new Intent();
         intent.setAction(eventCode);
+        mContext.getApplicationContext().sendBroadcast(intent);
+    }
+
+    private static void sendMessageToActivity(String msg) {
+        Intent intent = new Intent("ReceiveMsg");
+        // You can also include some extra data.
+        intent.putExtra("key", msg);
         mContext.getApplicationContext().sendBroadcast(intent);
     }
 

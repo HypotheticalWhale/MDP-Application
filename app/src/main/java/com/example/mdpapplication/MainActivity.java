@@ -1,14 +1,20 @@
 package com.example.mdpapplication;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,17 +25,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity<NameViewModel> extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
     Button b_send;
     TextView tView;
     TextInputLayout tInput;
 
     BluetoothConnectionHelper bluetooth;
-    String msg;
+    String messageLog, msg;
+
+    private NameViewModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         bluetooth = new BluetoothConnectionHelper(context);
 
+        registerReceiver(mMessageReceiver, new IntentFilter("ReceiveMsg"));
+
+        tView.setText("Welcome");
 
         tInput.getEditText().addTextChangedListener(new TextWatcher() {
 
@@ -64,7 +76,18 @@ public class MainActivity extends AppCompatActivity {
                 bluetooth.write(msg);
             }
         });
+
     }
+
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("key");
+            messageLog += message + "\n";
+            tView.setText(messageLog);
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,6 +112,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //toast message function
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
