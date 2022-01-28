@@ -7,8 +7,11 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,12 +20,50 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter mBluetoothAdapter;
+    Button b_send;
+    TextView tView;
+    TextInputLayout tInput;
+
+    BluetoothConnectionHelper bluetooth;
+    String msg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        b_send = findViewById(R.id.b_send);
+        tView = findViewById(R.id.textView);
+        tInput = findViewById(R.id.textInput);
+
+        Context context = getApplicationContext();
+        bluetooth = new BluetoothConnectionHelper(context);
+
+
+        tInput.getEditText().addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                //get the String from CharSequence with s.toString() and process it to validation
+                msg = s.toString();
+            }
+        });
+
+        b_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bluetooth.write(msg);
+            }
+        });
     }
 
     @Override

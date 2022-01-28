@@ -171,8 +171,8 @@ public class ApplicationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //list paired devices
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 000);
+                    if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 000);
                         return;
                     }
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -323,14 +323,12 @@ public class ApplicationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bluetoothAdapter.cancelDiscovery();
         Log.d("tag", "Bluetooth In onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        bluetoothAdapter.cancelDiscovery();
         Log.d("tag", "Bluetooth In onResume");
     }
 
