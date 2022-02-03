@@ -52,7 +52,7 @@
         <ListView
             android:id="@+id/pairedList"
             android:layout_width="match_parent"
-            android:layout_height="175dp"
+            android:layout_height="215dp"
             android:layout_centerHorizontal="true"
             />
 

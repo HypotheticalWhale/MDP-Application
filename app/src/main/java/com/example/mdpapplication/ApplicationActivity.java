@@ -290,7 +290,6 @@ public class ApplicationActivity extends AppCompatActivity {
         }
     }
 
-
     //For UnPairing
     private void unpairDevice(BluetoothDevice device) {
         try {
@@ -306,8 +305,7 @@ public class ApplicationActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent = new Intent(ApplicationActivity.this, MainActivity.class);
-        startActivity(intent);
+        finish();
         return super.onOptionsItemSelected(item);
     }
 

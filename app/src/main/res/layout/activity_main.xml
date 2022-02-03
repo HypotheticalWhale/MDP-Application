@@ -18,15 +18,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <com.slaviboy.infinitegridview.InfiniteGridView
-            android:layout_weight="1"
+        <com.example.mdpapplication.PixelGridView
+            android:id="@+id/pixelGrid"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#46ADE8"
-            app:horizontalNormalLinesColor="#ffffff"
-            app:horizontalThickLinesColor="#ffffff"
-            app:verticalNormalLinesColor="#ffffff"
-            app:verticalThickLinesColor="#ffffff" />
+            android:layout_weight="1"
+            />
 
         <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"
