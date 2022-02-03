@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,10 +54,11 @@ import java.util.UUID;
 
 public class ApplicationActivity extends AppCompatActivity {
     private static final String TAG = "ApplicationActivity";
-    Button b_list, b_scan, b_discover, b_test, b_connect;
+    Button b_list, b_scan, b_discover;
     SwitchMaterial bluetoothSwitch;
     ListView pairedList, scannedList;
     BluetoothAdapter bluetoothAdapter;
+    ProgressBar loadingBar;
 
     ArrayAdapter<String> btArrayAdapter;
 
@@ -70,10 +72,9 @@ public class ApplicationActivity extends AppCompatActivity {
         b_list = findViewById(R.id.b_list);
         b_scan = findViewById(R.id.b_scan);
         b_discover = findViewById(R.id.b_discover);
-        b_connect = findViewById(R.id.b_connect);
-        b_test = findViewById(R.id.b_test);
         pairedList = findViewById(R.id.pairedList);
         scannedList = findViewById(R.id.scannedList);
+        loadingBar = findViewById(R.id.loadingBar);
 
         bluetoothSwitch = findViewById(R.id.btSwitch);
 
@@ -116,7 +117,7 @@ public class ApplicationActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     bluetoothAdapter.disable();
-                    showToast("Turning Bluetooth Off");
+                    showToast("Turning Off Bluetooth...");
                 }
             }
         });
@@ -188,26 +189,19 @@ public class ApplicationActivity extends AppCompatActivity {
                     }
                 }
                 if (bluetoothAdapter.isEnabled()) {
-
                     btArrayAdapter.clear();
+                    loadingBar.setVisibility(View.VISIBLE);
                     bluetoothAdapter.startDiscovery();
+                    loadingBar.postDelayed(new Runnable() {
+                        public void run() {
+                            loadingBar.setVisibility(View.INVISIBLE);
+                            bluetoothAdapter.cancelDiscovery();
+                        }
+                    }, 12000);
+
                 } else {
                     showToast("Bluetooth is not on!");
                 }
-            }
-        });
-
-        b_connect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bluetooth.connectAsClient();
-            }
-        });
-
-        b_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bluetooth.write("test");
             }
         });
     }
@@ -279,6 +273,7 @@ public class ApplicationActivity extends AppCompatActivity {
             BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
             bluetooth.setDeviceInfo(btDevice.getName(),btDevice.getAddress());
             bluetooth.setRPIDeviceInfo(btDevice.getName(),btDevice.getAddress());
+            bluetooth.connectAsClient();
         }
     };
 
