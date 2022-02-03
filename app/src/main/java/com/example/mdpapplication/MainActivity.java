@@ -48,9 +48,6 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pixelGrid = findViewById(R.id.pixelGrid);
-        pixelGrid.setNumColumns(20);
-        pixelGrid.setNumRows(20);
-
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
 
