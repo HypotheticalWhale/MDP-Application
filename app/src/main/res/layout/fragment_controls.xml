@@ -5,72 +5,165 @@
     android:layout_height="match_parent"
     tools:context=".controls">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/send_arena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_stadium_24" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/send_arena"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SEND ARENA INFO" />
-
-            <Button
-                android:id="@+id/s_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="STRAFE RIGHT" />
-
-            <Button
-                android:id="@+id/s_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="STRAFE LEFT" />
-
-            <Button
-                android:id="@+id/forward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FORWARD" />
-
-            <Button
-                android:id="@+id/reverse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="REVERSE" />
-
-            <Button
+            <ImageButton
                 android:id="@+id/r_left"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ROTATE LEFT" />
+                android:src="@drawable/ic_baseline_rotate_left_24" />
 
-            <Button
+            <ImageButton
+                android:id="@+id/forward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow_drop_up_24" />
+
+            <ImageButton
                 android:id="@+id/r_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ROTATE RIGHT" />
+                android:src="@drawable/ic_baseline_rotate_right_24" />
 
-            <Button
+            <ImageButton
+                android:id="@+id/placeholder1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/placeholder2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder123"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder124"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder2144"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+
+
+            <ImageButton
                 android:id="@+id/explore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BEGIN EXPLORATION" />
+                android:src="@drawable/ic_baseline_explore_24" />
 
+        </LinearLayout>
 
-            <Button
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/s_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow_left_24" />
+
+            <ImageButton
+                android:id="@+id/centre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow_drop_up_24"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/s_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow_right_24" />
+
+            <ImageButton
+                android:id="@+id/placeholder3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/placeholder4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+            <ImageButton
+                android:id="@+id/placeholder7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+
+            <ImageButton
                 android:id="@+id/fastest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="BEGIN FASTEST PATH" />
-
+                android:src="@drawable/ic_baseline_fast_forward_24" />
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/reverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </FrameLayout>

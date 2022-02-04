@@ -3,55 +3,30 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/back.xml" value="0.2985" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/border_ui.xml" value="0.2985" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/box_border.xml" value="0.2985" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_android_black_24dp.xml" value="0.2985" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_baseline_bluetooth_24.xml" value="0.2985" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_application.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main2.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main3.xml" value="0.18541666666666667" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/content_main.xml" value="0.18541666666666667" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/custom_progressbar.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_controls.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_first.xml" value="0.18541666666666667" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_message.xml" value="0.358695652173913" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_second.xml" value="0.18541666666666667" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/infinite_grid_view.xml" value="0.18541666666666667" />
-        <entry key="..\:/Users/Thai/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/menu/menu.xml" value="0.3625" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application-1/app/src/main/res/layout/fragment_controls.xml" value="0.22826086956521738" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application-1/app/src/main/res/layout/fragment_message.xml" value="0.22826086956521738" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/bluetooth.xml" value="0.1925" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_baseline_bluetooth_24.xml" value="0.1925" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1925" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_application.xml" value="0.1" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main.xml" value="0.264" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main2.xml" value="0.1793478260869565" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/activity_main3.xml" value="0.12708333333333333" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/card_item.xml" value="0.1793478260869565" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/content_main.xml" value="0.16666666666666666" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_first.xml" value="0.16666666666666666" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/layout/fragment_second.xml" value="0.16666666666666666" />
-        <entry key="..\:/Users/weich/Desktop/School Stuff/CZ3004/MDP-Application/app/src/main/res/menu/menu.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_application.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.272760458202411" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_downward_24.xml" value="0.2205" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.354" />
+        <entry key="app/src/main/res/drawable/ic_baseline_arrow_upward_24.xml" value="0.2205" />
+        <entry key="app/src/main/res/drawable/ic_baseline_bluetooth_24.xml" value="0.2205" />
+        <entry key="app/src/main/res/drawable/ic_baseline_explore_24.xml" value="0.354" />
+        <entry key="app/src/main/res/layout/activity_application.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="app/src/main/res/layout/activity_main2.xml" value="0.22552083333333334" />
         <entry key="app/src/main/res/layout/activity_main3.xml" value="0.22239583333333332" />
+        <entry key="app/src/main/res/layout/content_main.xml" value="0.22552083333333334" />
+        <entry key="app/src/main/res/layout/device_adapter_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_control.xml" value="0.325" />
+        <entry key="app/src/main/res/layout/fragment_controls.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_sections_pager_adapter.xml" value="0.3894927536231884" />
+        <entry key="app/src/main/res/layout/tab_control.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/tab_message.xml" value="0.3894927536231884" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.22870370370370371" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
-  </component>
-  <component name="VisualizationToolProject">
-    <option name="state">
-      <ProjectState>
-        <option name="scale" value="0.1793478260869565" />
-      </ProjectState>
-    </option>
   </component>
 </project>

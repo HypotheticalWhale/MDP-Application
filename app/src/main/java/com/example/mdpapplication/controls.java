@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -23,7 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 public class controls extends Fragment {
     BluetoothConnectionHelper bluetooth;
     String msg;
-    Button sa,sr,sl,f,r,rl,rr,explore,fastest;
+    ImageButton sa,sr,sl,f,r,rl,rr,explore,fastest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
