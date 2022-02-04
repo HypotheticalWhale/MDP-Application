@@ -18,6 +18,7 @@ public class PixelGridView extends View {
     private boolean[][] cellChecked;
     private Paint whitePaint = new Paint();
     private int counter = 1;
+    private int[][] cellCounter;
 
     public PixelGridView(Context context) {
         this(context, null);
@@ -69,6 +70,7 @@ public class PixelGridView extends View {
         cellHeight = getHeight() / numRows;
 
         cellChecked = new boolean[numColumns][numRows];
+        cellCounter = new int[numColumns][numRows];
 
         invalidate();
     }
@@ -91,9 +93,8 @@ public class PixelGridView extends View {
                            (i + 1) * cellWidth, (j + 1) * cellHeight,
                             blackPaint);
                     Log.d(TAG, "onDraw: Column: " + i + " Row: " + j);
-                    canvas.drawText(String.valueOf(counter), (i + (float)0.5) * cellWidth, (j + (float)0.65) * cellHeight,
+                    canvas.drawText(String.valueOf(cellCounter[i][j]), (i + (float)0.5) * cellWidth, (j + (float)0.65) * cellHeight,
                             whitePaint);
-                    counter++;
                 }
             }
         }
@@ -114,6 +115,14 @@ public class PixelGridView extends View {
             int row = (int)(event.getY() / cellHeight);
             Log.d(TAG, "onTouchEvent: Column: " + column + " Row: " + row);
             cellChecked[column][row] = !cellChecked[column][row];
+            if(cellChecked[column][row]){
+                cellCounter[column][row] = counter;
+                counter++;
+            }
+            else{
+                cellCounter[column][row] = 0;
+                counter--;
+            }
             invalidate();
         }
 
