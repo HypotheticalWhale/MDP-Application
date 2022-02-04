@@ -2,6 +2,8 @@ package com.example.mdpapplication;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -35,6 +37,7 @@ public class PixelGridView extends View {
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(20);
         whitePaint.setTextAlign(Paint.Align.CENTER);
+
     }
 
     public void setNumColumns(int numColumns) {
@@ -75,6 +78,40 @@ public class PixelGridView extends View {
         invalidate();
     }
 
+    private void fixCount(int column, int row){
+        if(cellChecked[column][row]){
+            cellCounter[column][row] = counter;
+            counter++;
+        }
+        else{
+            int deletedCount = cellCounter[column][row];
+            cellCounter[column][row] = 0;
+            counter--;
+
+            for (int i = 0; i < numColumns; i++) {
+                for (int j = 0; j < numRows; j++) {
+                    if(cellCounter[i][j] > deletedCount){
+                        cellCounter[i][j]--;
+                    }
+                }
+            }
+
+        }
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.WHITE);
@@ -86,11 +123,15 @@ public class PixelGridView extends View {
         int width = getWidth();
         int height = getHeight();
 
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.chrome_2022_02_04_09_45_53);
+        Bitmap scaledBitmap = scaleDown(bm, 100, true);
+        canvas.drawBitmap(scaledBitmap, 0.5f * cellWidth, 18 * cellHeight, null);
+
         for (int i = 0; i < numColumns; i++) {
             for (int j = 0; j < numRows; j++) {
                 if (cellChecked[i][j]) {
                     canvas.drawRect(i * cellWidth, j * cellHeight,
-                           (i + 1) * cellWidth, (j + 1) * cellHeight,
+                            (i + 1) * cellWidth, (j + 1) * cellHeight,
                             blackPaint);
                     Log.d(TAG, "onDraw: Column: " + i + " Row: " + j);
                     canvas.drawText(String.valueOf(cellCounter[i][j]), (i + (float)0.5) * cellWidth, (j + (float)0.65) * cellHeight,
@@ -115,14 +156,7 @@ public class PixelGridView extends View {
             int row = (int)(event.getY() / cellHeight);
             Log.d(TAG, "onTouchEvent: Column: " + column + " Row: " + row);
             cellChecked[column][row] = !cellChecked[column][row];
-            if(cellChecked[column][row]){
-                cellCounter[column][row] = counter;
-                counter++;
-            }
-            else{
-                cellCounter[column][row] = 0;
-                counter--;
-            }
+            fixCount(column, row);
             invalidate();
         }
 
