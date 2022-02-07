@@ -525,57 +525,72 @@ public class PixelGridView3 extends View{
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
+            if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");
+                int col = curCoord[0];
+                int row = curCoord[1];
+                String direction = robotDirection;
+
                 if (message.equals("f")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-                    setCurCoord(col, row + 1, robotDirection);
+                    if (direction.equals("N")) {
+                        setCurCoord(col, row + 1, direction);
+                    } else if (direction.equals("E")) {
+                        setCurCoord(col + 1, row, direction);
+                    } else if (direction.equals("S")) {
+                        setCurCoord(col, row - 1, direction);
+                    } else if (direction.equals("W")) {
+                        setCurCoord(col - 1, row, direction);
+                    }
                 } else if (message.equals("r")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-                    setCurCoord(col, row - 1, robotDirection);
+                    if (direction.equals("N")) {
+                        setCurCoord(col, row - 1, direction);
+                    } else if (direction.equals("E")) {
+                        setCurCoord(col - 1, row, direction);
+                    } else if (direction.equals("S")) {
+                        setCurCoord(col, row + 1, direction);
+                    } else if (direction.equals("W")) {
+                        setCurCoord(col + 1, row, direction);
+                    }
                 } else if (message.equals("sl")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-                    setCurCoord(col-1, row, robotDirection);
+                    if (direction.equals("N")) {
+                        setCurCoord(col - 1, row, direction);
+                    } else if (direction.equals("E")) {
+                        setCurCoord(col, row + 1, direction);
+                    } else if (direction.equals("S")) {
+                        setCurCoord(col + 1, row, direction);
+                    } else if (direction.equals("W")) {
+                        setCurCoord(col, row - 1, direction);
+                    }
                 } else if (message.equals("sr")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-                    setCurCoord(col+1, row, robotDirection);
+                    if (direction.equals("N")) {
+                        setCurCoord(col + 1, row, direction);
+                    } else if (direction.equals("E")) {
+                        setCurCoord(col, row - 1, direction);
+                    } else if (direction.equals("S")) {
+                        setCurCoord(col - 1, row, direction);
+                    } else if (direction.equals("W")) {
+                        setCurCoord(col, row + 1, direction);
+                    }
                 } else if (message.equals("tl")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-                    String direction = robotDirection;
-                    if(direction.equals("N")){
+                    if (direction.equals("N")) {
                         direction = "W";
-                    }
-                    else if(direction.equals("E")){
+                    } else if (direction.equals("E")) {
                         direction = "N";
-                    }
-                    else if(direction.equals("S")){
+                    } else if (direction.equals("S")) {
                         direction = "E";
-                    }
-                    else if(direction.equals("W")){
+                    } else if (direction.equals("W")) {
                         direction = "S";
                     }
 
                     setCurCoord(col, row, direction);
                 } else if (message.equals("tr")) {
-                    int col = curCoord[0];
-                    int row = curCoord[1];
-
-                    String direction = robotDirection;
-                    if(direction.equals("N")){
+                    if (direction.equals("N")) {
                         direction = "E";
-                    }
-                    else if(direction.equals("E")){
+                    } else if (direction.equals("E")) {
                         direction = "S";
-                    }
-                    else if(direction.equals("S")){
+                    } else if (direction.equals("S")) {
                         direction = "W";
-                    }
-                    else if(direction.equals("W")){
+                    } else if (direction.equals("W")) {
                         direction = "N";
                     }
 
