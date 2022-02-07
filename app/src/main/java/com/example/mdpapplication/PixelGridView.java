@@ -16,9 +16,9 @@ public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
     private int numColumns, numRows;
     private int cellWidth, cellHeight;
-    private Paint blackPaint = new Paint();
+    private final Paint blackPaint = new Paint();
     private boolean[][] cellChecked;
-    private Paint whitePaint = new Paint();
+    private final Paint whitePaint = new Paint();
     private int counter = 1;
     private int[][] cellCounter;
 
@@ -123,7 +123,7 @@ public class PixelGridView extends View {
         int width = getWidth();
         int height = getHeight();
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.chrome_2022_02_04_09_45_53);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
         Bitmap scaledBitmap = scaleDown(bm, 100, true);
         canvas.drawBitmap(scaledBitmap, 0.5f * cellWidth, 18 * cellHeight, null);
 

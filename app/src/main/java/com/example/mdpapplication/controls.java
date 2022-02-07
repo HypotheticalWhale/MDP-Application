@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +22,27 @@ import android.widget.TextView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class controls extends Fragment {
+    private static final String TAG = "controls";
+
     BluetoothConnectionHelper bluetooth;
     String msg;
-    ImageButton sa,sr,sl,f,r,rl,rr,explore,fastest;
+    ImageButton sa, sr, sl, f, r, rl, rr, explore, fastest;
+    TextInputLayout corrInput;
+    PixelGridView3 pixelGrid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        // Inflate the layout for this fragment
         LayoutInflater lf = getActivity().getLayoutInflater();
-        View view = lf.inflate(R.layout.fragment_controls,container,false);
+        View view =  lf.inflate(R.layout.fragment_controls, container, false); //pass the correct layout name for the fragment
 
-        Context context = getActivity().getApplicationContext();
-        bluetooth = new BluetoothConnectionHelper(context);
         sa = view.findViewById(R.id.send_arena);
         sr = view.findViewById(R.id.s_right);
         sl = view.findViewById(R.id.s_left);
@@ -43,7 +51,27 @@ public class controls extends Fragment {
         rl = view.findViewById(R.id.r_left);
         rr = view.findViewById(R.id.r_right);
         explore = view.findViewById(R.id.explore);
-        fastest = view.findViewById(R.id.forward);
+        fastest = view.findViewById(R.id.fastest);
+
+        corrInput = view.findViewById(R.id.corrInput);
+        pixelGrid = getActivity().findViewById(R.id.pixelGrid);
+
+        Context context = getActivity().getApplicationContext();
+        bluetooth = new BluetoothConnectionHelper(context);
+
+        corrInput.getEditText().addTextChangedListener(new TextWatcher() {
+
+            public void afterTextChanged(Editable s) {}
+
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                //get the String from CharSequence with s.toString() and process it to validation
+                pixelGrid.setCurCoord(1, 1, "N");
+            }
+        });
 
         sa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,5 +136,10 @@ public class controls extends Fragment {
                 bluetooth.write(msg);
             }
         });
-        return view;    }
+        return view;
+    }
+
+    private int convertRow(int row) {
+        return (20 - row);
+    }
 }

@@ -18,21 +18,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp" />
-
-        <com.example.mdpapplication.PixelGridView
+        <com.example.mdpapplication.PixelGridView3
             android:id="@+id/pixelGrid"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             app:columns="20"
             app:rows="20" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp" />
 
         <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"
@@ -47,7 +39,8 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Controls" />
+                android:text="Control Panel" />
+
         </com.google.android.material.tabs.TabLayout>
 
         <androidx.viewpager2.widget.ViewPager2

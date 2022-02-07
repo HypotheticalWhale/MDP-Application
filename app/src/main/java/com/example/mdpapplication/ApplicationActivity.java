@@ -1,25 +1,13 @@
 package com.example.mdpapplication;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.Activity;
-import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,9 +15,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,14 +28,9 @@ import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public class ApplicationActivity extends AppCompatActivity {
     private static final String TAG = "ApplicationActivity";
@@ -107,7 +87,7 @@ public class ApplicationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 000);
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
                         return;
                     }
                 }
@@ -128,7 +108,23 @@ public class ApplicationActivity extends AppCompatActivity {
                 //list paired devices
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 000);
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+                        return;
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
+                        return;
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+                        return;
+                    }
+                } else {
+                    if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
                         return;
                     }
                 }
@@ -159,7 +155,7 @@ public class ApplicationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_ADVERTISE}, 000);
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_ADVERTISE}, 0);
                         return;
                     }
                 }
@@ -174,7 +170,7 @@ public class ApplicationActivity extends AppCompatActivity {
                 //list paired devices
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 000);
+                        ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
                         return;
                     }
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -195,9 +191,15 @@ public class ApplicationActivity extends AppCompatActivity {
                     loadingBar.postDelayed(new Runnable() {
                         public void run() {
                             loadingBar.setVisibility(View.INVISIBLE);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
+                                    return;
+                                }
+                            }
                             bluetoothAdapter.cancelDiscovery();
                         }
-                    }, 12000);
+                    }, 120);
 
                 } else {
                     showToast("Bluetooth is not on!");
@@ -211,7 +213,7 @@ public class ApplicationActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 000);
+                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
                     return;
                 }
             }
@@ -235,12 +237,12 @@ public class ApplicationActivity extends AppCompatActivity {
         return false;
     }
 
-    private AdapterView.OnItemClickListener mScannedDeviceClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener mScannedDeviceClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> mAdapterView, View mView,
                                 int mPosition, long mLong) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 000);
+                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
                     return;
                 }
             }
@@ -248,19 +250,19 @@ public class ApplicationActivity extends AppCompatActivity {
             String mDeviceInfo = ((TextView) mView).getText().toString();
             String mDeviceAddress = mDeviceInfo
                     .substring(mDeviceInfo.length() - 17);
-            Log.v("tag", "Device_Address " + mDeviceAddress);
+            Log.v(TAG, "Device_Address " + mDeviceAddress);
 
             BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
             pairDevice(btDevice);
         }
     };
 
-    private AdapterView.OnItemClickListener mPairedDeviceClickListener = new AdapterView.OnItemClickListener() {
+    private final AdapterView.OnItemClickListener mPairedDeviceClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> mAdapterView, View mView,
                                 int mPosition, long mLong) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 000);
+                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
                     return;
                 }
             }
@@ -268,11 +270,10 @@ public class ApplicationActivity extends AppCompatActivity {
             String mDeviceInfo = ((TextView) mView).getText().toString();
             String mDeviceAddress = mDeviceInfo
                     .substring(mDeviceInfo.length() - 17);
-            Log.v("tag", "Device_Address " + mDeviceAddress);
+            Log.v(TAG, "Device_Address " + mDeviceAddress);
 
             BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
-            bluetooth.setDeviceInfo(btDevice.getName(),btDevice.getAddress());
-            bluetooth.setRPIDeviceInfo(btDevice.getName(),btDevice.getAddress());
+            bluetooth.setDeviceInfo(btDevice.getName(), btDevice.getAddress());
             bluetooth.connectAsClient();
         }
     };
@@ -317,34 +318,52 @@ public class ApplicationActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("tag", "Bluetooth In onStart");
+        Log.d(TAG, "Bluetooth In onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("tag", "Bluetooth In onResume");
+        Log.d(TAG, "Bluetooth In onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
+                return;
+            }
+        }
         bluetoothAdapter.cancelDiscovery();
-        Log.d("tag", "Bluetooth In onPause");
+        Log.d(TAG, "Bluetooth In onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
+                return;
+            }
+        }
         bluetoothAdapter.cancelDiscovery();
-        Log.d("tag", "Bluetooth In onStop");
+        Log.d(TAG, "Bluetooth In onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 0);
+                return;
+            }
+        }
         bluetoothAdapter.cancelDiscovery();
-        Log.d("tag", "Bluetooth In onDestroy");
+        Log.d(TAG, "Bluetooth In onDestroy");
     }
 }
 

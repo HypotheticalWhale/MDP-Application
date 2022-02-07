@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class message extends Fragment {
+    private static final String TAG = "message";
 
     Button b_send, b_clear;
     TextView tView;
@@ -35,6 +38,9 @@ public class message extends Fragment {
 
     BluetoothConnectionHelper bluetooth;
     String msgLog, sendMsg;
+
+    public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
+    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +57,8 @@ public class message extends Fragment {
         Context context = getActivity().getApplicationContext();
         bluetooth = new BluetoothConnectionHelper(context);
 
-        context.registerReceiver(mMessageReceiver, new IntentFilter("ReceiveMsg"));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
 
         msgLog = "";
 
@@ -77,7 +84,6 @@ public class message extends Fragment {
             public void onClick(View v) {
                 if(sendMsg != null){
                     bluetooth.write(sendMsg);
-                    logMsg("Message Sent: " + sendMsg);
                     tInput.getEditText().setText("");
                 }
                 else{
@@ -105,12 +111,18 @@ public class message extends Fragment {
             DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
             Date date = new Date();
 
-            String message = intent.getStringExtra("key");
-            logMsg("Message Received: " + message);
+            if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
+                String message = intent.getStringExtra("key");
+                logMsg("Message Received: " + message);
+            }
+            else if(intent.getAction().equals(EVENT_MESSAGE_SENT)){
+                String message = intent.getStringExtra("key");
+                logMsg("Message Sent: " + message);
+            }
         }
     };
 
-    private void logMsg(String message){
+    public void logMsg(String message){
         DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         Date date = new Date();
         msgLog += "[" + dateFormat.format(date)+ "] " + message + "\n";
