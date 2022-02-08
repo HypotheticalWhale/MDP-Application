@@ -53,6 +53,7 @@ public class PixelGridView3 extends View{
     private final Paint obstacleDirectionColor = new Paint();
     private final Paint fastestPathColor = new Paint();
     private final Paint whitePaint = new Paint();
+    private final Paint yellowPaint = new Paint();
 
     private HashSet<Obstacle> obstacles;
     private SparseArray<Obstacle> obstaclePointer;
@@ -63,7 +64,7 @@ public class PixelGridView3 extends View{
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
 
     /** Stores data about obstacle */
-    private static class Obstacle {
+    public static class Obstacle {
         int id;
         int X;
         int Y;
@@ -151,7 +152,9 @@ public class PixelGridView3 extends View{
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(20);
         whitePaint.setTextAlign(Paint.Align.CENTER);
-        
+        yellowPaint.setColor(Color.YELLOW);
+        yellowPaint.setStrokeWidth(8);
+
         bluetooth = new BluetoothConnectionHelper(context);
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
 
@@ -257,8 +260,31 @@ public class PixelGridView3 extends View{
 
     private void drawObstacle(Canvas canvas) {
         for (Obstacle obstacle : obstacles) {
-            canvas.drawRect(obstacle.X * cellSize + (cellSize / 30), obstacle.Y * cellSize + (cellSize / 30), (obstacle.X + 1) * cellSize, (obstacle.Y + 1) * cellSize, obstacleColor);
-            canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+            float startX = obstacle.X * cellSize + (cellSize / 30);
+            float startY = obstacle.Y * cellSize + (cellSize / 30);
+            float endX = (obstacle.X + 1) * cellSize;
+            float endY = (obstacle.Y + 1) * cellSize;
+
+            if (obstacle.direction == "N") {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+                canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
+            } else if (obstacle.direction == "E") {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+                canvas.drawLine(endX - 5, startY, endX - 5, endY, yellowPaint);
+            } else if (obstacle.direction == "S") {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+                canvas.drawLine(startX, endY - 5, endX, endY - 5, yellowPaint);
+            } else if (obstacle.direction == "W") {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+                canvas.drawLine(startX + 5, startY, startX + 5, endY, yellowPaint);
+            } else {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+            }
         }
     }
 
@@ -491,27 +517,29 @@ public class PixelGridView3 extends View{
                 PixelGridView3 pixelGrid = findViewById(R.id.pixelGrid);
 
                 // create the popup window
-//            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-//            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
                 int length = (int) (cellSize + (cellSize / 30)) * 4;
 
                 boolean focusable = true; // lets taps outside the popup also dismiss it
-                //final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
                 final PopupWindow popupWindow = new PopupWindow(popupView, length, length, focusable);
 
                 // show the popup window
-                // which view you pass in doesn't matter, it is only used for the window tolken
+                // which view you pass in doesn't matter, it is only used for the window token
                 int x = (int) (event.getX() - cellSize*2);
                 int y = (int) (event.getY() + cellSize*2.5) ;
                 Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
                 popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
 
-                // dismiss the popup window when touched
-                popupView.setOnTouchListener(new View.OnTouchListener() {
+                ObstacleGridView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
+                final Obstacle[] obstacle = {getTouchedObstacle(column, row)};
+                obstacleGrid.setObstacle(obstacle[0]);
+                obstacleGrid.setPopupWindow(popupWindow);
+
+                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        popupWindow.dismiss();
-                        return true;
+                    public void onDismiss() {
+                        obstacle[0] = obstacleGrid.getObstacle();
+                        Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
+                        invalidate();
                     }
                 });
             }
