@@ -235,23 +235,23 @@ public class PixelGridView3 extends View{
 
     private void drawGrid(Canvas canvas) {
         for (int y = 0; y <= numRows; y++)
-            canvas.drawLine(cells[1][y].startX, cells[1][y].startY - (cellSize / 30), cells[20][y].endX, cells[20][y].startY - (cellSize / 30), blackPaint);
+            canvas.drawLine(cells[1][y].startX, cells[1][y].startY - (cellSize / 30), cells[numRows][y].endX, cells[numRows][y].startY - (cellSize / 30), blackPaint);
         for (int x = 0; x <= numColumns; x++)
-            canvas.drawLine(cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][0].startY - (cellSize / 30), cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][19].endY + (cellSize / 30), blackPaint);
+            canvas.drawLine(cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][0].startY - (cellSize / 30), cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][numRows-1].endY + (cellSize / 30), blackPaint);
     }
 
     private void drawGridNumber(Canvas canvas) {
         for (int x = 1; x <= numColumns; x++) {
             if (x > 9)
-                canvas.drawText(Integer.toString(x-1), cells[x][20].startX + (cellSize / 5), cells[x][20].startY + (cellSize / 3), blackPaint);
+                canvas.drawText(Integer.toString(x-1), cells[x][numRows].startX + (cellSize / 5), cells[x][numRows].startY + (cellSize / 3), blackPaint);
             else
-                canvas.drawText(Integer.toString(x-1), cells[x][20].startX + (cellSize / 3), cells[x][20].startY + (cellSize / 3), blackPaint);
+                canvas.drawText(Integer.toString(x-1), cells[x][numRows].startX + (cellSize / 3), cells[x][numRows].startY + (cellSize / 3), blackPaint);
         }
         for (int y = 0; y < numRows; y++) {
-            if ((20 - y) > 9)
-                canvas.drawText(Integer.toString(19 - y), cells[0][y].startX + (cellSize / 2), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
+            if ((numRows - y) > 9)
+                canvas.drawText(Integer.toString((numRows-1) - y), cells[0][y].startX + (cellSize / 2), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
             else
-                canvas.drawText(Integer.toString(19 - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
+                canvas.drawText(Integer.toString((numRows-1) - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
         }
     }
 
@@ -309,7 +309,7 @@ public class PixelGridView3 extends View{
     }
 
     private int convertRow(int row) {
-        return (20 - row);
+        return (numRows - row);
     }
     
     @Override
@@ -345,7 +345,7 @@ public class PixelGridView3 extends View{
 
         gestureDetector.onTouchEvent(event);
 
-        // get touch event coordinates and make transparent circle from it
+        // get touch event coordinates and make Obstacle from it
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 Log.w(TAG, "ACTION_DOWN");
@@ -355,8 +355,8 @@ public class PixelGridView3 extends View{
                 column = (int) (event.getX() / cellSize);
                 row = (int) (event.getY() / cellSize);
 
-                // check if we've touched inside some circle
-                if (column > 0 && row < 20) {
+                // check if we've touched inside some Obstacle
+                if (column > 0 && row < numRows) {
                     touchedObstacle = obtainTouchedObstacle(column, row);
                     touchedObstacle.X = column;
                     touchedObstacle.Y = row;
@@ -369,13 +369,13 @@ public class PixelGridView3 extends View{
 
             case MotionEvent.ACTION_POINTER_DOWN:
                 Log.w(TAG, "ACTION_POINTER_DOWN");
-                // It secondary pointers, so obtain their ids and check circles
+                // It secondary pointers, so obtain their ids and check Obstacles
                 pointerId = event.getPointerId(actionIndex);
 
                 column = (int) (event.getX(actionIndex) / cellSize);
                 row = (int) (event.getY(actionIndex) / cellSize);
 
-                // check if we've touched inside some circle
+                // check if we've touched inside some Obstacle
                 touchedObstacle = obtainTouchedObstacle(column, row);
                 obstaclePointer.put(pointerId, touchedObstacle);
                 touchedObstacle.X = column;
@@ -422,7 +422,7 @@ public class PixelGridView3 extends View{
 
                 touchedObstacle = getTouchedObstacle(column, row);
 
-                if (column > 0 && row < 20) {
+                if (column > 0 && row < numRows) {
                     Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
                     if (overlappingObstacle != null) {
@@ -481,29 +481,37 @@ public class PixelGridView3 extends View{
             int row = (int) (event.getY() / cellSize);
 
             Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
-            // inflate the layout of the popup window
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
-            View popupView = inflater.inflate(R.layout.popup_direction, null);
-            PixelGridView3 pixelGrid = findViewById(R.id.pixelGrid);
+            if (column > 0 && row < numRows) {
+                // inflate the layout of the popup window
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
+                View popupView = inflater.inflate(R.layout.popup_direction, null);
+                PixelGridView3 pixelGrid = findViewById(R.id.pixelGrid);
 
-            // create the popup window
-            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            boolean focusable = true; // lets taps outside the popup also dismiss it
-            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+                // create the popup window
+//            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+//            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int length = (int) (cellSize + (cellSize / 30)) * 5;
 
-            // show the popup window
-            // which view you pass in doesn't matter, it is only used for the window tolken
-            popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, 0,row);
+                boolean focusable = true; // lets taps outside the popup also dismiss it
+                //final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+                final PopupWindow popupWindow = new PopupWindow(popupView, length, length, focusable);
 
-            // dismiss the popup window when touched
-            popupView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    popupWindow.dismiss();
-                    return true;
-                }
-            });
+                // show the popup window
+                // which view you pass in doesn't matter, it is only used for the window tolken
+                int x = (int)(event.getX() - (cellSize + (cellSize / 30)));
+                int y = (int)(event.getY() - (cellSize + (cellSize / 30)));
+                Log.d(TAG, "onLongPress: x: " + x + " y: " + y);
+                popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x,y);
+
+                // dismiss the popup window when touched
+                popupView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
+            }
         }
     }
 
@@ -520,7 +528,7 @@ public class PixelGridView3 extends View{
             touchedObstacle = new Obstacle(column, row, counter);
             counter++;
 
-            Log.w(TAG, "Added circle " + touchedObstacle);
+            Log.w(TAG, "Added Obstacle " + touchedObstacle);
             obstacles.add(touchedObstacle);
         }
 

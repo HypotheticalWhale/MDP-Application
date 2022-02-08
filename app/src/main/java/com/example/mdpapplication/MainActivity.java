@@ -23,7 +23,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
     FragmentAdapter adapter;
-//    PixelGridView pixelGrid;
+    //    PixelGridView pixelGrid;
     PixelGridView3 pixelGrid;
 
     @Override
@@ -39,7 +39,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         adapter = new FragmentAdapter(fm, getLifecycle());
         viewPager.setAdapter(adapter);
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -82,8 +82,8 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
-            Log.d("tag","Application is started");
-            Intent intent = new Intent(MainActivity.this,ApplicationActivity.class);
+            Log.d(TAG, "Application is started");
+            Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
             return true;
         }
@@ -99,30 +99,30 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("tag","In onStart");
+        Log.d(TAG, "In onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("tag","In onResume");
+        Log.d(TAG, "In onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("tag","In onPause");
+        Log.d(TAG, "In onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("tag","In onStop");
+        Log.d(TAG, "In onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("tag","In onDestroy");
+        Log.d(TAG, "In onDestroy");
     }
 }
