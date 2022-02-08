@@ -423,11 +423,13 @@ public class PixelGridView3 extends View{
                 touchedObstacle = getTouchedObstacle(column, row);
 
                 if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
-                    Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
+                    if(touchedObstacle != null) {
+                        Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
-                    if (overlappingObstacle != null) {
-                        Log.w(TAG, "ACTION_UP: Overlapped ID: " + overlappingObstacle.id);
-                        touchedObstacle.X = column + 1;
+                        if (overlappingObstacle != null) {
+                            Log.w(TAG, "ACTION_UP: Overlapped ID: " + overlappingObstacle.id);
+                            touchedObstacle.X = column + 1;
+                        }
                     }
                 }
                 else{
@@ -483,6 +485,7 @@ public class PixelGridView3 extends View{
             Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
             if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                 // inflate the layout of the popup window
+                clearObstaclePointer();
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
                 View popupView = inflater.inflate(R.layout.popup_direction, null);
                 PixelGridView3 pixelGrid = findViewById(R.id.pixelGrid);
