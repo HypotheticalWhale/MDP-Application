@@ -419,7 +419,6 @@ public class PixelGridView3 extends View{
                 row = (int) (event.getY(actionIndex) / cellSize);
 
                 Log.d(TAG, "ACTION_UP: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
-                Log.d(TAG, "ACTION_UP: Actual Column: " + column + " Row: " + row);
 
                 touchedObstacle = getTouchedObstacle(column, row);
 
@@ -491,7 +490,7 @@ public class PixelGridView3 extends View{
                 // create the popup window
 //            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
 //            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int length = (int) (cellSize + (cellSize / 30)) * 5;
+                int length = (int) (cellSize + (cellSize / 30)) * 4;
 
                 boolean focusable = true; // lets taps outside the popup also dismiss it
                 //final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
@@ -499,8 +498,8 @@ public class PixelGridView3 extends View{
 
                 // show the popup window
                 // which view you pass in doesn't matter, it is only used for the window tolken
-                int x = (int) (event.getX() - cellSize*3);
-                int y = (int) (event.getY() + cellSize*3);
+                int x = (int) (event.getX() - cellSize*2);
+                int y = (int) (event.getY() + cellSize*2.5) ;
                 Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
                 popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
 
