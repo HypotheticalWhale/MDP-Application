@@ -24,7 +24,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     ViewPager2 viewPager;
     FragmentAdapter adapter;
     //    PixelGridView pixelGrid;
-    PixelGridView3 pixelGrid;
+    PixelGridView pixelGrid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

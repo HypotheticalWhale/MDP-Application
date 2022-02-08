@@ -7,13 +7,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
-import java.util.HashSet;
-
-public class ObstacleGridView extends View{
+public class ObstacleGridView extends View {
     private static final String TAG = "ObstacleGrid";
     private int numColumns, numRows;
     private int cellWidth, cellHeight;
@@ -22,10 +21,11 @@ public class ObstacleGridView extends View{
     private final Paint whitePaint = new Paint();
     private final Paint yellowPaint = new Paint();
 
-    private PixelGridView3.Obstacle obstacle;
+    private final GestureDetector gestureDetector;
+
+    private PixelGridView.Obstacle obstacle;
     private PopupWindow popupWindow;
 
-    float x1, x2, y1, y2, dx, dy;
 
     public ObstacleGridView(Context context) {
         this(context, null);
@@ -45,15 +45,17 @@ public class ObstacleGridView extends View{
         whitePaint.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(70);
+
+        gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
-    public void setObstacle(PixelGridView3.Obstacle obstacle) {
+    public void setObstacle(PixelGridView.Obstacle obstacle) {
         this.obstacle = obstacle;
 
         invalidate();
     }
 
-    public PixelGridView3.Obstacle getObstacle() {
+    public PixelGridView.Obstacle getObstacle() {
         return obstacle;
     }
 
@@ -95,7 +97,7 @@ public class ObstacleGridView extends View{
         if (obstacle.direction == "N") {
             canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
             canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
-            canvas.drawLine(0, 0, cellWidth , 0, yellowPaint);
+            canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
         } else if (obstacle.direction == "E") {
             canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
             canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
@@ -116,34 +118,50 @@ public class ObstacleGridView extends View{
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        switch(event.getAction()) {
-            case(MotionEvent.ACTION_DOWN):
-                x1 = event.getX();
-                y1 = event.getY();
-                break;
-            case(MotionEvent.ACTION_UP): {
-                x2 = event.getX();
-                y2 = event.getY();
-                dx = x2-x1;
-                dy = y2-y1;
+        return gestureDetector.onTouchEvent(event);
+    }
 
-                // Use dx and dy to determine the direction of the move
-                if(Math.abs(dx) > Math.abs(dy)) {
-                    if(dx>0)
-                        obstacle.direction = "E";
-                    else
-                        obstacle.direction = "W";
-                } else {
-                    if(dy>0)
-                        obstacle.direction = "S";
-                    else
-                        obstacle.direction = "N";
-                }
-                Log.d(TAG, "onTouchEvent: direction: " + obstacle.direction);
-                popupWindow.dismiss();
-                break;
-            }
+    private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
         }
-        return true;
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            boolean result = false;
+            try {
+                float diffY = e2.getY() - e1.getY();
+                float diffX = e2.getX() - e1.getX();
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            obstacle.direction = "E";
+                        } else {
+                            obstacle.direction = "W";
+                        }
+                        result = true;
+                    }
+                } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        obstacle.direction = "S";
+                    } else {
+                        obstacle.direction = "N";
+                    }
+                    result = true;
+                }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+
+            Log.d(TAG, "onFling: direction: " + obstacle.direction);
+            popupWindow.dismiss();
+
+            return result;
+        }
     }
 }

@@ -1,30 +1,17 @@
 package com.example.mdpapplication;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class controls extends Fragment {
     private static final String TAG = "controls";
@@ -33,7 +20,7 @@ public class controls extends Fragment {
     String msg;
     ImageButton sa, sr, sl, f, r, rl, rr, explore, fastest;
     TextInputLayout corrInput;
-    PixelGridView3 pixelGrid;
+    PixelGridView pixelGrid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
