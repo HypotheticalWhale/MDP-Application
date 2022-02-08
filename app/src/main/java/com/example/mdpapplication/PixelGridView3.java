@@ -481,7 +481,6 @@ public class PixelGridView3 extends View{
             int row = (int) (event.getY() / cellSize);
 
             Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
-            Log.d("Long press", "Pressed at: (" + column + "," + row + ")");
             // inflate the layout of the popup window
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
             View popupView = inflater.inflate(R.layout.popup_direction, null);
