@@ -16,8 +16,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 
 import androidx.core.view.GestureDetectorCompat;
 
@@ -64,6 +68,7 @@ public class PixelGridView3 extends View{
         int X;
         int Y;
         int targetID = -1;
+        String direction = "None";
 
         Obstacle(int X, int Y, int id) {
             this.id = id;
@@ -103,6 +108,13 @@ public class PixelGridView3 extends View{
             return Y;
         }
 
+        public void setDirection(String direction) {
+            this.direction = direction;
+        }
+
+        public String getDirection() {
+            return direction;
+        }
     }
 
     private class Cell {
@@ -469,7 +481,29 @@ public class PixelGridView3 extends View{
             int row = (int) (event.getY() / cellSize);
 
             Log.d("Long press", "Pressed at: (" + column + "," + row + ")");
+            // inflate the layout of the popup window
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
+            View popupView = inflater.inflate(R.layout.popup_direction, null);
+            PixelGridView3 pixelGrid = findViewById(R.id.pixelGrid);
 
+            // create the popup window
+            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            boolean focusable = true; // lets taps outside the popup also dismiss it
+            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+            // show the popup window
+            // which view you pass in doesn't matter, it is only used for the window tolken
+            popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, 0,row);
+
+            // dismiss the popup window when touched
+            popupView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    popupWindow.dismiss();
+                    return true;
+                }
+            });
         }
     }
 
