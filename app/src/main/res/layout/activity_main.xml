@@ -23,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            app:columns="25"
-            app:rows="25" />
+            app:columns="20"
+            app:rows="20" />
 
         <com.google.android.material.tabs.TabLayout
             android:layout_width="match_parent"

@@ -356,7 +356,7 @@ public class PixelGridView3 extends View{
                 row = (int) (event.getY() / cellSize);
 
                 // check if we've touched inside some Obstacle
-                if (column > 0 && row < numRows) {
+                if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                     touchedObstacle = obtainTouchedObstacle(column, row);
                     touchedObstacle.X = column;
                     touchedObstacle.Y = row;
@@ -419,10 +419,11 @@ public class PixelGridView3 extends View{
                 row = (int) (event.getY(actionIndex) / cellSize);
 
                 Log.d(TAG, "ACTION_UP: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
+                Log.d(TAG, "ACTION_UP: Actual Column: " + column + " Row: " + row);
 
                 touchedObstacle = getTouchedObstacle(column, row);
 
-                if (column > 0 && row < numRows) {
+                if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                     Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
                     if (overlappingObstacle != null) {
@@ -481,7 +482,7 @@ public class PixelGridView3 extends View{
             int row = (int) (event.getY() / cellSize);
 
             Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
-            if (column > 0 && row < numRows) {
+            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                 // inflate the layout of the popup window
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
                 View popupView = inflater.inflate(R.layout.popup_direction, null);
@@ -498,10 +499,10 @@ public class PixelGridView3 extends View{
 
                 // show the popup window
                 // which view you pass in doesn't matter, it is only used for the window tolken
-                int x = (int)(event.getX() - (cellSize + (cellSize / 30)));
-                int y = (int)(event.getY() - (cellSize + (cellSize / 30)));
-                Log.d(TAG, "onLongPress: x: " + x + " y: " + y);
-                popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x,y);
+                int x = (int) (event.getX() - cellSize*3);
+                int y = (int) (event.getY() + cellSize*3);
+                Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
+                popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
 
                 // dismiss the popup window when touched
                 popupView.setOnTouchListener(new View.OnTouchListener() {
