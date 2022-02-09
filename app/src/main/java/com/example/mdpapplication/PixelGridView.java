@@ -264,25 +264,16 @@ public class PixelGridView extends View{
             float endX = (obstacle.X + 1) * cellSize;
             float endY = (obstacle.Y + 1) * cellSize;
 
+            canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+            canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
             if (obstacle.direction == "N") {
-                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
                 canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
             } else if (obstacle.direction == "E") {
-                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
                 canvas.drawLine(endX - 5, startY, endX - 5, endY, yellowPaint);
             } else if (obstacle.direction == "S") {
-                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
                 canvas.drawLine(startX, endY - 5, endX, endY - 5, yellowPaint);
             } else if (obstacle.direction == "W") {
-                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
                 canvas.drawLine(startX + 5, startY, startX + 5, endY, yellowPaint);
-            } else {
-                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
             }
         }
     }
@@ -295,15 +286,13 @@ public class PixelGridView extends View{
             int row = convertRow(curCoord[1]);
             String direction = robotDirection;
 
+            rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
+            Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
+
             if(direction.equals("N")){
-                rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
-                Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
                 canvas.drawBitmap(robotBitmap, null, rect, null);
             }
             else if(direction.equals("E")){
-                rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
-                Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
-
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
@@ -311,9 +300,6 @@ public class PixelGridView extends View{
                 canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
             }
             else if(direction.equals("S")){
-                rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
-                Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
-
                 Matrix matrix = new Matrix();
                 matrix.postRotate(180);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
@@ -321,9 +307,6 @@ public class PixelGridView extends View{
                 canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
             }
             else if(direction.equals("W")){
-                rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
-                Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
-
                 Matrix matrix = new Matrix();
                 matrix.postRotate(270);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
@@ -508,39 +491,43 @@ public class PixelGridView extends View{
             int row = (int) (event.getY() / cellSize);
 
             Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
-            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
-                // inflate the layout of the popup window
-                clearObstaclePointer();
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
-                View popupView = inflater.inflate(R.layout.popup_direction, null);
-                PixelGridView pixelGrid = findViewById(R.id.pixelGrid);
+            final Obstacle[] obstacle = {getTouchedObstacle(column, row)};
+            if(obstacle[0] != null){
+                if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                    // inflate the layout of the popup window
+                    clearObstaclePointer();
 
-                // create the popup window
-                int length = (int) (cellSize + (cellSize / 30)) * 4;
+                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
+                    View popupView = inflater.inflate(R.layout.popup_direction, null);
+                    PixelGridView pixelGrid = findViewById(R.id.pixelGrid);
 
-                boolean focusable = true; // lets taps outside the popup also dismiss it
-                final PopupWindow popupWindow = new PopupWindow(popupView, length, length, focusable);
+                    // create the popup window
+                    int length = (int) (cellSize + (cellSize / 30)) * 4;
 
-                // show the popup window
-                // which view you pass in doesn't matter, it is only used for the window token
-                int x = (int) (event.getX() - cellSize*2);
-                int y = (int) (event.getY() + cellSize*2.5) ;
-                Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
-                popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
+                    boolean focusable = true; // lets taps outside the popup also dismiss it
+                    final PopupWindow popupWindow = new PopupWindow(popupView, length, length, focusable);
 
-                ObstacleGridView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
-                final Obstacle[] obstacle = {getTouchedObstacle(column, row)};
-                obstacleGrid.setObstacle(obstacle[0]);
-                obstacleGrid.setPopupWindow(popupWindow);
+                    // show the popup window
+                    // which view you pass in doesn't matter, it is only used for the window token
+                    int x = (int) (event.getX() - cellSize*2);
+                    int y = (int) (event.getY() + cellSize*2.5) ;
+                    Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
 
-                popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        obstacle[0] = obstacleGrid.getObstacle();
-                        Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
-                        invalidate();
-                    }
-                });
+                    popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
+
+                    ObstacleView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
+                    obstacleGrid.setObstacle(obstacle[0]);
+                    obstacleGrid.setPopupWindow(popupWindow);
+
+                    popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                        @Override
+                        public void onDismiss() {
+                            obstacle[0] = obstacleGrid.getObstacle();
+                            Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
+                            invalidate();
+                        }
+                    });
+                }
             }
         }
     }

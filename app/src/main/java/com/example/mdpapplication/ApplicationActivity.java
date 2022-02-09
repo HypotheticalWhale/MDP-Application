@@ -199,7 +199,7 @@ public class ApplicationActivity extends AppCompatActivity {
                             }
                             bluetoothAdapter.cancelDiscovery();
                         }
-                    }, 120);
+                    }, 12000);
 
                 } else {
                     showToast("Bluetooth is not on!");

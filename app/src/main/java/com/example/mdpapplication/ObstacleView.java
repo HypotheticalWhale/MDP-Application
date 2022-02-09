@@ -12,7 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
-public class ObstacleGridView extends View {
+public class ObstacleView extends View {
     private static final String TAG = "ObstacleGrid";
     private int numColumns, numRows;
     private int cellWidth, cellHeight;
@@ -27,11 +27,11 @@ public class ObstacleGridView extends View {
     private PopupWindow popupWindow;
 
 
-    public ObstacleGridView(Context context) {
+    public ObstacleView(Context context) {
         this(context, null);
     }
 
-    public ObstacleGridView(Context context, AttributeSet attrs) {
+    public ObstacleView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView,
@@ -91,28 +91,20 @@ public class ObstacleGridView extends View {
         if (numColumns == 0 || numRows == 0) {
             return;
         }
+        if(obstacle != null){
+            Log.d(TAG, "onDraw: direction: " + obstacle.direction);
 
-        Log.d(TAG, "onDraw: direction: " + obstacle.direction);
-
-        if (obstacle.direction == "N") {
             canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
             canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
-            canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
-        } else if (obstacle.direction == "E") {
-            canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
-            canvas.drawLine(cellWidth, 0, cellWidth, cellHeight, yellowPaint);
-        } else if (obstacle.direction == "S") {
-            canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
-            canvas.drawLine(0, cellHeight, cellWidth, cellHeight, yellowPaint);
-        } else if (obstacle.direction == "W") {
-            canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
-            canvas.drawLine(0, 0, 0, cellHeight, yellowPaint);
-        } else {
-            canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+            if (obstacle.direction == "N") {
+                canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
+            } else if (obstacle.direction == "E") {
+                canvas.drawLine(cellWidth, 0, cellWidth, cellHeight, yellowPaint);
+            } else if (obstacle.direction == "S") {
+                canvas.drawLine(0, cellHeight, cellWidth, cellHeight, yellowPaint);
+            } else if (obstacle.direction == "W") {
+                canvas.drawLine(0, 0, 0, cellHeight, yellowPaint);
+            }
         }
     }
 
