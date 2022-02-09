@@ -44,7 +44,7 @@ public class ObstacleView extends View {
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(80);
         whitePaint.setTextAlign(Paint.Align.CENTER);
-        targetScannedColor.setColor(Color.RED);
+        targetScannedColor.setColor(Color.WHITE);
         targetScannedColor.setTextSize(90);
         targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);

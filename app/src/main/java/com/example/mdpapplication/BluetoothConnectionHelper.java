@@ -56,6 +56,7 @@ public class BluetoothConnectionHelper extends Service {
     public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
+    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     //For showing toast
     private final String BLUETOOTH_NOT_SUPPORTED = "Device does not support bluetooth.";
@@ -132,6 +133,7 @@ public class BluetoothConnectionHelper extends Service {
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
+                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);

@@ -64,6 +64,7 @@ public class PixelGridView extends View {
 
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
+    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     /**
      * Stores data about obstacle
@@ -156,8 +157,8 @@ public class PixelGridView extends View {
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(20);
         whitePaint.setTextAlign(Paint.Align.CENTER);
-        targetScannedColor.setColor(Color.RED);
-        targetScannedColor.setTextSize(25);
+        targetScannedColor.setColor(Color.WHITE);
+        targetScannedColor.setTextSize(30);
         targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(8);
@@ -165,6 +166,7 @@ public class PixelGridView extends View {
         bluetooth = new BluetoothConnectionHelper(context);
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_TARGET_SCANNED));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_MOVES));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
     }
@@ -201,7 +203,7 @@ public class PixelGridView extends View {
 
     public void resetGrid() {
         calculateDimensions();
-        counter=1;
+        counter = 1;
     }
 
     @Override
@@ -680,29 +682,41 @@ public class PixelGridView extends View {
                 }
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
                 String message = intent.getStringExtra("key");
-                try {
-                    JSONObject jsonObj = new JSONObject(message);
-                    Log.d(TAG, "onReceive: "+ jsonObj);
+                if(message.contains("TARGET")){
+                    try {
+                        JSONObject jsonObj = new JSONObject(message);
+                        Log.d(TAG, "onReceive: " + jsonObj);
 
-                    int col = jsonObj.getInt("col");
-                    int row = convertRow(jsonObj.getInt("row"));
-                    String id = jsonObj.getString("id");
-                    String direction = jsonObj.getString("direction");
+                        int col = jsonObj.getInt("col");
+                        int row = convertRow(jsonObj.getInt("row"));
+                        String id = jsonObj.getString("id");
+                        String direction = jsonObj.getString("direction");
 
-                    Obstacle target =  obtainTouchedObstacle(col, row);
-                    if(target != null){
-                        target.targetID = id;
-                        target.direction = direction;
+                        Obstacle target = obtainTouchedObstacle(col, row);
+                        if (target != null) {
+                            target.targetID = id;
+                            target.direction = direction;
 
-                        Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: direction: "+ target.direction);
+                            Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: direction: " + target.direction);
 
-                        invalidate();
-                    }else{
-                        bluetooth.write("Wrong coordinate");
+                            invalidate();
+                        } else {
+                            bluetooth.write("Wrong coordinate");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
+            } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
+                String[] message = intent.getStringExtra("key").split(",");
+
+                int col = Integer.parseInt(message[1].replace(" ", ""));
+                int row = Integer.parseInt(message[2].replace(" ", ""));
+                String direction = message[3].replace(" ", "");
+
+                Log.d(TAG, "onReceive: col:" + col + " row:" + row + " direction:" + direction);
+
+                setCurCoord(col, row, direction);
             }
         }
     };
