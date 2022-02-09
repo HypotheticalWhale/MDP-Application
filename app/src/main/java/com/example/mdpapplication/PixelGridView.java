@@ -67,7 +67,7 @@ public class PixelGridView extends View{
         int id;
         int X;
         int Y;
-        int targetID = -1;
+        String targetID;
         String direction = "None";
 
         Obstacle(int X, int Y, int id) {
@@ -84,11 +84,11 @@ public class PixelGridView extends View{
             return id;
         }
 
-        public void setTargetID(int targetID) {
+        public void setTargetID(String targetID) {
             this.targetID = targetID;
         }
 
-        public int getTargetID() {
+        public String getTargetID() {
             return targetID;
         }
 
@@ -188,6 +188,10 @@ public class PixelGridView extends View{
 
     public int[] getCurCoord(){
         return curCoord;
+    }
+
+    public void resetGrid(){
+        calculateDimensions();
     }
 
     @Override
@@ -434,14 +438,24 @@ public class PixelGridView extends View{
                     if(touchedObstacle != null) {
                         Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
-                        if (overlappingObstacle != null) {
+                        while (overlappingObstacle != null) {
                             Log.w(TAG, "ACTION_UP: Overlapped ID: " + overlappingObstacle.id);
-                            touchedObstacle.X = column + 1;
+                            column++;
+                            overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
+                        }
+                        if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                            touchedObstacle.X = column;
+                        }
+                        else{
+                            int deletedCount = touchedObstacle.id;
+                            fixCount(deletedCount);
+                            obstacles.remove(touchedObstacle);
+                            counter--;
                         }
                     }
                 }
-                else{
-                    if(touchedObstacle != null){
+                else {
+                    if (touchedObstacle != null) {
                         int deletedCount = touchedObstacle.id;
                         fixCount(deletedCount);
                         obstacles.remove(touchedObstacle);

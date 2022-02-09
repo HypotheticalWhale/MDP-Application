@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -21,6 +22,7 @@ public class controls extends Fragment {
     ImageButton sa, sr, sl, f, r, rl, rr, explore, fastest;
     TextInputLayout corrInput;
     PixelGridView pixelGrid;
+    Button b_reset;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -39,6 +41,7 @@ public class controls extends Fragment {
         rr = view.findViewById(R.id.r_right);
         explore = view.findViewById(R.id.explore);
         fastest = view.findViewById(R.id.fastest);
+        b_reset = view.findViewById(R.id.b_reset);
 
         corrInput = view.findViewById(R.id.corrInput);
         pixelGrid = getActivity().findViewById(R.id.pixelGrid);
@@ -121,6 +124,12 @@ public class controls extends Fragment {
             public void onClick(View v) {
                 msg = "beginFastest";
                 bluetooth.write(msg);
+            }
+        });
+        b_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.resetGrid();
             }
         });
         return view;
