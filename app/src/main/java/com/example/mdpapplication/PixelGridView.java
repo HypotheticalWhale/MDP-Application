@@ -26,7 +26,7 @@ import androidx.core.view.GestureDetectorCompat;
 
 import java.util.HashSet;
 
-public class PixelGridView extends View{
+public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
 
     private boolean mapDrawn = false;
@@ -64,7 +64,9 @@ public class PixelGridView extends View{
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
 
-    /** Stores data about obstacle */
+    /**
+     * Stores data about obstacle
+     */
     public static class Obstacle {
         int id;
         int X;
@@ -192,12 +194,13 @@ public class PixelGridView extends View{
         invalidate();
     }
 
-    public int[] getCurCoord(){
+    public int[] getCurCoord() {
         return curCoord;
     }
 
-    public void resetGrid(){
+    public void resetGrid() {
         calculateDimensions();
+        counter=1;
     }
 
     @Override
@@ -211,20 +214,20 @@ public class PixelGridView extends View{
             return;
         }
 
-        cellSize = getWidth()/(numColumns+1);
+        cellSize = getWidth() / (numColumns + 1);
         curCoord = new int[]{-1, -1};
 
         cellChecked = new boolean[numColumns][numRows];
         cellCounter = new int[numColumns][numRows];
-        obstacles = new HashSet<Obstacle>(numColumns*numRows);
-        obstaclePointer = new SparseArray<Obstacle>(numColumns*numRows);
+        obstacles = new HashSet<Obstacle>(numColumns * numRows);
+        obstaclePointer = new SparseArray<Obstacle>(numColumns * numRows);
 
         invalidate();
     }
 
-    private void fixCount(int counter){
+    private void fixCount(int counter) {
         for (Obstacle obstacle : obstacles) {
-            if(obstacle.id > counter){
+            if (obstacle.id > counter) {
                 obstacle.id--;
             }
         }
@@ -232,7 +235,7 @@ public class PixelGridView extends View{
 
     private void createCell() {
         cells = new Cell[numColumns + 1][numRows + 1];
-        cellSize = getWidth()/(numColumns+1);
+        cellSize = getWidth() / (numColumns + 1);
 
         for (int x = 0; x <= numColumns; x++)
             for (int y = 0; y <= numRows; y++)
@@ -249,21 +252,21 @@ public class PixelGridView extends View{
         for (int y = 0; y <= numRows; y++)
             canvas.drawLine(cells[1][y].startX, cells[1][y].startY - (cellSize / 30), cells[numRows][y].endX, cells[numRows][y].startY - (cellSize / 30), blackPaint);
         for (int x = 0; x <= numColumns; x++)
-            canvas.drawLine(cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][0].startY - (cellSize / 30), cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][numRows-1].endY + (cellSize / 30), blackPaint);
+            canvas.drawLine(cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][0].startY - (cellSize / 30), cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][numRows - 1].endY + (cellSize / 30), blackPaint);
     }
 
     private void drawGridNumber(Canvas canvas) {
         for (int x = 1; x <= numColumns; x++) {
             if (x > 9)
-                canvas.drawText(Integer.toString(x-1), cells[x][numRows].startX + (cellSize / 5), cells[x][numRows].startY + (cellSize / 3), blackPaint);
+                canvas.drawText(Integer.toString(x - 1), cells[x][numRows].startX + (cellSize / 5), cells[x][numRows].startY + (cellSize / 3), blackPaint);
             else
-                canvas.drawText(Integer.toString(x-1), cells[x][numRows].startX + (cellSize / 3), cells[x][numRows].startY + (cellSize / 3), blackPaint);
+                canvas.drawText(Integer.toString(x - 1), cells[x][numRows].startX + (cellSize / 3), cells[x][numRows].startY + (cellSize / 3), blackPaint);
         }
         for (int y = 0; y < numRows; y++) {
             if ((numRows - y) > 9)
-                canvas.drawText(Integer.toString((numRows-1) - y), cells[0][y].startX + (cellSize / 2), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
+                canvas.drawText(Integer.toString((numRows - 1) - y), cells[0][y].startX + (cellSize / 2), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
             else
-                canvas.drawText(Integer.toString((numRows-1) - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
+                canvas.drawText(Integer.toString((numRows - 1) - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
         }
     }
 
@@ -275,10 +278,9 @@ public class PixelGridView extends View{
             float endY = (obstacle.Y + 1) * cellSize;
 
             canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-            if(obstacle.targetID == null){
+            if (obstacle.targetID == null) {
                 canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
-            }
-            else{
+            } else {
                 canvas.drawText(obstacle.targetID, (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, targetScannedColor);
             }
             if (obstacle.direction == "N") {
@@ -296,32 +298,29 @@ public class PixelGridView extends View{
     private void drawRobot(Canvas canvas, int[] curCoord) {
         RectF rect;
 
-        for (int i = 0; i < curCoord.length ; i++) {
+        for (int i = 0; i < curCoord.length; i++) {
             int col = curCoord[0];
             int row = convertRow(curCoord[1]);
             String direction = robotDirection;
 
-            rect = new RectF(col * cellSize, (row-1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
+            rect = new RectF(col * cellSize, (row - 1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
             Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 
-            if(direction.equals("N")){
+            if (direction.equals("N")) {
                 canvas.drawBitmap(robotBitmap, null, rect, null);
-            }
-            else if(direction.equals("E")){
+            } else if (direction.equals("E")) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
 
                 canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
-            }
-            else if(direction.equals("S")){
+            } else if (direction.equals("S")) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(180);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
 
                 canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
-            }
-            else if(direction.equals("W")){
+            } else if (direction.equals("W")) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(270);
                 Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
@@ -334,7 +333,7 @@ public class PixelGridView extends View{
     private int convertRow(int row) {
         return (numRows - row);
     }
-    
+
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.WHITE);
@@ -355,7 +354,7 @@ public class PixelGridView extends View{
 
         drawRobot(canvas, curCoord);
     }
-    
+
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         boolean handled = false;
@@ -420,7 +419,7 @@ public class PixelGridView extends View{
                     column = (int) (event.getX(actionIndex) / cellSize);
                     row = (int) (event.getY(actionIndex) / cellSize);
 
-                    Log.d(TAG, "ACTION_MOVE: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
+                    Log.d(TAG, "ACTION_MOVE: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
 
                     touchedObstacle = obstaclePointer.get(pointerId);
 
@@ -441,12 +440,12 @@ public class PixelGridView extends View{
                 column = (int) (event.getX(actionIndex) / cellSize);
                 row = (int) (event.getY(actionIndex) / cellSize);
 
-                Log.d(TAG, "ACTION_UP: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
+                Log.d(TAG, "ACTION_UP: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
 
                 touchedObstacle = getTouchedObstacle(column, row);
 
                 if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
-                    if(touchedObstacle != null) {
+                    if (touchedObstacle != null) {
                         Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
                         while (overlappingObstacle != null) {
@@ -456,16 +455,14 @@ public class PixelGridView extends View{
                         }
                         if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                             touchedObstacle.X = column;
-                        }
-                        else{
+                        } else {
                             int deletedCount = touchedObstacle.id;
                             fixCount(deletedCount);
                             obstacles.remove(touchedObstacle);
                             counter--;
                         }
                     }
-                }
-                else {
+                } else {
                     if (touchedObstacle != null) {
                         int deletedCount = touchedObstacle.id;
                         fixCount(deletedCount);
@@ -515,9 +512,9 @@ public class PixelGridView extends View{
             int column = (int) (event.getX() / cellSize);
             int row = (int) (event.getY() / cellSize);
 
-            Log.d(TAG, "onLongPress: Column: " + String.valueOf(column-(int)1) + " Row: " + String.valueOf(convertRow(row)-(int)1));
+            Log.d(TAG, "onLongPress: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
             final Obstacle[] obstacle = {getTouchedObstacle(column, row)};
-            if(obstacle[0] != null){
+            if (obstacle[0] != null) {
                 if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                     // inflate the layout of the popup window
                     clearObstaclePointer();
@@ -534,11 +531,11 @@ public class PixelGridView extends View{
 
                     // show the popup window
                     // which view you pass in doesn't matter, it is only used for the window token
-                    int x = (int) (event.getX() - cellSize*2);
-                    int y = (int) (event.getY() + cellSize*2.5) ;
+                    int x = (int) (event.getX() - cellSize * 2);
+                    int y = (int) (event.getY() + cellSize * 2.5);
                     Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
 
-                    popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY,x ,y);
+                    popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x, y);
 
                     ObstacleView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
                     obstacleGrid.setObstacle(obstacle[0]);
@@ -594,8 +591,8 @@ public class PixelGridView extends View{
         Obstacle touched = null;
 
         for (Obstacle obstacle : obstacles) {
-            if (obstacle.X == column && obstacle.Y ==  row && obstacle.id != id) {
-                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X-(int)1) + " Row: " + String.valueOf(convertRow(obstacle.Y)-(int)1) + " ID: " + obstacle.id);
+            if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
+                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
                 touched = obstacle;
                 break;
             }
@@ -680,10 +677,6 @@ public class PixelGridView extends View{
 
                     setCurCoord(col, row, direction);
                 }
-            }
-            else if(intent.getAction().equals(EVENT_TARGET_SCANNED)){
-                Obstacle target = getTouchedObstacle(0,0);
-                target.targetID = "5";
             }
         }
     };
