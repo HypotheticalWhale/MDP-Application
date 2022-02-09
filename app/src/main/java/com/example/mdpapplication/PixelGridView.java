@@ -53,6 +53,7 @@ public class PixelGridView extends View{
     private final Paint fastestPathColor = new Paint();
     private final Paint whitePaint = new Paint();
     private final Paint yellowPaint = new Paint();
+    private final Paint targetScannedColor = new Paint();
 
     private HashSet<Obstacle> obstacles;
     private SparseArray<Obstacle> obstaclePointer;
@@ -61,6 +62,7 @@ public class PixelGridView extends View{
     private final BluetoothConnectionHelper bluetooth;
 
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
+    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
 
     /** Stores data about obstacle */
     public static class Obstacle {
@@ -151,11 +153,15 @@ public class PixelGridView extends View{
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(20);
         whitePaint.setTextAlign(Paint.Align.CENTER);
+        targetScannedColor.setColor(Color.WHITE);
+        targetScannedColor.setTextSize(50);
+        targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(8);
 
         bluetooth = new BluetoothConnectionHelper(context);
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_TARGET_SCANNED));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
     }
@@ -269,7 +275,12 @@ public class PixelGridView extends View{
             float endY = (obstacle.Y + 1) * cellSize;
 
             canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-            canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+            if(obstacle.targetID == null){
+                canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
+            }
+            else{
+                canvas.drawText(obstacle.targetID, (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, targetScannedColor);
+            }
             if (obstacle.direction == "N") {
                 canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
             } else if (obstacle.direction == "E") {
@@ -669,6 +680,10 @@ public class PixelGridView extends View{
 
                     setCurCoord(col, row, direction);
                 }
+            }
+            else if(intent.getAction().equals(EVENT_TARGET_SCANNED)){
+                Obstacle target = getTouchedObstacle(0,0);
+                target.targetID = "5";
             }
         }
     };

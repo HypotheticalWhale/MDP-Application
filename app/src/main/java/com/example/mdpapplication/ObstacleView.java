@@ -95,7 +95,12 @@ public class ObstacleView extends View {
             Log.d(TAG, "onDraw: direction: " + obstacle.direction);
 
             canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+            if(obstacle.targetID == null){
+                canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+            }
+            else{
+                canvas.drawText(obstacle.targetID, 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+            }
             if (obstacle.direction == "N") {
                 canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
             } else if (obstacle.direction == "E") {
