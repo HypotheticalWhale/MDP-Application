@@ -20,6 +20,7 @@ public class ObstacleView extends View {
     private final Paint blackPaint = new Paint();
     private final Paint whitePaint = new Paint();
     private final Paint yellowPaint = new Paint();
+    private final Paint targetScannedColor = new Paint();
 
     private final GestureDetector gestureDetector;
 
@@ -43,6 +44,9 @@ public class ObstacleView extends View {
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(80);
         whitePaint.setTextAlign(Paint.Align.CENTER);
+        targetScannedColor.setColor(Color.RED);
+        targetScannedColor.setTextSize(90);
+        targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(70);
 
@@ -99,15 +103,15 @@ public class ObstacleView extends View {
                 canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
             }
             else{
-                canvas.drawText(obstacle.targetID, 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+                canvas.drawText(obstacle.targetID, 0.5f * cellWidth, 0.65f * cellHeight, targetScannedColor);
             }
-            if (obstacle.direction == "N") {
+            if (obstacle.direction.equals("N")) {
                 canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
-            } else if (obstacle.direction == "E") {
+            } else if (obstacle.direction.equals("E")) {
                 canvas.drawLine(cellWidth, 0, cellWidth, cellHeight, yellowPaint);
-            } else if (obstacle.direction == "S") {
+            } else if (obstacle.direction.equals("S")) {
                 canvas.drawLine(0, cellHeight, cellWidth, cellHeight, yellowPaint);
-            } else if (obstacle.direction == "W") {
+            } else if (obstacle.direction.equals("W")) {
                 canvas.drawLine(0, 0, 0, cellHeight, yellowPaint);
             }
         }

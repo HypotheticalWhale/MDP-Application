@@ -24,6 +24,9 @@ import android.widget.PopupWindow;
 
 import androidx.core.view.GestureDetectorCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashSet;
 
 public class PixelGridView extends View {
@@ -40,8 +43,6 @@ public class PixelGridView extends View {
     private String robotDirection = "None";
 
     private int counter = 1;
-    private int[][] cellCounter;
-    private boolean[][] cellChecked;
 
     private final Paint blackPaint = new Paint();
     private final Paint obstacleColor = new Paint();
@@ -155,8 +156,8 @@ public class PixelGridView extends View {
         whitePaint.setColor(Color.WHITE);
         whitePaint.setTextSize(20);
         whitePaint.setTextAlign(Paint.Align.CENTER);
-        targetScannedColor.setColor(Color.WHITE);
-        targetScannedColor.setTextSize(50);
+        targetScannedColor.setColor(Color.RED);
+        targetScannedColor.setTextSize(25);
         targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(8);
@@ -217,8 +218,6 @@ public class PixelGridView extends View {
         cellSize = getWidth() / (numColumns + 1);
         curCoord = new int[]{-1, -1};
 
-        cellChecked = new boolean[numColumns][numRows];
-        cellCounter = new int[numColumns][numRows];
         obstacles = new HashSet<Obstacle>(numColumns * numRows);
         obstaclePointer = new SparseArray<Obstacle>(numColumns * numRows);
 
@@ -283,13 +282,13 @@ public class PixelGridView extends View {
             } else {
                 canvas.drawText(obstacle.targetID, (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, targetScannedColor);
             }
-            if (obstacle.direction == "N") {
+            if (obstacle.direction.equals("N")) {
                 canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
-            } else if (obstacle.direction == "E") {
+            } else if (obstacle.direction.equals("E")) {
                 canvas.drawLine(endX - 5, startY, endX - 5, endY, yellowPaint);
-            } else if (obstacle.direction == "S") {
+            } else if (obstacle.direction.equals("S")) {
                 canvas.drawLine(startX, endY - 5, endX, endY - 5, yellowPaint);
-            } else if (obstacle.direction == "W") {
+            } else if (obstacle.direction.equals("W")) {
                 canvas.drawLine(startX + 5, startY, startX + 5, endY, yellowPaint);
             }
         }
@@ -564,11 +563,13 @@ public class PixelGridView extends View {
         Obstacle touchedObstacle = getTouchedObstacle(column, row);
 
         if (null == touchedObstacle) {
-            touchedObstacle = new Obstacle(column, row, counter);
-            counter++;
+            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                touchedObstacle = new Obstacle(column, row, counter);
+                counter++;
 
-            Log.w(TAG, "Added Obstacle " + touchedObstacle);
-            obstacles.add(touchedObstacle);
+                Log.w(TAG, "Added Obstacle " + touchedObstacle);
+                obstacles.add(touchedObstacle);
+            }
         }
 
         return touchedObstacle;
@@ -676,6 +677,31 @@ public class PixelGridView extends View {
                     }
 
                     setCurCoord(col, row, direction);
+                }
+            } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
+                String message = intent.getStringExtra("key");
+                try {
+                    JSONObject jsonObj = new JSONObject(message);
+                    Log.d(TAG, "onReceive: "+ jsonObj);
+
+                    int col = jsonObj.getInt("col");
+                    int row = convertRow(jsonObj.getInt("row"));
+                    String id = jsonObj.getString("id");
+                    String direction = jsonObj.getString("direction");
+
+                    Obstacle target =  obtainTouchedObstacle(col, row);
+                    if(target != null){
+                        target.targetID = id;
+                        target.direction = direction;
+
+                        Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: direction: "+ target.direction);
+
+                        invalidate();
+                    }else{
+                        bluetooth.write("Wrong coordinate");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
         }
