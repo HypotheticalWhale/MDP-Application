@@ -130,10 +130,18 @@ public class BluetoothConnectionHelper extends Service {
                     case MESSAGE_READ:
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
+
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
+
+                        if(receivedMessage.contains("TARGET")) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
+                        }
+                        else if(receivedMessage.contains("ROBOT")) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
+                        }
+                        else{
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                        }
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);

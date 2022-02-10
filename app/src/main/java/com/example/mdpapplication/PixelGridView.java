@@ -304,7 +304,8 @@ public class PixelGridView extends View {
             int row = convertRow(curCoord[1]);
             String direction = robotDirection;
 
-            rect = new RectF(col * cellSize, (row - 1) * cellSize, (col + 2) * cellSize, (row + 1) * cellSize);
+            rect = new RectF(col * cellSize, (row - 2) * cellSize, (col + 2) * cellSize, row * cellSize);
+
             Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 
             if (direction.equals("N")) {
@@ -625,7 +626,7 @@ public class PixelGridView extends View {
                     } else if (direction.equals("W")) {
                         setCurCoord(col - 1, row, direction);
                     }
-                } else if (message.equals("r")) {
+                } else if (message.equals("b")) {
                     if (direction.equals("N")) {
                         setCurCoord(col, row - 1, direction);
                     } else if (direction.equals("E")) {
@@ -655,7 +656,7 @@ public class PixelGridView extends View {
                     } else if (direction.equals("W")) {
                         setCurCoord(col, row + 1, direction);
                     }
-                } else if (message.equals("tl")) {
+                } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";
                     } else if (direction.equals("E")) {
@@ -667,7 +668,7 @@ public class PixelGridView extends View {
                     }
 
                     setCurCoord(col, row, direction);
-                } else if (message.equals("tr")) {
+                } else if (message.equals("r")) {
                     if (direction.equals("N")) {
                         direction = "E";
                     } else if (direction.equals("E")) {
@@ -682,7 +683,6 @@ public class PixelGridView extends View {
                 }
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
                 String message = intent.getStringExtra("key");
-                if(message.contains("TARGET")){
                     try {
                         JSONObject jsonObj = new JSONObject(message);
                         Log.d(TAG, "onReceive: " + jsonObj);
@@ -706,7 +706,6 @@ public class PixelGridView extends View {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
                 String[] message = intent.getStringExtra("key").split(",");
 

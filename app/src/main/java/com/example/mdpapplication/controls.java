@@ -63,7 +63,8 @@ public class controls extends Fragment {
             }
         });
 
-        /** f - Forward
+        /**
+         *  f - Forward
          *  b - Reverse
          *  l - turn left
          *  r - turn right
