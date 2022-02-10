@@ -59,10 +59,16 @@ public class controls extends Fragment {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
-                pixelGrid.setCurCoord(1, 1, "N");
+                pixelGrid.setCurCoord(0, 0, "N");
             }
         });
 
+        /** f - Forward
+         *  b - Reverse
+         *  l - turn left
+         *  r - turn right
+         *  s - stop
+         */
         sa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,21 +100,21 @@ public class controls extends Fragment {
         r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "r";
+                msg = "b";
                 bluetooth.write(msg);
             }
         });
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "tl";
+                msg = "l";
                 bluetooth.write(msg);
             }
         });
         rr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "tr";
+                msg = "r";
                 bluetooth.write(msg);
             }
         });
