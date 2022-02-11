@@ -15,6 +15,7 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="10dp" />
+
     <TextView
         android:id="@+id/textView"
         android:scrollbars = "vertical"

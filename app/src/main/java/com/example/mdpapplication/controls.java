@@ -117,5 +117,6 @@ public class controls extends Fragment {
                 bluetooth.write(msg);
             }
         });
+
         return view;    }
 }
