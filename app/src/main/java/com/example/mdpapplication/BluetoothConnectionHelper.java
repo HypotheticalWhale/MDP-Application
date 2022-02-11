@@ -33,6 +33,7 @@ public class BluetoothConnectionHelper extends Service {
     /** Variables and Constant
      *
      */
+    private static final String TAG = "BluetoothConnectionHelper";
 
     private static Toast toast;
     private static Boolean displayToast = true;
@@ -122,6 +123,7 @@ public class BluetoothConnectionHelper extends Service {
         mContext = context;
 
         mHandler = new Handler(){
+
             @SuppressLint("HandlerLeak")
             @Override
             public void handleMessage(Message msg){
@@ -131,8 +133,9 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
 
+                        Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
+
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
 
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);

@@ -752,16 +752,24 @@ public class PixelGridView extends View {
 //                    } catch (JSONException e) {
 //                        e.printStackTrace();
 //                    }
+
+                Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
+
                 String[] message = intent.getStringExtra("key").split(",");
 
                 int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
                 String targetID = message[2].replace(" ", "");
 
                 Obstacle target = findObstacleByID(obstacleNo);
-                target.targetID = targetID;
+
+                if(target != null){
+                    target.targetID = targetID;
+                }
 
                 invalidate();
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
+                Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: " + intent.getStringExtra("key"));
+
                 String[] message = intent.getStringExtra("key").split(",");
 
                 int col = Integer.parseInt(message[1].replace(" ", ""));
