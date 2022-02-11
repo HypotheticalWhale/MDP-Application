@@ -1,45 +1,29 @@
 package com.example.mdpapplication;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.Activity;
+
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.textfield.TextInputLayout;
 
 public class MainActivity<NameViewModel> extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private BluetoothAdapter mBluetoothAdapter;
 
     TabLayout tabLayout;
     ViewPager2 viewPager;
     FragmentAdapter adapter;
+    //    PixelGridView pixelGrid;
     PixelGridView pixelGrid;
 
     @Override
@@ -55,7 +39,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         adapter = new FragmentAdapter(fm, getLifecycle());
         viewPager.setAdapter(adapter);
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener(){
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -98,8 +82,8 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
-            Log.d("tag","Application is started");
-            Intent intent = new Intent(MainActivity.this,ApplicationActivity.class);
+            Log.d(TAG, "Application is started");
+            Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
             startActivity(intent);
             return true;
         }
@@ -115,30 +99,30 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("tag","In onStart");
+        Log.d(TAG, "In onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("tag","In onResume");
+        Log.d(TAG, "In onResume");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("tag","In onPause");
+        Log.d(TAG, "In onPause");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("tag","In onStop");
+        Log.d(TAG, "In onStop");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("tag","In onDestroy");
+        Log.d(TAG, "In onDestroy");
     }
 }

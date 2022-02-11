@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,7 +25,8 @@ import com.google.android.material.textfield.TextInputLayout;
 public class controls extends Fragment {
     BluetoothConnectionHelper bluetooth;
     String msg;
-    ImageButton sa,sr,sl,f,r,rl,rr,explore,fastest;
+    ImageButton sa,sr,sl,f,r,rl,rr;
+    ToggleButton explore,fastest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,8 +45,15 @@ public class controls extends Fragment {
         rl = view.findViewById(R.id.r_left);
         rr = view.findViewById(R.id.r_right);
         explore = view.findViewById(R.id.explore);
-        fastest = view.findViewById(R.id.forward);
+        fastest = view.findViewById(R.id.fastest);
 
+        /**
+        *  f - Forward
+        *  b - Reverse
+         *  l - turn left
+        *  r - turn right
+        *  s - stop
+        */
         sa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,21 +85,21 @@ public class controls extends Fragment {
         r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "r";
+                msg = "b";
                 bluetooth.write(msg);
             }
         });
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "tl";
+                msg = "l";
                 bluetooth.write(msg);
             }
         });
         rr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "tr";
+                msg = "r";
                 bluetooth.write(msg);
             }
         });

@@ -53,6 +53,10 @@ public class BluetoothConnectionHelper extends Service {
     public static final String EVENT_STATE_CONNECTING = "com.event.EVENT_STATE_CONNECTING";
     public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
     public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
+    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
+    public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
+    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
+    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     //For showing toast
     private final String BLUETOOTH_NOT_SUPPORTED = "Device does not support bluetooth.";
@@ -82,15 +86,15 @@ public class BluetoothConnectionHelper extends Service {
     //For manual connection and reconnection to remote device
     private static String targetMACAddress = "";
     private static String targetDeviceName = "";
-    private static String serverName = "MDP Tablet Group 2";
+    private static final String serverName = "MDP Tablet Group 19";
     private static String connectedMACAddress = "";
     private static String connectedDeviceName = "";
     private static int reconnectAttempt = 0;
     private static boolean isServer = false;
 
     //For auto connection to remote device
-    private static String RPIMACAddress = "";
-    private static String RPIDeviceName = "";
+    private static final String RPIMACAddress = "";
+    private static final String RPIDeviceName = "";
 
     /** Service Binding
      *
@@ -126,13 +130,24 @@ public class BluetoothConnectionHelper extends Service {
                     case MESSAGE_READ:
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
-                        showToast("Message received: " + receivedMessage);
-                        sendMessageToActivity(receivedMessage);
-                        sendIntentBroadcast(EVENT_MESSAGE_RECEIVED);
+
+                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
+                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
+
+                        if(receivedMessage.contains("TARGET")) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
+                        }
+                        else if(receivedMessage.contains("ROBOT")) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
+                        }
+                        else{
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                        }
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
-                        showToast("Message sent: " + sentMessage);
+                        sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
+                        sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
                         break;
                     case MESSAGE_TOAST:
                         String toastMessage = (String) msg.obj;
@@ -165,8 +180,6 @@ public class BluetoothConnectionHelper extends Service {
         super.onDestroy();
     }
 
-
-
     /** Setter and Getters
      *
      */
@@ -183,13 +196,6 @@ public class BluetoothConnectionHelper extends Service {
         arrayList = new ArrayList<String>();
         arrayList.add(deviceName + "\n" + MACAddress);
         pairDevice(mBluetoothAdapter.getRemoteDevice(MACAddress));
-    }
-
-    public void setRPIDeviceInfo(String nRPIDeviceName, String nRPIMACAddress){
-        if (nRPIMACAddress.equals("")){
-            return;
-        }
-        setDeviceInfo(nRPIDeviceName, nRPIMACAddress);
     }
 
     public ArrayList<String> getDeviceList(){
@@ -482,7 +488,7 @@ public class BluetoothConnectionHelper extends Service {
     }
 
 
-    private static Object obj = new Object();
+    private static final Object obj = new Object();
 
     public void write(String message){
         ConnectedThread r;
@@ -584,7 +590,7 @@ public class BluetoothConnectionHelper extends Service {
             }catch(IOException connectException){
                 try{
                     mmSocket.close();
-                }catch(IOException closeException){;
+                }catch(IOException closeException){
                 }
                 mHandler.obtainMessage(MESSAGE_TOAST, 1, -1, BLUETOOTH_CONNECTION_FAILED)
                         .sendToTarget();
@@ -699,8 +705,9 @@ public class BluetoothConnectionHelper extends Service {
         mContext.getApplicationContext().sendBroadcast(intent);
     }
 
-    private static void sendMessageToActivity(String msg) {
-        Intent intent = new Intent("ReceiveMsg");
+    private static void sendIntentBroadcastWithMsg(String msg, String eventCode) {
+        Intent intent = new Intent();
+        intent.setAction(eventCode);
         // You can also include some extra data.
         intent.putExtra("key", msg);
         mContext.getApplicationContext().sendBroadcast(intent);

@@ -18,12 +18,14 @@ public class FragmentAdapter extends FragmentStateAdapter {
         switch (position){
             case 1:
                 return new controls();
+            case 2:
+                return new mapControls();
         }
         return new message();
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }
