@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,8 @@ public class mapControls extends Fragment {
     BluetoothConnectionHelper bluetooth;
     TextInputLayout corrInput;
     PixelGridView pixelGrid;
-    Button b_reset;
+    Button b_reset, b_set;
+    String robotString;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,6 +31,7 @@ public class mapControls extends Fragment {
         View view =  lf.inflate(R.layout.fragment_map_controls, container, false); //pass the correct layout name for the fragment
 
         b_reset = view.findViewById(R.id.b_reset);
+        b_set = view.findViewById(R.id.b_set);
 
         corrInput = view.findViewById(R.id.corrInput);
         pixelGrid = getActivity().findViewById(R.id.pixelGrid);
@@ -46,7 +49,7 @@ public class mapControls extends Fragment {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
-                pixelGrid.setCurCoord(0, 0, "N");
+                robotString = s.toString();
             }
         });
 
@@ -54,6 +57,19 @@ public class mapControls extends Fragment {
             @Override
             public void onClick(View v) {
                 pixelGrid.resetGrid();
+            }
+        });
+
+        b_set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] message = robotString.split(",");
+
+                int col = Integer.parseInt(message[0].replace(" ", ""));
+                int row = Integer.parseInt(message[1].replace(" ", ""));
+                String direction = message[2].replace(" ", "");
+
+                pixelGrid.setCurCoord(col, row, direction);
             }
         });
 

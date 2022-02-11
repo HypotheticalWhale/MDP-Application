@@ -270,7 +270,17 @@ public class PixelGridView extends View {
                 canvas.drawText(Integer.toString((numRows - 1) - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
         }
     }
-
+    /**
+    * 'Alphabet_A', 'Alphabet_B', 'Alphabet_C',
+     * 'Alphabet_D', 'Alphabet_E', 'Alphabet_F',
+     * 'Alphabet_G', 'Alphabet_H', 'Alphabet_S',
+     * 'Alphabet_T', 'Alphabet_U', 'Alphabet_V',
+     * 'Alphabet_W', 'Alphabet_X', 'Alphabet_Y',
+     * 'Alphabet_Z', 'bullseye', 'down_arrow',
+     * 'eight', 'five', 'four', 'left_arrow',
+     * 'nine', 'one', 'right_arrow', 'seven',
+     * 'six', 'stop', 'three', 'two', 'up_arrow'
+     **/
     private void drawObstacle(Canvas canvas) {
         for (Obstacle obstacle : obstacles) {
             float startX = obstacle.X * cellSize + (cellSize / 30);
@@ -278,12 +288,29 @@ public class PixelGridView extends View {
             float endX = (obstacle.X + 1) * cellSize;
             float endY = (obstacle.Y + 1) * cellSize;
 
-            canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+            //canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+
             if (obstacle.targetID == null) {
+                canvas.drawRect(startX, startY, endX, endY, obstacleColor);
                 canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
-            } else {
-                canvas.drawText(obstacle.targetID, (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, targetScannedColor);
             }
+            else if(obstacle.targetID.equals("six")) {
+                Log.d(TAG, "2. drawObstacle: (obstacle.targetID:  " + obstacle.targetID );
+                RectF rect = new RectF(startX, startY, endX, endY);
+                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.six);
+                canvas.drawBitmap(obstacleBitmap, null, rect, null);
+            }
+            else if(obstacle.targetID.equals("seven")) {
+                RectF rect = new RectF(startX, startY, endX, endY);
+                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seven);
+                canvas.drawBitmap(obstacleBitmap, null, rect, null);
+            }
+        else if(obstacle.targetID.equals("eight")){
+                RectF rect = new RectF(startX, startY, endX, endY);
+                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.eight);
+                canvas.drawBitmap(obstacleBitmap, null, rect, null);
+            }
+
             if (obstacle.direction.equals("N")) {
                 canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
             } else if (obstacle.direction.equals("E")) {
@@ -456,20 +483,22 @@ public class PixelGridView extends View {
                             overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
                         }
                         if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                            touchedObstacle.Y = row;
                             touchedObstacle.X = column;
+                            bluetooth.write("{X: "+ column +", Y:" + row +", id:"+ touchedObstacle.id +" }");
                         } else {
                             int deletedCount = touchedObstacle.id;
-                            fixCount(deletedCount);
+                            //fixCount(deletedCount);
                             obstacles.remove(touchedObstacle);
-                            counter--;
+                            //counter--;
                         }
                     }
                 } else {
                     if (touchedObstacle != null) {
                         int deletedCount = touchedObstacle.id;
-                        fixCount(deletedCount);
+                        //fixCount(deletedCount);
                         obstacles.remove(touchedObstacle);
-                        counter--;
+                        //counter--;
                     }
                 }
 
@@ -591,6 +620,19 @@ public class PixelGridView extends View {
         return touched;
     }
 
+    private Obstacle findObstacleByID(final int id ) {
+        Obstacle found = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.id == id) {
+                found = obstacle;
+                break;
+            }
+        }
+
+        return found;
+    }
+
     private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
         Obstacle touched = null;
 
@@ -682,30 +724,39 @@ public class PixelGridView extends View {
                     setCurCoord(col, row, direction);
                 }
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
-                String message = intent.getStringExtra("key");
-                    try {
-                        JSONObject jsonObj = new JSONObject(message);
-                        Log.d(TAG, "onReceive: " + jsonObj);
+//                String message = intent.getStringExtra("key");
+//                    try {
+//                        JSONObject jsonObj = new JSONObject(message);
+//                        Log.d(TAG, "onReceive: " + jsonObj);
+//
+//                        int col = jsonObj.getInt("col");
+//                        int row = convertRow(jsonObj.getInt("row"));
+//                        String id = jsonObj.getString("id");
+//                        String direction = jsonObj.getString("direction");
+//
+//                        Obstacle target = obtainTouchedObstacle(col, row);
+//                        if (target != null) {
+//                            target.targetID = id;
+//                            target.direction = direction;
+//
+//                            Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: direction: " + target.direction);
+//
+//                            invalidate();
+//                        } else {
+//                            bluetooth.write("Wrong coordinate");
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+                String[] message = intent.getStringExtra("key").split(",");
 
-                        int col = jsonObj.getInt("col");
-                        int row = convertRow(jsonObj.getInt("row"));
-                        String id = jsonObj.getString("id");
-                        String direction = jsonObj.getString("direction");
+                int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
+                String targetID = message[2].replace(" ", "");
 
-                        Obstacle target = obtainTouchedObstacle(col, row);
-                        if (target != null) {
-                            target.targetID = id;
-                            target.direction = direction;
+                Obstacle target = findObstacleByID(obstacleNo);
+                target.targetID = targetID;
 
-                            Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: direction: " + target.direction);
-
-                            invalidate();
-                        } else {
-                            bluetooth.write("Wrong coordinate");
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                invalidate();
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
                 String[] message = intent.getStringExtra("key").split(",");
 
