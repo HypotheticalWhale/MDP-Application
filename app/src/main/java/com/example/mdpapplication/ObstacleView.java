@@ -2,15 +2,21 @@ package com.example.mdpapplication;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class ObstacleView extends View {
     private static final String TAG = "ObstacleGrid";
@@ -27,6 +33,17 @@ public class ObstacleView extends View {
     private PixelGridView.Obstacle obstacle;
     private PopupWindow popupWindow;
 
+    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+            "Alphabet_D", "Alphabet_E", "Alphabet_F",
+            "Alphabet_G", "Alphabet_H", "Alphabet_S",
+            "Alphabet_T", "Alphabet_U", "Alphabet_V",
+            "Alphabet_W", "Alphabet_X", "Alphabet_Y",
+            "Alphabet_Z", "down_arrow",
+            "eight", "five", "four", "left_arrow",
+            "nine", "one", "right_arrow", "seven",
+            "six", "stop", "three", "two", "up_arrow");
+
+    private Context cachedContext;
 
     public ObstacleView(Context context) {
         this(context, null);
@@ -51,6 +68,8 @@ public class ObstacleView extends View {
         yellowPaint.setStrokeWidth(70);
 
         gestureDetector = new GestureDetector(context, new GestureListener());
+
+        cachedContext = context;
     }
 
     public void setObstacle(PixelGridView.Obstacle obstacle) {
@@ -98,13 +117,16 @@ public class ObstacleView extends View {
         if(obstacle != null){
             Log.d(TAG, "onDraw: direction: " + obstacle.direction);
 
-            canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
-            if(obstacle.targetID == null){
+            if (obstacle.targetID == null || obstacle.targetID.equals("bullseye")) {
+                canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
                 canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
+            } else if (ValidTargetStrings.contains(obstacle.targetID)) {
+                RectF rect = new RectF(0, 0, cellWidth, cellHeight);
+                int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
+                canvas.drawBitmap(obstacleBitmap, null, rect, null);
             }
-            else{
-                canvas.drawText(obstacle.targetID, 0.5f * cellWidth, 0.65f * cellHeight, targetScannedColor);
-            }
+
             if (obstacle.direction.equals("N")) {
                 canvas.drawLine(0, 0, cellWidth, 0, yellowPaint);
             } else if (obstacle.direction.equals("E")) {

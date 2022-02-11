@@ -27,7 +27,9 @@ import androidx.core.view.GestureDetectorCompat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
@@ -65,6 +67,18 @@ public class PixelGridView extends View {
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
     public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
+
+    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+            "Alphabet_D", "Alphabet_E", "Alphabet_F",
+            "Alphabet_G", "Alphabet_H", "Alphabet_S",
+            "Alphabet_T", "Alphabet_U", "Alphabet_V",
+            "Alphabet_W", "Alphabet_X", "Alphabet_Y",
+            "Alphabet_Z", "down_arrow",
+            "eight", "five", "four", "left_arrow",
+            "nine", "one", "right_arrow", "seven",
+            "six", "stop", "three", "two", "up_arrow");
+
+    private Context cachedContext;
 
     /**
      * Stores data about obstacle
@@ -169,6 +183,8 @@ public class PixelGridView extends View {
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_MOVES));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
+
+        cachedContext = context;
     }
 
     public void setNumColumns(int numColumns) {
@@ -270,16 +286,17 @@ public class PixelGridView extends View {
                 canvas.drawText(Integer.toString((numRows - 1) - y), cells[0][y].startX + (cellSize / 1.5f), cells[0][y].startY + (cellSize / 1.5f), blackPaint);
         }
     }
+
     /**
-    * 'Alphabet_A', 'Alphabet_B', 'Alphabet_C',
-     * 'Alphabet_D', 'Alphabet_E', 'Alphabet_F',
-     * 'Alphabet_G', 'Alphabet_H', 'Alphabet_S',
-     * 'Alphabet_T', 'Alphabet_U', 'Alphabet_V',
-     * 'Alphabet_W', 'Alphabet_X', 'Alphabet_Y',
-     * 'Alphabet_Z', 'bullseye', 'down_arrow',
-     * 'eight', 'five', 'four', 'left_arrow',
-     * 'nine', 'one', 'right_arrow', 'seven',
-     * 'six', 'stop', 'three', 'two', 'up_arrow'
+     * "Alphabet_A", "Alphabet_B", "Alphabet_C",
+     * "Alphabet_D", "Alphabet_E", "Alphabet_F",
+     * "Alphabet_G", "Alphabet_H", "Alphabet_S",
+     * "Alphabet_T", "Alphabet_U", "Alphabet_V",
+     * "Alphabet_W", "Alphabet_X", "Alphabet_Y",
+     * "Alphabet_Z", "bullseye", "down_arrow",
+     * "eight", "five", "four", "left_arrow",
+     * "nine", "one", "right_arrow", "seven",
+     * "six", "stop", "three", "two", "up_arrow"
      **/
     private void drawObstacle(Canvas canvas) {
         for (Obstacle obstacle : obstacles) {
@@ -288,26 +305,13 @@ public class PixelGridView extends View {
             float endX = (obstacle.X + 1) * cellSize;
             float endY = (obstacle.Y + 1) * cellSize;
 
-            //canvas.drawRect(startX, startY, endX, endY, obstacleColor);
-
-            if (obstacle.targetID == null) {
+            if (obstacle.targetID == null || obstacle.targetID.equals("bullseye")) {
                 canvas.drawRect(startX, startY, endX, endY, obstacleColor);
                 canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
-            }
-            else if(obstacle.targetID.equals("six")) {
-                Log.d(TAG, "2. drawObstacle: (obstacle.targetID:  " + obstacle.targetID );
+            } else if (ValidTargetStrings.contains(obstacle.targetID)) {
                 RectF rect = new RectF(startX, startY, endX, endY);
-                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.six);
-                canvas.drawBitmap(obstacleBitmap, null, rect, null);
-            }
-            else if(obstacle.targetID.equals("seven")) {
-                RectF rect = new RectF(startX, startY, endX, endY);
-                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.seven);
-                canvas.drawBitmap(obstacleBitmap, null, rect, null);
-            }
-        else if(obstacle.targetID.equals("eight")){
-                RectF rect = new RectF(startX, startY, endX, endY);
-                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.eight);
+                int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
                 canvas.drawBitmap(obstacleBitmap, null, rect, null);
             }
 
@@ -400,13 +404,13 @@ public class PixelGridView extends View {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 Log.w(TAG, "ACTION_DOWN");
-                // it's the first pointer, so clear all existing pointers data
+                // it"s the first pointer, so clear all existing pointers data
                 clearObstaclePointer();
 
                 column = (int) (event.getX() / cellSize);
                 row = (int) (event.getY() / cellSize);
 
-                // check if we've touched inside some Obstacle
+                // check if we"ve touched inside some Obstacle
                 if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                     touchedObstacle = obtainTouchedObstacle(column, row);
                     touchedObstacle.X = column;
@@ -426,7 +430,7 @@ public class PixelGridView extends View {
                 column = (int) (event.getX(actionIndex) / cellSize);
                 row = (int) (event.getY(actionIndex) / cellSize);
 
-                // check if we've touched inside some Obstacle
+                // check if we"ve touched inside some Obstacle
                 touchedObstacle = obtainTouchedObstacle(column, row);
                 obstaclePointer.put(pointerId, touchedObstacle);
                 touchedObstacle.X = column;
@@ -485,7 +489,7 @@ public class PixelGridView extends View {
                         if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                             touchedObstacle.Y = row;
                             touchedObstacle.X = column;
-                            bluetooth.write("{X: "+ column +", Y:" + row +", id:"+ touchedObstacle.id +" }");
+                            bluetooth.write("{X: " + column + ", Y:" + row + ", id:" + touchedObstacle.id + " }");
                         } else {
                             int deletedCount = touchedObstacle.id;
                             //fixCount(deletedCount);
@@ -561,7 +565,7 @@ public class PixelGridView extends View {
                     final PopupWindow popupWindow = new PopupWindow(popupView, length, length, focusable);
 
                     // show the popup window
-                    // which view you pass in doesn't matter, it is only used for the window token
+                    // which view you pass in doesn"t matter, it is only used for the window token
                     int x = (int) (event.getX() - cellSize * 2);
                     int y = (int) (event.getY() + cellSize * 2.5);
                     Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
@@ -620,7 +624,7 @@ public class PixelGridView extends View {
         return touched;
     }
 
-    private Obstacle findObstacleByID(final int id ) {
+    private Obstacle findObstacleByID(final int id) {
         Obstacle found = null;
 
         for (Obstacle obstacle : obstacles) {
