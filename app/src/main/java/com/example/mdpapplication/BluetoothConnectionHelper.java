@@ -132,6 +132,7 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = receivedMessage.trim();
 
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
+                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
 
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
