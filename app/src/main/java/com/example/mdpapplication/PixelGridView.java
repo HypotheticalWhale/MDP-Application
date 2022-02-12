@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -24,25 +26,27 @@ import android.widget.PopupWindow;
 
 import androidx.core.view.GestureDetectorCompat;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
+    public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
+    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
+    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     private boolean mapDrawn = false;
 
-    private static int[] curCoord;
     private static float cellSize;
     private static Cell[][] cells;
 
-    private int numColumns, numRows;
+    private Robot robot;
 
-    private String robotDirection = "None";
+    private HashSet<Obstacle> obstacles;
+    private SparseArray<Obstacle> obstaclePointer;
+
+    private int numColumns, numRows;
 
     private int counter = 1;
 
@@ -58,17 +62,10 @@ public class PixelGridView extends View {
     private final Paint yellowPaint = new Paint();
     private final Paint targetScannedColor = new Paint();
 
-    private HashSet<Obstacle> obstacles;
-    private SparseArray<Obstacle> obstaclePointer;
-
     private final GestureDetectorCompat gestureDetector;
     private final BluetoothConnectionHelper bluetooth;
 
-    public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
-    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
-    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
-
-    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -78,22 +75,26 @@ public class PixelGridView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
-    private Context cachedContext;
+    private final Context cachedContext;
 
     /**
      * Stores data about obstacle
      */
-    public static class Obstacle {
+    public static class Obstacle implements Parcelable {
         int id;
         int X;
         int Y;
+        int xOnGrid;
+        int yOnGrid;
         String targetID;
         String direction = "None";
 
-        Obstacle(int X, int Y, int id) {
+        Obstacle(int X, int Y, int xOnGrid, int yOnGrid, int id) {
             this.id = id;
             this.X = X;
             this.Y = Y;
+            this.xOnGrid = xOnGrid;
+            this.yOnGrid = yOnGrid;
         }
 
         public void setId(int id) {
@@ -135,9 +136,152 @@ public class PixelGridView extends View {
         public String getDirection() {
             return direction;
         }
+
+        public void setxOnGrid(int xOnGrid) {
+            this.xOnGrid = xOnGrid;
+        }
+
+        public int getxOnGrid() {
+            return xOnGrid;
+        }
+
+        public void setyOnGrid(int yOnGrid) {
+            this.yOnGrid = yOnGrid;
+        }
+
+        public int getyOnGrid() {
+            return yOnGrid;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.id);
+            dest.writeInt(this.X);
+            dest.writeInt(this.Y);
+            dest.writeInt(this.xOnGrid);
+            dest.writeInt(this.yOnGrid);
+            dest.writeString(this.targetID);
+            dest.writeString(this.direction);
+        }
+
+        public void readFromParcel(Parcel source) {
+            this.id = source.readInt();
+            this.X = source.readInt();
+            this.Y = source.readInt();
+            this.xOnGrid = source.readInt();
+            this.yOnGrid = source.readInt();
+            this.targetID = source.readString();
+            this.direction = source.readString();
+        }
+
+        protected Obstacle(Parcel in) {
+            this.id = in.readInt();
+            this.X = in.readInt();
+            this.Y = in.readInt();
+            this.xOnGrid = in.readInt();
+            this.yOnGrid = in.readInt();
+            this.targetID = in.readString();
+            this.direction = in.readString();
+        }
+
+        public static final Parcelable.Creator<Obstacle> CREATOR = new Parcelable.Creator<Obstacle>() {
+            @Override
+            public Obstacle createFromParcel(Parcel source) {
+                return new Obstacle(source);
+            }
+
+            @Override
+            public Obstacle[] newArray(int size) {
+                return new Obstacle[size];
+            }
+        };
     }
 
-    private class Cell {
+    public static class Robot{
+        int[] robotSize;
+        int[] X;
+        int[] Y;
+        String direction = "None";
+
+        private Robot(int X, int Y, int[] robotSize){
+            this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
+
+            this.X = new int[robotSize[0]];
+            this.X[0] = X;
+            this.X[1] = X+robotSize[0]-1;
+
+            this.Y = new int[robotSize[1]];
+            this.Y[0] = Y;
+            this.Y[1] = Y+robotSize[1]-1;
+        }
+
+        public int[] getRobotSize() {
+            return robotSize;
+        }
+
+        public void setRobotSize(int[] robotSize) {
+            this.robotSize = robotSize;
+        }
+
+        public int[] getXArray() {
+            return X;
+        }
+
+        public void setXArray(int[] x) {
+            X = x;
+        }
+
+        public int[] getYArray() {
+            return Y;
+        }
+
+        public void setYArray(int[] y) {
+            Y = y;
+        }
+
+        public int getX(){
+            return X[0];
+        }
+
+        public void setX(int x){
+            if(x == 19){
+                X[0] = x-1;
+                X[1] = x+robotSize[0]-2;
+            }else{
+                X[0] = x;
+                X[1] = x+robotSize[0]-1;
+            }
+        }
+
+        public int getY(){
+            return Y[0];
+        }
+
+        public void setY(int y){
+            if( y == 19){
+                Y[0] = y-1;
+                Y[1] = y+robotSize[0]-2;
+            }else{
+                Y[0] = y;
+                Y[1] = y+robotSize[0]-1;
+            }
+        }
+
+        public String getDirection() {
+            return direction;
+        }
+
+        public void setDirection(String direction) {
+            this.direction = direction;
+        }
+    }
+
+    private static class Cell {
         float startX, startY, endX, endY;
 
         private Cell(float startX, float startY, float endX, float endY) {
@@ -155,10 +299,9 @@ public class PixelGridView extends View {
     public PixelGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView,
-                0, 0);
-        this.numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
-        this.numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView, 0, 0);
+        numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
+        numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         obstacleColor.setColor(Color.BLACK);
@@ -177,12 +320,17 @@ public class PixelGridView extends View {
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(8);
 
-        bluetooth = new BluetoothConnectionHelper(context);
+        bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_TARGET_SCANNED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_MOVES));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
+
+        robot = new Robot(0,0, new int[]{2, 2});
+        robot.setDirection("N");
+        obstacles = new HashSet<>(numColumns * numRows);
+        obstaclePointer = new SparseArray<>(numColumns * numRows);
 
         cachedContext = context;
     }
@@ -205,21 +353,38 @@ public class PixelGridView extends View {
         return numRows;
     }
 
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
     public void setCurCoord(int col, int row, String direction) {
-        curCoord[0] = col;
-        curCoord[1] = row;
-        robotDirection = direction;
+        robot.setX(col);
+        robot.setY(row);
+        robot.setDirection(direction);
 
         invalidate();
     }
 
     public int[] getCurCoord() {
-        return curCoord;
+        return new int[]{robot.getX(), robot.getY()};
     }
 
-    public void resetGrid() {
-        calculateDimensions();
-        counter = 1;
+    public String getRobotDirection() {
+        return robot.getDirection();
+    }
+
+    public HashSet<Obstacle> getObstacles() {
+        return obstacles;
+    }
+
+    public void setObstacles(HashSet<Obstacle> obstacles) {
+        this.obstacles = new HashSet<>(obstacles);
+        Log.d(TAG, "setObstacles: " + obstacles.size());
+        invalidate();
     }
 
     @Override
@@ -228,18 +393,24 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
+    public void resetGrid() {
+        calculateDimensions();
+
+        robot = new Robot(0,0, new int[]{2, 2});
+        robot.setDirection("N");
+        obstacles = new HashSet<>(numColumns * numRows);
+        obstaclePointer = new SparseArray<>(numColumns * numRows);
+        counter = 1;
+
+        invalidate();
+    }
+
     private void calculateDimensions() {
         if (numColumns < 1 || numRows < 1) {
             return;
         }
 
         cellSize = getWidth() / (numColumns + 1);
-        curCoord = new int[]{-1, -1};
-
-        obstacles = new HashSet<Obstacle>(numColumns * numRows);
-        obstaclePointer = new SparseArray<Obstacle>(numColumns * numRows);
-
-        invalidate();
     }
 
     private void fixCount(int counter) {
@@ -248,6 +419,118 @@ public class PixelGridView extends View {
                 obstacle.id--;
             }
         }
+    }
+
+    private void clearObstaclePointer() {
+        Log.w(TAG, "clearObstaclePointer");
+
+        obstaclePointer.clear();
+    }
+
+    private Obstacle obtainTouchedObstacle(final int column, final int row) {
+        Obstacle touchedObstacle = getTouchedObstacle(column, row);
+
+        if (null == touchedObstacle) {
+            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                touchedObstacle = new Obstacle(column, row, (column - 1), (convertRow(row) - 1), counter);
+                counter++;
+
+                Log.w(TAG, "Added Obstacle " + touchedObstacle);
+                obstacles.add(touchedObstacle);
+            }
+        }
+
+        return touchedObstacle;
+    }
+
+    private Obstacle getTouchedObstacle(final int column, final int row) {
+        Obstacle touched = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.X == column && obstacle.Y == row) {
+                touched = obstacle;
+                break;
+            }
+        }
+
+        return touched;
+    }
+
+    private Obstacle findObstacleByID(final int id) {
+        Obstacle found = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.id == id) {
+                found = obstacle;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    private Obstacle findObstacleByGridCoord(int column, int row) {
+        Obstacle found = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.xOnGrid == column && obstacle.yOnGrid == row) {
+                found = obstacle;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
+        Obstacle touched = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
+                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
+                touched = obstacle;
+                break;
+            }
+        }
+
+        return touched;
+    }
+
+    private boolean checkMovable(int startX, int startY, int endX, int endY, String direction, String command) {
+        Log.d(TAG, "checkMovable: startX: " + startX + " endX:" + endX + " startY:" + startY + " endY:" + endY);
+        Obstacle obstacle1 = null;
+        Obstacle obstacle2 = null;
+
+        if ((startX >= 0 && endX < numColumns && startY >= 0 && endY < numRows)) {
+            if ((command.equals("f") && direction.equals("N")) ||
+                    (command.equals("b") && direction.equals("S")) ||
+                    (command.equals("sl") && direction.equals("E")) ||
+                    (command.equals("sr") && direction.equals("W"))) {
+                obstacle1 = findObstacleByGridCoord(startX, endY);
+                obstacle2 = findObstacleByGridCoord(endX, endY);
+            } else if ((command.equals("f") && direction.equals("E")) ||
+                    (command.equals("b") && direction.equals("W")) ||
+                    (command.equals("sl") && direction.equals("S")) ||
+                    (command.equals("sr") && direction.equals("N"))) {
+                obstacle1 = findObstacleByGridCoord(endX, startY);
+                obstacle2 = findObstacleByGridCoord(endX, endY);
+            } else if ((command.equals("f") && direction.equals("S")) ||
+                    (command.equals("b") && direction.equals("N")) ||
+                    (command.equals("sl") && direction.equals("W")) ||
+                    (command.equals("sr") && direction.equals("E"))) {
+                obstacle1 = findObstacleByGridCoord(startX, startY);
+                obstacle2 = findObstacleByGridCoord(endX, startY);
+            } else if ((command.equals("f") && direction.equals("W")) ||
+                    (command.equals("b") && direction.equals("E")) ||
+                    (command.equals("sl") && direction.equals("N")) ||
+                    (command.equals("sr") && direction.equals("S"))) {
+                obstacle1 = findObstacleByGridCoord(startX, startY);
+                obstacle2 = findObstacleByGridCoord(startX, endY);
+            }
+
+            return obstacle1 == null && obstacle2 == null;
+        }
+        return false;
     }
 
     private void createCell() {
@@ -327,39 +610,37 @@ public class PixelGridView extends View {
         }
     }
 
-    private void drawRobot(Canvas canvas, int[] curCoord) {
+    private void drawRobot(Canvas canvas) {
         RectF rect;
 
-        for (int i = 0; i < curCoord.length; i++) {
-            int col = curCoord[0];
-            int row = convertRow(curCoord[1]);
-            String direction = robotDirection;
+        int col = robot.getX() + 1;
+        int row = convertRow(robot.getY());
+        String direction = robot.getDirection();
 
-            rect = new RectF(col * cellSize, (row - 2) * cellSize, (col + 2) * cellSize, row * cellSize);
+        rect = new RectF(col * cellSize, (row - 2) * cellSize, (col + 2) * cellSize, row * cellSize);
 
-            Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
+        Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 
-            if (direction.equals("N")) {
-                canvas.drawBitmap(robotBitmap, null, rect, null);
-            } else if (direction.equals("E")) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
+        if (direction.equals("N")) {
+            canvas.drawBitmap(robotBitmap, null, rect, null);
+        } else if (direction.equals("E")) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
 
-                canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
-            } else if (direction.equals("S")) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(180);
-                Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
+            canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
+        } else if (direction.equals("S")) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(180);
+            Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
 
-                canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
-            } else if (direction.equals("W")) {
-                Matrix matrix = new Matrix();
-                matrix.postRotate(270);
-                Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
+            canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
+        } else if (direction.equals("W")) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(270);
+            Bitmap rotatedRobotBitmap = Bitmap.createBitmap(robotBitmap, 0, 0, robotBitmap.getWidth(), robotBitmap.getHeight(), matrix, true);
 
-                canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
-            }
+            canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
         }
     }
 
@@ -385,9 +666,12 @@ public class PixelGridView extends View {
         drawGridNumber(canvas);
         drawObstacle(canvas);
 
-        drawRobot(canvas, curCoord);
+        drawRobot(canvas);
     }
 
+    /**
+     * Actual Coords Col: 1 - 20 Row: 0 - 19
+     */
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         boolean handled = false;
@@ -415,6 +699,8 @@ public class PixelGridView extends View {
                     touchedObstacle = obtainTouchedObstacle(column, row);
                     touchedObstacle.X = column;
                     touchedObstacle.Y = row;
+                    touchedObstacle.xOnGrid = column - 1;
+                    touchedObstacle.yOnGrid = convertRow(row) - 1;
                     obstaclePointer.put(event.getPointerId(0), touchedObstacle);
                 }
 
@@ -435,6 +721,8 @@ public class PixelGridView extends View {
                 obstaclePointer.put(pointerId, touchedObstacle);
                 touchedObstacle.X = column;
                 touchedObstacle.Y = row;
+                touchedObstacle.xOnGrid = column - 1;
+                touchedObstacle.yOnGrid = convertRow(row) - 1;
 
                 invalidate();
                 handled = true;
@@ -459,6 +747,8 @@ public class PixelGridView extends View {
                     if (null != touchedObstacle) {
                         touchedObstacle.X = column;
                         touchedObstacle.Y = row;
+                        touchedObstacle.xOnGrid = column - 1;
+                        touchedObstacle.yOnGrid = convertRow(row) - 1;
                     }
                 }
                 invalidate();
@@ -489,7 +779,10 @@ public class PixelGridView extends View {
                         if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
                             touchedObstacle.Y = row;
                             touchedObstacle.X = column;
-                            bluetooth.write("{X: " + column + ", Y:" + row + ", id:" + touchedObstacle.id + " }");
+                            touchedObstacle.xOnGrid = column - 1;
+                            touchedObstacle.yOnGrid = convertRow(row) - 1;
+
+                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
                             int deletedCount = touchedObstacle.id;
                             //fixCount(deletedCount);
@@ -570,6 +863,7 @@ public class PixelGridView extends View {
                     int y = (int) (event.getY() + cellSize * 2.5);
                     Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
 
+
                     popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x, y);
 
                     ObstacleView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
@@ -581,74 +875,13 @@ public class PixelGridView extends View {
                         public void onDismiss() {
                             obstacle[0] = obstacleGrid.getObstacle();
                             Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
+                            bluetooth.write("{X: " + obstacle[0].X + ", Y:" + obstacle[0].Y + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
                             invalidate();
                         }
                     });
                 }
             }
         }
-    }
-
-    private void clearObstaclePointer() {
-        Log.w(TAG, "clearObstaclePointer");
-
-        obstaclePointer.clear();
-    }
-
-    private Obstacle obtainTouchedObstacle(final int column, final int row) {
-        Obstacle touchedObstacle = getTouchedObstacle(column, row);
-
-        if (null == touchedObstacle) {
-            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
-                touchedObstacle = new Obstacle(column, row, counter);
-                counter++;
-
-                Log.w(TAG, "Added Obstacle " + touchedObstacle);
-                obstacles.add(touchedObstacle);
-            }
-        }
-
-        return touchedObstacle;
-    }
-
-    private Obstacle getTouchedObstacle(final int column, final int row) {
-        Obstacle touched = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.X == column && obstacle.Y == row) {
-                touched = obstacle;
-                break;
-            }
-        }
-
-        return touched;
-    }
-
-    private Obstacle findObstacleByID(final int id) {
-        Obstacle found = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.id == id) {
-                found = obstacle;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
-        Obstacle touched = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
-                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
-                touched = obstacle;
-                break;
-            }
-        }
-
-        return touched;
     }
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -658,49 +891,43 @@ public class PixelGridView extends View {
             // Get extra data included in the Intent
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");
-                int col = curCoord[0];
-                int row = curCoord[1];
-                String direction = robotDirection;
 
-                if (message.equals("f")) {
-                    if (direction.equals("N")) {
-                        setCurCoord(col, row + 1, direction);
-                    } else if (direction.equals("E")) {
-                        setCurCoord(col + 1, row, direction);
-                    } else if (direction.equals("S")) {
-                        setCurCoord(col, row - 1, direction);
-                    } else if (direction.equals("W")) {
-                        setCurCoord(col - 1, row, direction);
+                int startX = robot.getXArray()[0];
+                int startY = robot.getYArray()[0];
+                int endX = robot.getXArray()[1];
+                int endY = robot.getYArray()[1];
+
+                String direction = robot.getDirection();
+
+                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + startX + " endX: " + endX + " startY: " + startY + " endY: " + endY + " Direction: " + direction);
+
+                if ((message.equals("f") && direction.equals("N")) ||
+                        (message.equals("b") && direction.equals("S")) ||
+                        (message.equals("sl") && direction.equals("E")) ||
+                        (message.equals("sr") && direction.equals("W"))) {
+                    if (checkMovable(startX, startY + 1, endX, endY + 1, direction, message)) {
+                        setCurCoord(startX, startY + 1, direction);
                     }
-                } else if (message.equals("b")) {
-                    if (direction.equals("N")) {
-                        setCurCoord(col, row - 1, direction);
-                    } else if (direction.equals("E")) {
-                        setCurCoord(col - 1, row, direction);
-                    } else if (direction.equals("S")) {
-                        setCurCoord(col, row + 1, direction);
-                    } else if (direction.equals("W")) {
-                        setCurCoord(col + 1, row, direction);
+                } else if ((message.equals("f") && direction.equals("E")) ||
+                        (message.equals("b") && direction.equals("W")) ||
+                        (message.equals("sl") && direction.equals("S")) ||
+                        (message.equals("sr") && direction.equals("N"))) {
+                    if (checkMovable(startX + 1, startY, endX + 1, endY, direction, message)) {
+                        setCurCoord(startX + 1, startY, direction);
                     }
-                } else if (message.equals("sl")) {
-                    if (direction.equals("N")) {
-                        setCurCoord(col - 1, row, direction);
-                    } else if (direction.equals("E")) {
-                        setCurCoord(col, row + 1, direction);
-                    } else if (direction.equals("S")) {
-                        setCurCoord(col + 1, row, direction);
-                    } else if (direction.equals("W")) {
-                        setCurCoord(col, row - 1, direction);
+                } else if ((message.equals("f") && direction.equals("S")) ||
+                        (message.equals("b") && direction.equals("N")) ||
+                        (message.equals("sl") && direction.equals("W")) ||
+                        (message.equals("sr") && direction.equals("E"))) {
+                    if (checkMovable(startX, startY - 1, endX, endY - 1, direction, message)) {
+                        setCurCoord(startX, startY - 1, direction);
                     }
-                } else if (message.equals("sr")) {
-                    if (direction.equals("N")) {
-                        setCurCoord(col + 1, row, direction);
-                    } else if (direction.equals("E")) {
-                        setCurCoord(col, row - 1, direction);
-                    } else if (direction.equals("S")) {
-                        setCurCoord(col - 1, row, direction);
-                    } else if (direction.equals("W")) {
-                        setCurCoord(col, row + 1, direction);
+                } else if ((message.equals("f") && direction.equals("W")) ||
+                        (message.equals("b") && direction.equals("E")) ||
+                        (message.equals("sl") && direction.equals("N")) ||
+                        (message.equals("sr") && direction.equals("S"))) {
+                    if (checkMovable(startX - 1, startY, endX - 1, endY, direction, message)) {
+                        setCurCoord(startX - 1, startY, direction);
                     }
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
@@ -713,7 +940,7 @@ public class PixelGridView extends View {
                         direction = "S";
                     }
 
-                    setCurCoord(col, row, direction);
+                    setCurCoord(startX, startY, direction);
                 } else if (message.equals("r")) {
                     if (direction.equals("N")) {
                         direction = "E";
@@ -725,8 +952,9 @@ public class PixelGridView extends View {
                         direction = "N";
                     }
 
-                    setCurCoord(col, row, direction);
+                    setCurCoord(startX, startY, direction);
                 }
+
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
 //                String message = intent.getStringExtra("key");
 //                    try {
@@ -776,10 +1004,17 @@ public class PixelGridView extends View {
                 int row = Integer.parseInt(message[2].replace(" ", ""));
                 String direction = message[3].replace(" ", "");
 
-                Log.d(TAG, "onReceive: col:" + col + " row:" + row + " direction:" + direction);
+                Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
 
                 setCurCoord(col, row, direction);
             }
         }
+    };
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        //add your code.
+        getContext().unregisterReceiver(mMessageReceiver);
     };
 }

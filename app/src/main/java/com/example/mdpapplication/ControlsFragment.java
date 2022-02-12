@@ -22,7 +22,7 @@ import android.widget.ToggleButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class controls extends Fragment {
+public class ControlsFragment extends Fragment {
     BluetoothConnectionHelper bluetooth;
     String msg;
     ImageButton sa,sr,sl,f,r,rl,rr;
@@ -36,7 +36,7 @@ public class controls extends Fragment {
         View view = lf.inflate(R.layout.fragment_controls,container,false);
 
         Context context = getActivity().getApplicationContext();
-        bluetooth = new BluetoothConnectionHelper(context);
+        bluetooth = MDPApplication.getBluetooth();;
         sa = view.findViewById(R.id.send_arena);
         sr = view.findViewById(R.id.s_right);
         sl = view.findViewById(R.id.s_left);

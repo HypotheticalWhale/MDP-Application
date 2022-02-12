@@ -7,19 +7,14 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,18 +24,20 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class message extends Fragment {
-    private static final String TAG = "message";
+public class MessageFragment extends Fragment {
+    private static final String TAG = "MessageFragment";
 
-    Button b_send, b_clear;
+    public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
+    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
+
+    private static final String STATE_LOG = "log";
+
+    Button btn_send, btn_clear;
     TextView tView;
     TextInputLayout tInput;
 
     BluetoothConnectionHelper bluetooth;
     String msgLog, sendMsg;
-
-    public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
-    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -49,20 +46,26 @@ public class message extends Fragment {
         LayoutInflater lf = getActivity().getLayoutInflater();
         View view =  lf.inflate(R.layout.fragment_message, container, false); //pass the correct layout name for the fragment
 
-        b_send = view.findViewById(R.id.b_send);
-        b_clear = view.findViewById(R.id.b_clear);
+        btn_send = view.findViewById(R.id.btn_send);
+        btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
         tInput = view.findViewById(R.id.textInput);
 
         Context context = getActivity().getApplicationContext();
-        bluetooth = new BluetoothConnectionHelper(context);
-
+        bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
 
+        tView.setText("Application Started");
         msgLog = "";
 
-        tView.setText("Application Started");
+        if(savedInstanceState != null){
+            msgLog = savedInstanceState.getString(STATE_LOG);
+            if(msgLog != ""){
+                tView.setText(msgLog);
+            }
+        }
+
         tView.setMovementMethod(new ScrollingMovementMethod());
 
         tInput.getEditText().addTextChangedListener(new TextWatcher() {
@@ -79,7 +82,7 @@ public class message extends Fragment {
             }
         });
 
-        b_send.setOnClickListener(new View.OnClickListener() {
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(sendMsg != null){
@@ -92,7 +95,7 @@ public class message extends Fragment {
             }
         });
 
-        b_clear.setOnClickListener(new View.OnClickListener() {
+        btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tView.setText("");
@@ -132,5 +135,13 @@ public class message extends Fragment {
     //toast message function
     private void showToast(String msg) {
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString(STATE_LOG, msgLog);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

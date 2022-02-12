@@ -17,11 +17,11 @@ public class FragmentAdapter extends FragmentStateAdapter {
 
         switch (position){
             case 1:
-                return new controls();
+                return new ControlsFragment();
             case 2:
-                return new mapControls();
+                return new MapControlsFragment();
         }
-        return new message();
+        return new MessageFragment();
     }
 
     @Override

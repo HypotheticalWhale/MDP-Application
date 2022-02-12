@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -97,6 +99,9 @@ public class BluetoothConnectionHelper extends Service {
     private static final String RPIMACAddress = "";
     private static final String RPIDeviceName = "";
 
+    private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
+            "l", "sl", "sr");
+
     /** Service Binding
      *
      */
@@ -116,6 +121,8 @@ public class BluetoothConnectionHelper extends Service {
     /** Constructor
      *
      * */
+    public BluetoothConnectionHelper() {
+    }
     public BluetoothConnectionHelper(Context context){
         super();
         arrayList = new ArrayList<String>();
@@ -143,14 +150,18 @@ public class BluetoothConnectionHelper extends Service {
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
                         }
-                        else{
+                        else if(ValidRobotCommands.contains(receivedMessage)){
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
                         }
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
+                        Log.d(TAG, "handleMessage: MESSAGE_SENT: " + sentMessage);
+
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
-                        sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
+                        if(ValidRobotCommands.contains(sentMessage)){
+                            sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
+                        }
                         break;
                     case MESSAGE_TOAST:
                         String toastMessage = (String) msg.obj;
@@ -187,6 +198,7 @@ public class BluetoothConnectionHelper extends Service {
      *
      */
 
+    @SuppressLint("MissingPermission")
     public void setDeviceInfo(String deviceName, String MACAddress){
         BluetoothConnectionHelper.targetMACAddress = MACAddress;
         BluetoothConnectionHelper.targetDeviceName = deviceName;
@@ -213,6 +225,7 @@ public class BluetoothConnectionHelper extends Service {
         return receivedMessage;
     }
 
+    @SuppressLint("MissingPermission")
     public void turnOffBT(){
         if (mBluetoothAdapter.isEnabled()){
             mBluetoothAdapter.disable();
@@ -227,6 +240,7 @@ public class BluetoothConnectionHelper extends Service {
      *
      */
 
+    @SuppressLint("MissingPermission")
     public void performDiscovery(){
         //clear deviceInfo
         targetDeviceName = "";
@@ -386,6 +400,7 @@ public class BluetoothConnectionHelper extends Service {
                     targetMACAddress);
             mConnectThread = new ConnectThread(device);
             mConnectThread.start();
+
             setState(STATE_CONNECTING, false);
             try {
                 Thread.sleep(6000, 0);
@@ -395,6 +410,7 @@ public class BluetoothConnectionHelper extends Service {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void connected(BluetoothSocket mmSocket,
                                         BluetoothDevice mmDevice){
         reconnectAttempt = 0;
@@ -469,6 +485,7 @@ public class BluetoothConnectionHelper extends Service {
             toast.cancel();
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void stopService(){
         setState(STATE_NONE, true);
         if (mConnectThread != null) {
@@ -510,6 +527,7 @@ public class BluetoothConnectionHelper extends Service {
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver(){
 
+        @SuppressLint("MissingPermission")
         @Override
         public void onReceive(Context context, Intent intent){
             String action = intent.getAction();
@@ -527,6 +545,7 @@ public class BluetoothConnectionHelper extends Service {
     private class AcceptThread extends Thread{
         private final BluetoothServerSocket mmServerSocket;
 
+        @SuppressLint("MissingPermission")
         public AcceptThread(){
             BluetoothServerSocket tmp = null;
             try{
@@ -574,6 +593,7 @@ public class BluetoothConnectionHelper extends Service {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
+        @SuppressLint("MissingPermission")
         public ConnectThread(BluetoothDevice device){
             this.mmDevice = device;
             BluetoothSocket tmp = null;
@@ -584,6 +604,7 @@ public class BluetoothConnectionHelper extends Service {
             mmSocket = tmp;
         }
 
+        @SuppressLint("MissingPermission")
         @Override
         public void run(){
             setName("ConnectThread");
@@ -651,7 +672,7 @@ public class BluetoothConnectionHelper extends Service {
                 }catch(IOException e){
                     mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
                             "Bluetooth failed to read from connection").sendToTarget();
-                    if (isServer == true){
+                    if (isServer){
                         stopService();
                     }else{
                         reconnectAsClient();
@@ -668,7 +689,7 @@ public class BluetoothConnectionHelper extends Service {
             }catch(IOException e){
                 mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
                         "Bluetooth failed to write to connection").sendToTarget();
-                if (isServer == true){
+                if (isServer){
                     stopService();
                 }else{
                     reconnectAsClient();

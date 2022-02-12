@@ -16,14 +16,21 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 public class MainActivity<NameViewModel> extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final String STATE_OBSTACLE = "obstacles";
+    private static final String STATE_ROBOT = "robot";
+    private static final String STATE_ROBOT_DIRECTION = "robot direction";
+    private static final String STATE_COUNTER = "counter";
+
     private BluetoothAdapter mBluetoothAdapter;
 
     TabLayout tabLayout;
     ViewPager2 viewPager;
     FragmentAdapter adapter;
-    //    PixelGridView pixelGrid;
     PixelGridView pixelGrid;
 
     @Override
@@ -38,6 +45,16 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         adapter = new FragmentAdapter(fm, getLifecycle());
         viewPager.setAdapter(adapter);
+
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            HashSet<PixelGridView.Obstacle> obstacles = new HashSet<>(savedInstanceState.getParcelableArrayList(STATE_OBSTACLE));
+            pixelGrid.setObstacles(obstacles);
+            int[] curCoord = savedInstanceState.getIntArray(STATE_ROBOT);
+            String direction = savedInstanceState.getString(STATE_ROBOT_DIRECTION);
+            pixelGrid.setCurCoord(curCoord[0], curCoord[1], direction);
+            pixelGrid.setCounter(savedInstanceState.getInt(STATE_COUNTER));
+        }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
@@ -82,8 +99,8 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
-            Log.d(TAG, "Application is started");
-            Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
+            Log.d(TAG, "onOptionsItemSelected: Going to Bluetooth Page");
+            Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);
             startActivity(intent);
             return true;
         }
@@ -97,32 +114,44 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        ArrayList<PixelGridView.Obstacle> obstacles = new ArrayList<>(pixelGrid.getObstacles());
+        savedInstanceState.putParcelableArrayList(STATE_OBSTACLE, obstacles);
+        savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
+        savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
+        savedInstanceState.putInt(STATE_COUNTER, pixelGrid.getCounter());
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "In onStart");
+        Log.d(TAG, "onStart: ");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "In onResume");
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "In onPause");
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "In onStop");
+        Log.d(TAG, "onStop: ");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "In onDestroy");
+        Log.d(TAG, "onDestroy: ");
     }
 }
