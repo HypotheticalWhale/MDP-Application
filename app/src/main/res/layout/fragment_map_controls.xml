@@ -17,10 +17,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/xInput"
-                android:layout_width="50dp"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp">
+                android:layout_marginLeft="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -30,10 +29,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/yInput"
-                android:layout_width="50dp"
+                android:layout_width="65dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp">
+                android:layout_marginLeft="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

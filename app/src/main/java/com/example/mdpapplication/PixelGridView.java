@@ -287,7 +287,8 @@ public class PixelGridView extends View {
 
     public void resetGrid() {
         calculateDimensions();
-        curCoord = new int[]{-1, -1};
+        curCoord = new int[]{1, 1};
+        robotDirection = "N";
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
         counter = 1;
@@ -849,6 +850,7 @@ public class PixelGridView extends View {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        //add your code.
         getContext().unregisterReceiver(mMessageReceiver);
     };
 }

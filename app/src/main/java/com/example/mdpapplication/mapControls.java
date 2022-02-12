@@ -96,6 +96,7 @@ public class mapControls extends Fragment {
             @Override
             public void onClick(View v) {
                 pixelGrid.resetGrid();
+                updateTextInput();
             }
         });
 
