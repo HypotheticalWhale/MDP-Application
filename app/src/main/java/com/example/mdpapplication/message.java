@@ -27,10 +27,16 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class message extends Fragment {
     private static final String TAG = "message";
+
+    public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
+    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
+
+    private static final String STATE_LOG = "log";
 
     Button b_send, b_clear;
     TextView tView;
@@ -38,9 +44,6 @@ public class message extends Fragment {
 
     BluetoothConnectionHelper bluetooth;
     String msgLog, sendMsg;
-
-    public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
-    public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,13 +59,19 @@ public class message extends Fragment {
 
         Context context = getActivity().getApplicationContext();
         bluetooth = new BluetoothConnectionHelper(context);
-
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
 
+        tView.setText("Application Started");
         msgLog = "";
 
-        tView.setText("Application Started");
+        if(savedInstanceState != null){
+            msgLog = savedInstanceState.getString(STATE_LOG);
+            if(msgLog != ""){
+                tView.setText(msgLog);
+            }
+        }
+
         tView.setMovementMethod(new ScrollingMovementMethod());
 
         tInput.getEditText().addTextChangedListener(new TextWatcher() {
@@ -132,5 +141,13 @@ public class message extends Fragment {
     //toast message function
     private void showToast(String msg) {
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString(STATE_LOG, msgLog);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

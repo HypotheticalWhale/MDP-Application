@@ -15,13 +15,14 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="10dp" />
+
     <TextView
         android:id="@+id/textView"
         android:scrollbars = "vertical"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         />
 
         <Space
@@ -36,8 +37,8 @@
                 android:id="@+id/textInput"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -47,18 +48,16 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/b_send"
-                style="@style/Widget.MaterialComponents.Button.Icon"
+                style="@style/Widget.Material3.Button.Icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_marginTop="-20dp"
-                android:layout_marginEnd="5dp"
+                android:layout_marginRight="8dp"
                 android:insetLeft="0dp"
                 android:insetTop="0dp"
                 android:insetRight="0dp"
                 android:insetBottom="0dp"
-                android:visibility="visible"
                 app:cornerRadius="30dp"
                 app:icon="@drawable/ic_baseline_send_24" />
 
@@ -68,8 +67,8 @@
             android:id="@+id/b_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:text="Clear Message Log"
             tools:layout_editor_absoluteX="6dp"
             tools:layout_editor_absoluteY="177dp" />

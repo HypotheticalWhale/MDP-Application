@@ -116,6 +116,8 @@ public class BluetoothConnectionHelper extends Service {
     /** Constructor
      *
      * */
+    public BluetoothConnectionHelper() {
+    }
     public BluetoothConnectionHelper(Context context){
         super();
         arrayList = new ArrayList<String>();

@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -27,18 +29,25 @@ import androidx.core.view.GestureDetectorCompat;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
+    public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
+    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
+    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     private boolean mapDrawn = false;
 
     private static int[] curCoord;
     private static float cellSize;
     private static Cell[][] cells;
+
+    private HashSet<Obstacle> obstacles;
+    private SparseArray<Obstacle> obstaclePointer;
 
     private int numColumns, numRows;
 
@@ -58,17 +67,10 @@ public class PixelGridView extends View {
     private final Paint yellowPaint = new Paint();
     private final Paint targetScannedColor = new Paint();
 
-    private HashSet<Obstacle> obstacles;
-    private SparseArray<Obstacle> obstaclePointer;
-
     private final GestureDetectorCompat gestureDetector;
     private final BluetoothConnectionHelper bluetooth;
 
-    public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
-    public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
-    public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
-
-    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -78,12 +80,12 @@ public class PixelGridView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
-    private Context cachedContext;
+    private final Context cachedContext;
 
     /**
      * Stores data about obstacle
      */
-    public static class Obstacle {
+    public static class Obstacle implements Parcelable {
         int id;
         int X;
         int Y;
@@ -135,9 +137,51 @@ public class PixelGridView extends View {
         public String getDirection() {
             return direction;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.id);
+            dest.writeInt(this.X);
+            dest.writeInt(this.Y);
+            dest.writeString(this.targetID);
+            dest.writeString(this.direction);
+        }
+
+        public void readFromParcel(Parcel source) {
+            this.id = source.readInt();
+            this.X = source.readInt();
+            this.Y = source.readInt();
+            this.targetID = source.readString();
+            this.direction = source.readString();
+        }
+
+        protected Obstacle(Parcel in) {
+            this.id = in.readInt();
+            this.X = in.readInt();
+            this.Y = in.readInt();
+            this.targetID = in.readString();
+            this.direction = in.readString();
+        }
+
+        public static final Parcelable.Creator<Obstacle> CREATOR = new Parcelable.Creator<Obstacle>() {
+            @Override
+            public Obstacle createFromParcel(Parcel source) {
+                return new Obstacle(source);
+            }
+
+            @Override
+            public Obstacle[] newArray(int size) {
+                return new Obstacle[size];
+            }
+        };
     }
 
-    private class Cell {
+    private static class Cell {
         float startX, startY, endX, endY;
 
         private Cell(float startX, float startY, float endX, float endY) {
@@ -155,10 +199,9 @@ public class PixelGridView extends View {
     public PixelGridView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView,
-                0, 0);
-        this.numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
-        this.numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView, 0, 0);
+        numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
+        numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         obstacleColor.setColor(Color.BLACK);
@@ -183,6 +226,10 @@ public class PixelGridView extends View {
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_MOVES));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
+
+        curCoord = new int[]{-1, -1};
+        obstacles = new HashSet<>(numColumns * numRows);
+        obstaclePointer = new SparseArray<>(numColumns * numRows);
 
         cachedContext = context;
     }
@@ -217,9 +264,18 @@ public class PixelGridView extends View {
         return curCoord;
     }
 
-    public void resetGrid() {
-        calculateDimensions();
-        counter = 1;
+    public String getRobotDirection() {
+        return robotDirection;
+    }
+
+    public HashSet<Obstacle> getObstacles() {
+        return obstacles;
+    }
+
+    public void setObstacles(HashSet<Obstacle> obstacles) {
+        this.obstacles = new HashSet<>(obstacles);
+        Log.d(TAG, "setObstacles: " + obstacles.size());
+        invalidate();
     }
 
     @Override
@@ -228,18 +284,22 @@ public class PixelGridView extends View {
         calculateDimensions();
     }
 
+    public void resetGrid() {
+        calculateDimensions();
+        curCoord = new int[]{-1, -1};
+        obstacles = new HashSet<>(numColumns * numRows);
+        obstaclePointer = new SparseArray<>(numColumns * numRows);
+        counter = 1;
+
+        invalidate();
+    }
+
     private void calculateDimensions() {
         if (numColumns < 1 || numRows < 1) {
             return;
         }
 
         cellSize = getWidth() / (numColumns + 1);
-        curCoord = new int[]{-1, -1};
-
-        obstacles = new HashSet<Obstacle>(numColumns * numRows);
-        obstaclePointer = new SparseArray<Obstacle>(numColumns * numRows);
-
-        invalidate();
     }
 
     private void fixCount(int counter) {
@@ -248,6 +308,68 @@ public class PixelGridView extends View {
                 obstacle.id--;
             }
         }
+    }
+
+    private void clearObstaclePointer() {
+        Log.w(TAG, "clearObstaclePointer");
+
+        obstaclePointer.clear();
+    }
+
+    private Obstacle obtainTouchedObstacle(final int column, final int row) {
+        Obstacle touchedObstacle = getTouchedObstacle(column, row);
+
+        if (null == touchedObstacle) {
+            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                touchedObstacle = new Obstacle(column, row, counter);
+                counter++;
+
+                Log.w(TAG, "Added Obstacle " + touchedObstacle);
+                obstacles.add(touchedObstacle);
+            }
+        }
+
+        return touchedObstacle;
+    }
+
+    private Obstacle getTouchedObstacle(final int column, final int row) {
+        Obstacle touched = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.X == column && obstacle.Y == row) {
+                touched = obstacle;
+                break;
+            }
+        }
+
+        return touched;
+    }
+
+    private Obstacle findObstacleByID(final int id) {
+        Obstacle found = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.id == id) {
+                found = obstacle;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
+        Obstacle touched = null;
+
+        for (Obstacle obstacle : obstacles) {
+            if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
+                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
+                touched = obstacle;
+                break;
+            }
+        }
+
+        return touched;
     }
 
     private void createCell() {
@@ -587,68 +709,6 @@ public class PixelGridView extends View {
                 }
             }
         }
-    }
-
-    private void clearObstaclePointer() {
-        Log.w(TAG, "clearObstaclePointer");
-
-        obstaclePointer.clear();
-    }
-
-    private Obstacle obtainTouchedObstacle(final int column, final int row) {
-        Obstacle touchedObstacle = getTouchedObstacle(column, row);
-
-        if (null == touchedObstacle) {
-            if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
-                touchedObstacle = new Obstacle(column, row, counter);
-                counter++;
-
-                Log.w(TAG, "Added Obstacle " + touchedObstacle);
-                obstacles.add(touchedObstacle);
-            }
-        }
-
-        return touchedObstacle;
-    }
-
-    private Obstacle getTouchedObstacle(final int column, final int row) {
-        Obstacle touched = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.X == column && obstacle.Y == row) {
-                touched = obstacle;
-                break;
-            }
-        }
-
-        return touched;
-    }
-
-    private Obstacle findObstacleByID(final int id) {
-        Obstacle found = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.id == id) {
-                found = obstacle;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
-        Obstacle touched = null;
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
-                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
-                touched = obstacle;
-                break;
-            }
-        }
-
-        return touched;
     }
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

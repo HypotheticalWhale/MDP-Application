@@ -16,14 +16,20 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 public class MainActivity<NameViewModel> extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final String STATE_OBSTACLE = "obstacles";
+    private static final String STATE_ROBOT = "robot";
+    private static final String STATE_ROBOT_DIRECTION = "robot direction";
+
     private BluetoothAdapter mBluetoothAdapter;
 
     TabLayout tabLayout;
     ViewPager2 viewPager;
     FragmentAdapter adapter;
-    //    PixelGridView pixelGrid;
     PixelGridView pixelGrid;
 
     @Override
@@ -38,6 +44,15 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         adapter = new FragmentAdapter(fm, getLifecycle());
         viewPager.setAdapter(adapter);
+
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            HashSet<PixelGridView.Obstacle> obstacles = new HashSet<>(savedInstanceState.getParcelableArrayList(STATE_OBSTACLE));
+            pixelGrid.setObstacles(obstacles);
+            int[] curCoord = savedInstanceState.getIntArray(STATE_ROBOT);
+            String direction = savedInstanceState.getString(STATE_ROBOT_DIRECTION);
+            pixelGrid.setCurCoord(curCoord[0], curCoord[1], direction);
+        }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
 
@@ -94,6 +109,17 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     //toast message function
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        ArrayList<PixelGridView.Obstacle> obstacles = new ArrayList<>(pixelGrid.getObstacles());
+        savedInstanceState.putParcelableArrayList(STATE_OBSTACLE, obstacles);
+        savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
+        savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
