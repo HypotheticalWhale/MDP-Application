@@ -397,6 +397,7 @@ public class BluetoothConnectionHelper extends Service {
                     targetMACAddress);
             mConnectThread = new ConnectThread(device);
             mConnectThread.start();
+
             setState(STATE_CONNECTING, false);
             try {
                 Thread.sleep(6000, 0);

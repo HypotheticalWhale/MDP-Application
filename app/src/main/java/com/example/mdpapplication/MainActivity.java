@@ -100,7 +100,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
             Log.d(TAG, "Application is started");
-            Intent intent = new Intent(MainActivity.this, ApplicationActivity.class);
+            Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);
             startActivity(intent);
             return true;
         }

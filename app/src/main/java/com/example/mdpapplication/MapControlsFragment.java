@@ -24,7 +24,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Arrays;
 import java.util.List;
 
-public class mapControls extends Fragment {
+public class MapControlsFragment extends Fragment {
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
 
     private static final List<String> ValidDirection = Arrays.asList( "N", "E", "S", "W");

@@ -22,7 +22,7 @@ import android.widget.ToggleButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class controls extends Fragment {
+public class ControlsFragment extends Fragment {
     BluetoothConnectionHelper bluetooth;
     String msg;
     ImageButton sa,sr,sl,f,r,rl,rr;
