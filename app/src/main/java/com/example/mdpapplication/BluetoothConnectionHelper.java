@@ -198,6 +198,7 @@ public class BluetoothConnectionHelper extends Service {
      *
      */
 
+    @SuppressLint("MissingPermission")
     public void setDeviceInfo(String deviceName, String MACAddress){
         BluetoothConnectionHelper.targetMACAddress = MACAddress;
         BluetoothConnectionHelper.targetDeviceName = deviceName;
@@ -224,6 +225,7 @@ public class BluetoothConnectionHelper extends Service {
         return receivedMessage;
     }
 
+    @SuppressLint("MissingPermission")
     public void turnOffBT(){
         if (mBluetoothAdapter.isEnabled()){
             mBluetoothAdapter.disable();
@@ -238,6 +240,7 @@ public class BluetoothConnectionHelper extends Service {
      *
      */
 
+    @SuppressLint("MissingPermission")
     public void performDiscovery(){
         //clear deviceInfo
         targetDeviceName = "";
@@ -407,6 +410,7 @@ public class BluetoothConnectionHelper extends Service {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void connected(BluetoothSocket mmSocket,
                                         BluetoothDevice mmDevice){
         reconnectAttempt = 0;
@@ -481,6 +485,7 @@ public class BluetoothConnectionHelper extends Service {
             toast.cancel();
     }
 
+    @SuppressLint("MissingPermission")
     private synchronized void stopService(){
         setState(STATE_NONE, true);
         if (mConnectThread != null) {
@@ -522,6 +527,7 @@ public class BluetoothConnectionHelper extends Service {
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver(){
 
+        @SuppressLint("MissingPermission")
         @Override
         public void onReceive(Context context, Intent intent){
             String action = intent.getAction();
@@ -539,6 +545,7 @@ public class BluetoothConnectionHelper extends Service {
     private class AcceptThread extends Thread{
         private final BluetoothServerSocket mmServerSocket;
 
+        @SuppressLint("MissingPermission")
         public AcceptThread(){
             BluetoothServerSocket tmp = null;
             try{
@@ -586,6 +593,7 @@ public class BluetoothConnectionHelper extends Service {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
 
+        @SuppressLint("MissingPermission")
         public ConnectThread(BluetoothDevice device){
             this.mmDevice = device;
             BluetoothSocket tmp = null;
@@ -596,6 +604,7 @@ public class BluetoothConnectionHelper extends Service {
             mmSocket = tmp;
         }
 
+        @SuppressLint("MissingPermission")
         @Override
         public void run(){
             setName("ConnectThread");
