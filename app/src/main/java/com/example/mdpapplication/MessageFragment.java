@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class MessageFragment extends Fragment {
-    private static final String TAG = "message";
+    private static final String TAG = "MessageFragment";
 
     public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
     public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class BluetoothActivity extends AppCompatActivity {
-    private static final String TAG = "ApplicationActivity";
+    private static final String TAG = "BluetoothActivity";
 
     public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
     public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
