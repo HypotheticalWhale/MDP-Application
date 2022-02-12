@@ -46,7 +46,7 @@
             android:layout_height="8dp" />
 
         <Button
-            android:id="@+id/b_discover"
+            android:id="@+id/btn_discover"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -58,7 +58,7 @@
             android:layout_height="8dp" />
 
         <Button
-            android:id="@+id/b_list"
+            android:id="@+id/btn_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
@@ -85,7 +85,7 @@
             android:layout_height="8dp" />
 
         <Button
-            android:id="@+id/b_scan"
+            android:id="@+id/btn_scan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"

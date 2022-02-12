@@ -39,7 +39,7 @@ public class BluetoothActivity extends AppCompatActivity {
     public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
     public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
 
-    Button b_list, b_scan, b_discover;
+    Button btn_list, btn_scan, btn_discover;
     SwitchMaterial bluetoothSwitch;
     ListView pairedList, scannedList;
     BluetoothAdapter bluetoothAdapter;
@@ -56,9 +56,9 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
 
-        b_list = findViewById(R.id.b_list);
-        b_scan = findViewById(R.id.b_scan);
-        b_discover = findViewById(R.id.b_discover);
+        btn_list = findViewById(R.id.btn_list);
+        btn_scan = findViewById(R.id.btn_scan);
+        btn_discover = findViewById(R.id.btn_discover);
         pairedList = findViewById(R.id.pairedList);
         scannedList = findViewById(R.id.scannedList);
         loadingBar = findViewById(R.id.loadingBar);
@@ -111,7 +111,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
-        b_list.setOnClickListener(new View.OnClickListener() {
+        btn_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //list paired devices
@@ -160,7 +160,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
         });
 
-        b_discover.setOnClickListener(new View.OnClickListener() {
+        btn_discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -174,7 +174,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         });
 
-        b_scan.setOnClickListener(new View.OnClickListener() {
+        btn_scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //list paired devices
@@ -198,7 +198,7 @@ public class BluetoothActivity extends AppCompatActivity {
                     btArrayAdapter.clear();
                     loadingBar.setVisibility(View.VISIBLE);
                     bluetoothAdapter.startDiscovery();
-                    b_scan.setEnabled(false);
+                    btn_scan.setEnabled(false);
                     loadingBar.postDelayed(new Runnable() {
                         public void run() {
                             loadingBar.setVisibility(View.INVISIBLE);
@@ -209,7 +209,7 @@ public class BluetoothActivity extends AppCompatActivity {
                                 }
                             }
                             bluetoothAdapter.cancelDiscovery();
-                            b_scan.setEnabled(true);
+                            btn_scan.setEnabled(true);
                         }
                     }, 12000);
 

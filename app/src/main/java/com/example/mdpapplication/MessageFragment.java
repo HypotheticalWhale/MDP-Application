@@ -7,19 +7,14 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +22,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class MessageFragment extends Fragment {
@@ -38,7 +32,7 @@ public class MessageFragment extends Fragment {
 
     private static final String STATE_LOG = "log";
 
-    Button b_send, b_clear;
+    Button btn_send, btn_clear;
     TextView tView;
     TextInputLayout tInput;
 
@@ -52,8 +46,8 @@ public class MessageFragment extends Fragment {
         LayoutInflater lf = getActivity().getLayoutInflater();
         View view =  lf.inflate(R.layout.fragment_message, container, false); //pass the correct layout name for the fragment
 
-        b_send = view.findViewById(R.id.b_send);
-        b_clear = view.findViewById(R.id.b_clear);
+        btn_send = view.findViewById(R.id.btn_send);
+        btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
         tInput = view.findViewById(R.id.textInput);
 
@@ -88,7 +82,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        b_send.setOnClickListener(new View.OnClickListener() {
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(sendMsg != null){
@@ -101,7 +95,7 @@ public class MessageFragment extends Fragment {
             }
         });
 
-        b_clear.setOnClickListener(new View.OnClickListener() {
+        btn_clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tView.setText("");
