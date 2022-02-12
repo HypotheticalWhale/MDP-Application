@@ -353,6 +353,14 @@ public class PixelGridView extends View {
         return numRows;
     }
 
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
     public void setCurCoord(int col, int row, String direction) {
         robot.setX(col);
         robot.setY(row);

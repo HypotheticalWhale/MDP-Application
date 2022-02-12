@@ -24,6 +24,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     private static final String STATE_OBSTACLE = "obstacles";
     private static final String STATE_ROBOT = "robot";
     private static final String STATE_ROBOT_DIRECTION = "robot direction";
+    private static final String STATE_COUNTER = "counter";
 
     private BluetoothAdapter mBluetoothAdapter;
 
@@ -52,6 +53,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
             int[] curCoord = savedInstanceState.getIntArray(STATE_ROBOT);
             String direction = savedInstanceState.getString(STATE_ROBOT_DIRECTION);
             pixelGrid.setCurCoord(curCoord[0], curCoord[1], direction);
+            pixelGrid.setCounter(savedInstanceState.getInt(STATE_COUNTER));
         }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -117,6 +119,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         savedInstanceState.putParcelableArrayList(STATE_OBSTACLE, obstacles);
         savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
         savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
+        savedInstanceState.putInt(STATE_COUNTER, pixelGrid.getCounter());
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
