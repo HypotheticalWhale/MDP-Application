@@ -60,11 +60,5 @@ jobs:
           name: app-release.apk
           path: app/build/outputs/apk/release/
 
-      - name: Upload R8 Mapping
-        uses: actions/upload-artifact@v2
-        with:
-          name: mapping.txt
-          path: app/build/outputs/mapping/release/
-
       - name: Delete Build Folder
         run: rm -rf app/build/
