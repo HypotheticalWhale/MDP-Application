@@ -35,13 +35,9 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_rotate_right_24" />
 
-            <ImageButton
-                android:id="@+id/placeholder1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
-
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="match_parent" />
 
             <ImageButton
                 android:id="@+id/send_arena"
@@ -49,12 +45,6 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_stadium_24" />
 
-            <ImageButton
-                android:id="@+id/placeholder2144"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
             <TextView
                 android:id="@+id/explorationTitleTextView"
                 android:layout_width="wrap_content"
@@ -107,25 +97,10 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_arrow_right_24" />
 
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="match_parent" />
 
-            <ImageButton
-                android:id="@+id/placeholder5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
-            <ImageButton
-                android:id="@+id/placeholder6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
-            <ImageButton
-                android:id="@+id/placeholder7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
             <ToggleButton
                 android:id="@+id/fastest"
                 android:layout_width="wrap_content"
@@ -138,6 +113,7 @@
                 android:textOn="STOP"
                 android:layout_marginBottom="5dp"
                 />
+
             <TextView
                 android:id="@+id/fastestPathTimeTextView"
                 android:layout_width="200dp"
