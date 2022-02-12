@@ -17,17 +17,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class mapControls extends Fragment {
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
+
+    private static final List<String> ValidDirection = Arrays.asList( "N", "E", "S", "W");
 
     BluetoothConnectionHelper bluetooth;
     TextInputLayout xInput, yInput, directionInput;
     PixelGridView pixelGrid;
     Button b_reset, b_set;
     String x,y,robotDirection;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -107,7 +114,13 @@ public class mapControls extends Fragment {
                 int row = Integer.parseInt(y.replace(" ", ""));
                 String direction = robotDirection.replace(" ", "").toUpperCase();
 
-                pixelGrid.setCurCoord(col, row, direction);
+                if(col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction))
+                {
+                    pixelGrid.setCurCoord(col, row, direction);
+                }
+                else{
+                    showToast("Invalid Input!");
+                }
             }
         });
 
@@ -123,6 +136,11 @@ public class mapControls extends Fragment {
         xInput.getEditText().setText(x);
         yInput.getEditText().setText(y);
         directionInput.getEditText().setText(robotDirection);
+    }
+
+    //toast message function
+    private void showToast(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {

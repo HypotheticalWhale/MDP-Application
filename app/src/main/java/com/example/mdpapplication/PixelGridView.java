@@ -249,8 +249,13 @@ public class PixelGridView extends View {
         }
 
         public void setX(int x){
-            X[0] = x;
-            X[1] = x+robotSize[0]-1;
+            if(x == 19){
+                X[0] = x-1;
+                X[1] = x+robotSize[0]-2;
+            }else{
+                X[0] = x;
+                X[1] = x+robotSize[0]-1;
+            }
         }
 
         public int getY(){
@@ -258,8 +263,13 @@ public class PixelGridView extends View {
         }
 
         public void setY(int y){
-            Y[0] = y;
-            Y[1] = y+robotSize[0]-1;
+            if( y == 19){
+                Y[0] = y-1;
+                Y[1] = y+robotSize[0]-2;
+            }else{
+                Y[0] = y;
+                Y[1] = y+robotSize[0]-1;
+            }
         }
 
         public String getDirection() {
@@ -484,53 +494,33 @@ public class PixelGridView extends View {
         Obstacle obstacle2 = null;
 
         if ((startX >= 0 && endX < numColumns && startY >= 0 && endY < numRows)) {
-            if (command.equals("f")) {
-                if (direction.equals("N")) {
-                    obstacle1 = findObstacleByGridCoord(startX, endY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                } else if (direction.equals("E")) {
-                    obstacle1 = findObstacleByGridCoord(endX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                } else if (direction.equals("S")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, startY);
-                } else if (direction.equals("W")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(startX, endY);
-                }
-            } else if (command.equals("b")) {
-                if (direction.equals("N")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, startY);
-                } else if (direction.equals("E")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(startX, endY);
-                } else if (direction.equals("S")) {
-                    obstacle1 = findObstacleByGridCoord(startX, endY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                } else if (direction.equals("W")) {
-                    obstacle1 = findObstacleByGridCoord(endX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                }
-            } else if (command.equals("sl")) {
-                if (direction.equals("N")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(startX, endY);
-                } else if (direction.equals("E")) {
-                    obstacle1 = findObstacleByGridCoord(startX, endY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                } else if (direction.equals("S")) {
-                    obstacle1 = findObstacleByGridCoord(endX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, endY);
-                } else if (direction.equals("W")) {
-                    obstacle1 = findObstacleByGridCoord(startX, startY);
-                    obstacle2 = findObstacleByGridCoord(endX, startY);
-                }
+            if ((command.equals("f") && direction.equals("N")) ||
+                    (command.equals("b") && direction.equals("S")) ||
+                    (command.equals("sl") && direction.equals("E")) ||
+                    (command.equals("sr") && direction.equals("W"))) {
+                obstacle1 = findObstacleByGridCoord(startX, endY);
+                obstacle2 = findObstacleByGridCoord(endX, endY);
+            } else if ((command.equals("f") && direction.equals("E")) ||
+                    (command.equals("b") && direction.equals("W")) ||
+                    (command.equals("sl") && direction.equals("S")) ||
+                    (command.equals("sr") && direction.equals("N"))) {
+                obstacle1 = findObstacleByGridCoord(endX, startY);
+                obstacle2 = findObstacleByGridCoord(endX, endY);
+            } else if ((command.equals("f") && direction.equals("S")) ||
+                    (command.equals("b") && direction.equals("N")) ||
+                    (command.equals("sl") && direction.equals("W")) ||
+                    (command.equals("sr") && direction.equals("E"))) {
+                obstacle1 = findObstacleByGridCoord(startX, startY);
+                obstacle2 = findObstacleByGridCoord(endX, startY);
+            } else if ((command.equals("f") && direction.equals("W")) ||
+                    (command.equals("b") && direction.equals("E")) ||
+                    (command.equals("sl") && direction.equals("N")) ||
+                    (command.equals("sr") && direction.equals("S"))) {
+                obstacle1 = findObstacleByGridCoord(startX, startY);
+                obstacle2 = findObstacleByGridCoord(startX, endY);
             }
 
-            if (obstacle1 == null && obstacle2 == null) {
-                return true;
-            }
+            return obstacle1 == null && obstacle2 == null;
         }
         return false;
     }
