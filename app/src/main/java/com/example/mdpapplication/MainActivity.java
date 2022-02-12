@@ -99,7 +99,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
-            Log.d(TAG, "Application is started");
+            Log.d(TAG, "onOptionsItemSelected: Going to Bluetooth Page");
             Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);
             startActivity(intent);
             return true;
@@ -128,30 +128,30 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "In onStart");
+        Log.d(TAG, "onStart: ");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "In onResume");
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "In onPause");
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "In onStop");
+        Log.d(TAG, "onStop: ");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "In onDestroy");
+        Log.d(TAG, "onDestroy: ");
     }
 }

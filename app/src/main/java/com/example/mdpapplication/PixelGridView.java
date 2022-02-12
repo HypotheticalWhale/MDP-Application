@@ -1002,7 +1002,7 @@ public class PixelGridView extends View {
                 int row = Integer.parseInt(message[2].replace(" ", ""));
                 String direction = message[3].replace(" ", "");
 
-                Log.d(TAG, "onReceive: col:" + col + " row:" + row + " direction:" + direction);
+                Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
 
                 setCurCoord(col, row, direction);
             }

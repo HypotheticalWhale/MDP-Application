@@ -39,8 +39,6 @@ public class BluetoothActivity extends AppCompatActivity {
     public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
     public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
 
-    public static final String STATE_PAIRED_LIST = "paired";
-
     Button b_list, b_scan, b_discover;
     SwitchMaterial bluetoothSwitch;
     ListView pairedList, scannedList;
@@ -359,26 +357,26 @@ public class BluetoothActivity extends AppCompatActivity {
     //For Pairing
     private void pairDevice(BluetoothDevice device) {
         try {
-            Log.d("pairDevice()", "Start Pairing...");
+            Log.d(TAG, "pairDevice: Start Pairing...");
             Method m = device.getClass().getMethod("createBond", (Class[]) null);
             m.invoke(device, (Object[]) null);
-            Log.d("pairDevice()", "Pairing finished.");
+            Log.d(TAG, "pairDevice: Pairing finished.");
             showToast("Pairing...");
         } catch (Exception e) {
-            Log.e("pairDevice()", e.getMessage());
+            Log.e(TAG, "pairDevice: " + e.getMessage());
         }
     }
 
     //For UnPairing
     private void unpairDevice(BluetoothDevice device) {
         try {
-            Log.d("unpairDevice()", "Start Un-Pairing...");
+            Log.d(TAG, "unpairDevice: Start Un-Pairing...");
             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
             m.invoke(device, (Object[]) null);
-            Log.d("unpairDevice()", "Un-Pairing finished.");
+            Log.d(TAG, "unpairDevice: Un-Pairing finished.");
             showToast("Device unpaired!");
         } catch (Exception e) {
-            Log.e("unpairDevice()", e.getMessage());
+            Log.e(TAG, "unpairDevice: " + e.getMessage());
         }
     }
 
@@ -396,13 +394,13 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "Bluetooth In onStart");
+        Log.d(TAG, "onStart: ");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "Bluetooth In onResume");
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -415,7 +413,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
-        Log.d(TAG, "Bluetooth In onPause");
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
@@ -428,7 +426,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
-        Log.d(TAG, "Bluetooth In onStop");
+        Log.d(TAG, "onStop: ");
     }
 
     @Override
@@ -441,8 +439,7 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
-
-        Log.d(TAG, "Bluetooth In onDestroy");
+        Log.d(TAG, "onDestroy: ");
     }
 }
 
