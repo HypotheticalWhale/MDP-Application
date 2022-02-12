@@ -17,6 +17,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/btSwitch"
             android:layout_width="match_parent"
@@ -27,13 +31,19 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="8dp" />
 
         <TextView
             android:id="@+id/deviceStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DISCONNECTED" />
+            android:text="DEVICE DISCONNECTED"
+            android:textAlignment="center"
+            android:textColor="#FF0000" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
 
         <Button
             android:id="@+id/b_discover"
@@ -41,7 +51,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:text="Make device discoverable" />
+            android:text="Make Device Discoverable" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
 
         <Button
                 android:id="@+id/b_list"
@@ -49,20 +63,26 @@
                 android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-                android:text="Show paired devices" />
+                android:text="Show Paired Devices" />
 
-        <Space
+        <ProgressBar
+            android:id="@+id/connectingLoadingBar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="8dp"
+            android:indeterminate="true"
+            android:visibility="invisible" />
 
         <ListView
             android:id="@+id/pairedList"
             android:layout_width="match_parent"
-            android:layout_height="215dp" />
+            android:layout_height="215dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="8dp" />
 
         <Button
             android:id="@+id/b_scan"
@@ -70,20 +90,22 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:text="Scan for devices" />
+            android:text="Scan for Devices" />
 
         <ProgressBar
             android:id="@+id/loadingBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
+            android:layout_height="8dp"
             android:indeterminate="true"
             android:visibility="invisible" />
 
         <ListView
             android:id="@+id/scannedList"
             android:layout_width="match_parent"
-            android:layout_height="215dp" />
+            android:layout_height="215dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
 
     </LinearLayout>
 

@@ -662,7 +662,7 @@ public class BluetoothConnectionHelper extends Service {
                 }catch(IOException e){
                     mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
                             "Bluetooth failed to read from connection").sendToTarget();
-                    if (isServer == true){
+                    if (isServer){
                         stopService();
                     }else{
                         reconnectAsClient();
@@ -679,7 +679,7 @@ public class BluetoothConnectionHelper extends Service {
             }catch(IOException e){
                 mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
                         "Bluetooth failed to write to connection").sendToTarget();
-                if (isServer == true){
+                if (isServer){
                     stopService();
                 }else{
                     reconnectAsClient();

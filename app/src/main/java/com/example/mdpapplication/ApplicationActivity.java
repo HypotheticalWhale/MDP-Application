@@ -12,7 +12,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,10 +31,12 @@ import android.widget.Toast;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -41,12 +46,15 @@ public class ApplicationActivity extends AppCompatActivity {
     public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
     public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
 
+    public static final String STATE_PAIRED_LIST = "paired";
+
     Button b_list, b_scan, b_discover;
     SwitchMaterial bluetoothSwitch;
     ListView pairedList, scannedList;
     BluetoothAdapter bluetoothAdapter;
-    ProgressBar loadingBar;
+    ProgressBar loadingBar, connectingLoadingBar;
     TextView deviceStatus;
+    View pairedSelected;
 
     ArrayAdapter<String> btArrayAdapter;
 
@@ -63,6 +71,7 @@ public class ApplicationActivity extends AppCompatActivity {
         pairedList = findViewById(R.id.pairedList);
         scannedList = findViewById(R.id.scannedList);
         loadingBar = findViewById(R.id.loadingBar);
+        connectingLoadingBar = findViewById(R.id.connectingLoadingBar);
         bluetoothSwitch = findViewById(R.id.btSwitch);
         deviceStatus = findViewById(R.id.deviceStatus);
 
@@ -79,7 +88,7 @@ public class ApplicationActivity extends AppCompatActivity {
 
         checkBluetoothOn();
 
-        btArrayAdapter = new ArrayAdapter<>(ApplicationActivity.this, android.R.layout.simple_list_item_1);
+        btArrayAdapter = new ArrayAdapter<>(ApplicationActivity.this, android.R.layout.simple_selectable_list_item);
         scannedList.setAdapter(btArrayAdapter);
         scannedList.setOnItemClickListener(mScannedDeviceClickListener);
 
@@ -140,17 +149,18 @@ public class ApplicationActivity extends AppCompatActivity {
                 if (bluetoothAdapter.isEnabled()) {
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     ArrayList<String> devices = new ArrayList<String>();
-                    ArrayAdapter arrayAdapter = new ArrayAdapter(ApplicationActivity.this, android.R.layout.simple_list_item_1, devices);
-                    pairedList.setAdapter(arrayAdapter);
+                    ArrayAdapter pairedArray = new ArrayAdapter(ApplicationActivity.this, android.R.layout.simple_selectable_list_item, devices);
+                    pairedList.setAdapter(pairedArray);
                     pairedList.setOnItemClickListener(mPairedDeviceClickListener);
+
                     if (pairedDevices.size() > 0) {
                         for (BluetoothDevice mDevice : pairedDevices) {
-                            arrayAdapter.add(mDevice.getName() + "\n"
+                            pairedArray.add(mDevice.getName() + "\n"
                                     + mDevice.getAddress());
                         }
                     } else {
                         String mNoDevices = "None Paired";// getResources().getText(R.string.none_paired).toString();
-                        arrayAdapter.add(mNoDevices);
+                        pairedArray.add(mNoDevices);
                     }
                 } else {
                     showToast("Bluetooth is not on!");
@@ -197,6 +207,7 @@ public class ApplicationActivity extends AppCompatActivity {
                     btArrayAdapter.clear();
                     loadingBar.setVisibility(View.VISIBLE);
                     bluetoothAdapter.startDiscovery();
+                    b_scan.setEnabled(false);
                     loadingBar.postDelayed(new Runnable() {
                         public void run() {
                             loadingBar.setVisibility(View.INVISIBLE);
@@ -207,6 +218,7 @@ public class ApplicationActivity extends AppCompatActivity {
                                 }
                             }
                             bluetoothAdapter.cancelDiscovery();
+                            b_scan.setEnabled(true);
                         }
                     }, 12000);
 
@@ -226,6 +238,7 @@ public class ApplicationActivity extends AppCompatActivity {
                     return;
                 }
             }
+
             bluetoothAdapter.cancelDiscovery();
             String mDeviceInfo = ((TextView) mView).getText().toString();
             String mDeviceAddress = mDeviceInfo
@@ -234,6 +247,7 @@ public class ApplicationActivity extends AppCompatActivity {
 
             BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
             pairDevice(btDevice);
+
         }
     };
 
@@ -247,14 +261,20 @@ public class ApplicationActivity extends AppCompatActivity {
                 }
             }
             bluetoothAdapter.cancelDiscovery();
-            String mDeviceInfo = ((TextView) mView).getText().toString();
-            String mDeviceAddress = mDeviceInfo
-                    .substring(mDeviceInfo.length() - 17);
-            Log.v(TAG, "Device_Address " + mDeviceAddress);
+            if (mView.isEnabled()) {
+                String mDeviceInfo = ((TextView) mView).getText().toString();
+                if (mDeviceInfo != "None Paired") {
+                    String mDeviceAddress = mDeviceInfo
+                            .substring(mDeviceInfo.length() - 17);
+                    Log.v(TAG, "Device_Address " + mDeviceAddress);
 
-            BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
-            bluetooth.setDeviceInfo(btDevice.getName(), btDevice.getAddress());
-            bluetooth.connectAsClient();
+                    BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
+                    bluetooth.setDeviceInfo(btDevice.getName(), btDevice.getAddress());
+                    bluetooth.connectAsClient();
+                    pairedSelected = mView;
+                    connectingLoadingBar.setVisibility(View.VISIBLE);
+                }
+            }
         }
     };
 
@@ -289,9 +309,18 @@ public class ApplicationActivity extends AppCompatActivity {
                 switch (state) {
                     case BluetoothAdapter.STATE_OFF:
                         bluetoothSwitch.setChecked(false);
+                        pairedSelected.setEnabled(true);
+                        deviceStatus.setText("DEVICE DISCONNECTED");
+                        deviceStatus.setTextColor(Color.RED);
                         break;
                     case BluetoothAdapter.STATE_ON:
                         bluetoothSwitch.setChecked(true);
+                        pairedSelected.setEnabled(true);
+                        break;
+                    case BluetoothAdapter.STATE_DISCONNECTED:
+                        deviceStatus.setText("DEVICE DISCONNECTED");
+                        deviceStatus.setTextColor(Color.RED);
+                        pairedSelected.setEnabled(true);
                         break;
                 }
             }
@@ -302,10 +331,16 @@ public class ApplicationActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(EVENT_STATE_CONNECTED)){
-                deviceStatus.setText("CONNECTED");
+                deviceStatus.setText("DEVICE CONNECTED");
+                deviceStatus.setTextColor(Color.GREEN);
+                pairedSelected.setEnabled(false);
+                connectingLoadingBar.setVisibility(View.INVISIBLE);
             }
             else if(intent.getAction().equals(EVENT_STATE_NONE)){
-                deviceStatus.setText("DISCONNECTED");
+                deviceStatus.setText("DEVICE DISCONNECTED");
+                deviceStatus.setTextColor(Color.RED);
+                pairedSelected.setEnabled(true);
+                connectingLoadingBar.setVisibility(View.INVISIBLE);
             }
         }
     };
@@ -413,6 +448,7 @@ public class ApplicationActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
+
         Log.d(TAG, "Bluetooth In onDestroy");
     }
 }
