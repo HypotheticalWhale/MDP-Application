@@ -69,15 +69,15 @@ public class ApplicationActivity extends AppCompatActivity {
             finish();
         }
 
-        if (bluetoothAdapter.isEnabled()) {
-            bluetoothSwitch.setChecked(true);
-        }
+        checkBluetoothOn();
 
         btArrayAdapter = new ArrayAdapter<>(ApplicationActivity.this, android.R.layout.simple_list_item_1);
         scannedList.setAdapter(btArrayAdapter);
         scannedList.setOnItemClickListener(mScannedDeviceClickListener);
 
         ApplicationActivity.this.registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+
+        ApplicationActivity.this.registerReceiver(BluetoothStatusReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         Context context = getApplicationContext();
         bluetooth = new BluetoothConnectionHelper(context);
@@ -208,35 +208,6 @@ public class ApplicationActivity extends AppCompatActivity {
         });
     }
 
-    private final BroadcastReceiver ActionFoundReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
-                    return;
-                }
-            }
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (device.getName() != null && !checkExist(btArrayAdapter, device.getName() + "\n" + device.getAddress())) {
-                    btArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                    btArrayAdapter.notifyDataSetChanged();
-                }
-            }
-        }
-    };
-
-    private boolean checkExist(ArrayAdapter a, String exist) {
-        int count = a.getCount();
-        for (int i = 0; i < count; i++) {
-            if (a.getItem(i) == exist)
-                return true;
-        }
-        return false;
-    }
-
     private final AdapterView.OnItemClickListener mScannedDeviceClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> mAdapterView, View mView,
                                 int mPosition, long mLong) {
@@ -277,6 +248,64 @@ public class ApplicationActivity extends AppCompatActivity {
             bluetooth.connectAsClient();
         }
     };
+
+    private final BroadcastReceiver ActionFoundReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ActivityCompat.checkSelfPermission(ApplicationActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(ApplicationActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+                    return;
+                }
+            }
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (device.getName() != null && !checkExist(btArrayAdapter, device.getName() + "\n" + device.getAddress())) {
+                    btArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    btArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+    };
+
+    private final BroadcastReceiver BluetoothStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        bluetoothSwitch.setChecked(false);
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        bluetoothSwitch.setChecked(true);
+                        break;
+                }
+            }
+        }
+    };
+
+    private boolean checkExist(ArrayAdapter a, String exist) {
+        int count = a.getCount();
+        for (int i = 0; i < count; i++) {
+            if (a.getItem(i) == exist)
+                return true;
+        }
+        return false;
+    }
+
+    private void checkBluetoothOn(){
+        if (bluetoothAdapter.isEnabled()) {
+            bluetoothSwitch.setChecked(true);
+        }
+        else{
+            bluetoothSwitch.setChecked(false);
+        }
+    }
 
     //For Pairing
     private void pairDevice(BluetoothDevice device) {
