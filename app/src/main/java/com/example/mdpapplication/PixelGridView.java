@@ -863,6 +863,7 @@ public class PixelGridView extends View {
                     int y = (int) (event.getY() + cellSize * 2.5);
                     Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
 
+
                     popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x, y);
 
                     ObstacleView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
@@ -874,6 +875,7 @@ public class PixelGridView extends View {
                         public void onDismiss() {
                             obstacle[0] = obstacleGrid.getObstacle();
                             Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
+                            bluetooth.write("{X: " + obstacle[0].X + ", Y:" + obstacle[0].Y + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
                             invalidate();
                         }
                     });
