@@ -220,14 +220,15 @@ public class PixelGridView extends View {
         yellowPaint.setColor(Color.YELLOW);
         yellowPaint.setStrokeWidth(8);
 
-        bluetooth = new BluetoothConnectionHelper(context);
+        bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_TARGET_SCANNED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_MOVES));
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
 
-        curCoord = new int[]{-1, -1};
+        curCoord = new int[]{1, 1};
+        robotDirection = "N";
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
 
@@ -722,6 +723,8 @@ public class PixelGridView extends View {
                 int row = curCoord[1];
                 String direction = robotDirection;
 
+                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT col:" + col + " row:" + row + " direction:" + direction);
+
                 if (message.equals("f")) {
                     if (direction.equals("N")) {
                         setCurCoord(col, row + 1, direction);
@@ -841,5 +844,11 @@ public class PixelGridView extends View {
                 setCurCoord(col, row, direction);
             }
         }
+    };
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        getContext().unregisterReceiver(mMessageReceiver);
     };
 }

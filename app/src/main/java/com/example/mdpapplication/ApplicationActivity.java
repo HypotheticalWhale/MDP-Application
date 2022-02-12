@@ -29,16 +29,24 @@ import android.widget.Toast;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Set;
 
 public class ApplicationActivity extends AppCompatActivity {
     private static final String TAG = "ApplicationActivity";
+
+    public static final String EVENT_STATE_CONNECTED = "com.event.EVENT_STATE_CONNECTED";
+    public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
+
     Button b_list, b_scan, b_discover;
     SwitchMaterial bluetoothSwitch;
     ListView pairedList, scannedList;
     BluetoothAdapter bluetoothAdapter;
     ProgressBar loadingBar;
+    TextView deviceStatus;
 
     ArrayAdapter<String> btArrayAdapter;
 
@@ -55,8 +63,8 @@ public class ApplicationActivity extends AppCompatActivity {
         pairedList = findViewById(R.id.pairedList);
         scannedList = findViewById(R.id.scannedList);
         loadingBar = findViewById(R.id.loadingBar);
-
         bluetoothSwitch = findViewById(R.id.btSwitch);
+        deviceStatus = findViewById(R.id.deviceStatus);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -75,12 +83,13 @@ public class ApplicationActivity extends AppCompatActivity {
         scannedList.setAdapter(btArrayAdapter);
         scannedList.setOnItemClickListener(mScannedDeviceClickListener);
 
-        ApplicationActivity.this.registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-
-        ApplicationActivity.this.registerReceiver(BluetoothStatusReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-
         Context context = getApplicationContext();
-        bluetooth = new BluetoothConnectionHelper(context);
+        bluetooth = MDPApplication.getBluetooth();
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_STATE_CONNECTED));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_STATE_NONE));
+
+        context.registerReceiver(ActionFoundReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+        context.registerReceiver(BluetoothStatusReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
         bluetoothSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -285,6 +294,18 @@ public class ApplicationActivity extends AppCompatActivity {
                         bluetoothSwitch.setChecked(true);
                         break;
                 }
+            }
+        }
+    };
+
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(EVENT_STATE_CONNECTED)){
+                deviceStatus.setText("CONNECTED");
+            }
+            else if(intent.getAction().equals(EVENT_STATE_NONE)){
+                deviceStatus.setText("DISCONNECTED");
             }
         }
     };

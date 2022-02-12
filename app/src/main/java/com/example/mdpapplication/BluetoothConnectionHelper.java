@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -97,6 +99,9 @@ public class BluetoothConnectionHelper extends Service {
     private static final String RPIMACAddress = "";
     private static final String RPIDeviceName = "";
 
+    private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
+            "l", "sl", "sr");
+
     /** Service Binding
      *
      */
@@ -145,14 +150,18 @@ public class BluetoothConnectionHelper extends Service {
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
                         }
-                        else{
+                        else if(ValidRobotCommands.contains(receivedMessage)){
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
                         }
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
+                        Log.d(TAG, "handleMessage: MESSAGE_SENT: " + sentMessage);
+
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
-                        sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
+                        if(ValidRobotCommands.contains(sentMessage)){
+                            sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
+                        }
                         break;
                     case MESSAGE_TOAST:
                         String toastMessage = (String) msg.obj;

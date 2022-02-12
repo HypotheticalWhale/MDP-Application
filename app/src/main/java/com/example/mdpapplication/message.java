@@ -58,7 +58,7 @@ public class message extends Fragment {
         tInput = view.findViewById(R.id.textInput);
 
         Context context = getActivity().getApplicationContext();
-        bluetooth = new BluetoothConnectionHelper(context);
+        bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
 
