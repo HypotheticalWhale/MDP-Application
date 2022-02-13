@@ -302,6 +302,7 @@ public class PixelGridView extends View {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView, 0, 0);
         numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
         numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+        typedArray.recycle();
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         obstacleColor.setColor(Color.BLACK);

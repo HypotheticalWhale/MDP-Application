@@ -57,6 +57,7 @@ public class ObstacleView extends View {
                 0, 0);
         this.numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
         this.numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+        typedArray.recycle();
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         whitePaint.setColor(Color.WHITE);

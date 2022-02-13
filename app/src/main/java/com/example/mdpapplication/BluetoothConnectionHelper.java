@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -387,7 +388,7 @@ public class BluetoothConnectionHelper extends Service {
 
             reconnectAttempt++;
 
-            String reconnectMsg =String.format("Reconnect Attempt: %d / 10",
+            String reconnectMsg =String.format(Locale.getDefault(), "Reconnect Attempt: %d / 10",
                     reconnectAttempt);
             mHandler.obtainMessage(MESSAGE_TOAST, 1, -1, reconnectMsg)
                     .sendToTarget();
@@ -557,7 +558,7 @@ public class BluetoothConnectionHelper extends Service {
 
         @Override
         public void run(){
-            BluetoothSocket socket = null;
+            BluetoothSocket socket;
             while(mState != STATE_CONNECTED){
                 try{
                     socket = mmServerSocket.accept();

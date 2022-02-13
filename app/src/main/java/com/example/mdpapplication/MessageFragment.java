@@ -119,9 +119,6 @@ public class MessageFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-            Date date = new Date();
-
             if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 String message = intent.getStringExtra("key");
                 logMsg("Message Received: " + message);
