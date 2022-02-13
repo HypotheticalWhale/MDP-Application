@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
@@ -48,13 +50,13 @@ public class MessageFragment extends Fragment {
     SpannableStringBuilder msgLog;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_message, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         btn_send = view.findViewById(R.id.btn_send);
         btn_clear = view.findViewById(R.id.btn_clear);
@@ -85,7 +87,7 @@ public class MessageFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start,
                                           int count, int after) {}
 
-            public void onTextChanged(CharSequence s, int start,
+            public void onTextChanged(@NonNull CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
                 sendMsg = s.toString();
@@ -117,7 +119,7 @@ public class MessageFragment extends Fragment {
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
             if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 String message = intent.getStringExtra("key");
@@ -203,7 +205,7 @@ public class MessageFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         String log = Html.toHtml(msgLog, 0);
         Log.d(TAG, "onSaveInstanceState: before: \n" + log);
         if (log.length() != 0) {

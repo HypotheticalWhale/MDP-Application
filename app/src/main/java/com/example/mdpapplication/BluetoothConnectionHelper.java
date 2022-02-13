@@ -18,6 +18,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,6 +40,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final String TAG = "BluetoothConnectionHelper";
 
     private static Toast toast;
+    @NonNull
     private static Boolean displayToast = true;
 
     private static Handler mHandler;
@@ -72,8 +76,11 @@ public class BluetoothConnectionHelper extends Service {
     public final int MESSAGE_TOAST = 0022;
     private static String receivedMessage;
 
+    @Nullable
     private ConnectThread mConnectThread;
+    @Nullable
     private AcceptThread mAcceptThread;
+    @Nullable
     private static ConnectedThread mConnectedThread;
 
     public static int mState = STATE_NONE;
@@ -107,11 +114,13 @@ public class BluetoothConnectionHelper extends Service {
     private final IBinder binder = new BluetoothBinder();
 
     public class BluetoothBinder extends Binder {
+        @NonNull
         BluetoothConnectionHelper getBluetooth(){
             return BluetoothConnectionHelper.this;
         }
     }
 
+    @NonNull
     @Override
     public IBinder onBind(Intent intent) {
         return binder;
@@ -130,7 +139,7 @@ public class BluetoothConnectionHelper extends Service {
 
         mHandler = new Handler(Looper.getMainLooper()) {
             @Override
-            public void handleMessage(Message msg){
+            public void handleMessage(@NonNull Message msg){
                 super.handleMessage(msg);
                 switch(msg.what){
                     case MESSAGE_READ:
@@ -408,8 +417,8 @@ public class BluetoothConnectionHelper extends Service {
     }
 
     @SuppressLint("MissingPermission")
-    private synchronized void connected(BluetoothSocket mmSocket,
-                                        BluetoothDevice mmDevice){
+    private synchronized void connected(@NonNull BluetoothSocket mmSocket,
+                                        @Nullable BluetoothDevice mmDevice){
         reconnectAttempt = 0;
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -507,7 +516,7 @@ public class BluetoothConnectionHelper extends Service {
 
     private static final Object obj = new Object();
 
-    public void write(String message){
+    public void write(@NonNull String message){
         ConnectedThread r;
         synchronized(obj){
             if (mState != STATE_CONNECTED){
@@ -526,7 +535,7 @@ public class BluetoothConnectionHelper extends Service {
 
         @SuppressLint("MissingPermission")
         @Override
-        public void onReceive(Context context, Intent intent){
+        public void onReceive(Context context, @NonNull Intent intent){
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(
@@ -540,6 +549,7 @@ public class BluetoothConnectionHelper extends Service {
     };
 
     private class AcceptThread extends Thread{
+        @Nullable
         private final BluetoothServerSocket mmServerSocket;
 
         @SuppressLint("MissingPermission")
@@ -587,11 +597,13 @@ public class BluetoothConnectionHelper extends Service {
     }//end of AcceptThread
 
     private class ConnectThread extends Thread{
+        @Nullable
         private final BluetoothSocket mmSocket;
+        @NonNull
         private final BluetoothDevice mmDevice;
 
         @SuppressLint("MissingPermission")
-        public ConnectThread(BluetoothDevice device){
+        public ConnectThread(@NonNull BluetoothDevice device){
             this.mmDevice = device;
             BluetoothSocket tmp = null;
             try{
@@ -633,11 +645,14 @@ public class BluetoothConnectionHelper extends Service {
     }//end of connectThread()
 
     private class ConnectedThread extends Thread{
+        @NonNull
         private final BluetoothSocket mmSocket;
+        @Nullable
         private final InputStream mmInStream;
+        @Nullable
         private final OutputStream mmOutStream;
 
-        public ConnectedThread(BluetoothSocket socket){
+        public ConnectedThread(@NonNull BluetoothSocket socket){
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -678,7 +693,7 @@ public class BluetoothConnectionHelper extends Service {
             }
         }
         @SuppressLint("NewApi")
-        public void write(byte[] buffer){
+        public void write(@NonNull byte[] buffer){
             try{
                 mmOutStream.write(buffer);
                 mHandler.obtainMessage(MESSAGE_SENT, buffer.length, -1, buffer)
@@ -703,7 +718,7 @@ public class BluetoothConnectionHelper extends Service {
 
     }//end of connectedThread
 
-    private void pairDevice(BluetoothDevice device){
+    private void pairDevice(@NonNull BluetoothDevice device){
         try{
             Method method = device.getClass().getMethod("createBond", (Class[])null);
             method.invoke(device, (Object[]) null);
@@ -712,7 +727,7 @@ public class BluetoothConnectionHelper extends Service {
     }
 
     //wont be using this
-    private void unpairDevice(BluetoothDevice device){
+    private void unpairDevice(@NonNull BluetoothDevice device){
         try{
             Method method = device.getClass().getMethod("removeBond", (Class[])null);
             method.invoke(device, (Object[]) null);

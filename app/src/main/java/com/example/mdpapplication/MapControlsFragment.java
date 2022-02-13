@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
@@ -36,13 +37,13 @@ public class MapControlsFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_map_controls, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
         b_reset = view.findViewById(R.id.b_reset);
         b_set = view.findViewById(R.id.b_set);
@@ -65,7 +66,7 @@ public class MapControlsFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start,
                                           int count, int after) {}
 
-            public void onTextChanged(CharSequence s, int start,
+            public void onTextChanged(@NonNull CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
                 x = s.toString();
@@ -79,7 +80,7 @@ public class MapControlsFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start,
                                           int count, int after) {}
 
-            public void onTextChanged(CharSequence s, int start,
+            public void onTextChanged(@NonNull CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
                 y = s.toString();
@@ -93,7 +94,7 @@ public class MapControlsFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start,
                                           int count, int after) {}
 
-            public void onTextChanged(CharSequence s, int start,
+            public void onTextChanged(@NonNull CharSequence s, int start,
                                       int before, int count) {
                 //get the String from CharSequence with s.toString() and process it to validation
                 robotDirection = s.toString();
@@ -146,7 +147,7 @@ public class MapControlsFragment extends Fragment {
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 updateTextInput();

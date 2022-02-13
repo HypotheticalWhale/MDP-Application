@@ -24,6 +24,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
 
 import java.util.Arrays;
@@ -62,6 +64,7 @@ public class PixelGridView extends View {
     private final Paint yellowPaint = new Paint();
     private final Paint targetScannedColor = new Paint();
 
+    @NonNull
     private final GestureDetectorCompat gestureDetector;
     private final BluetoothConnectionHelper bluetooth;
 
@@ -75,6 +78,7 @@ public class PixelGridView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
+    @NonNull
     private final Context cachedContext;
 
     /**
@@ -159,7 +163,7 @@ public class PixelGridView extends View {
         }
 
         @Override
-        public void writeToParcel(Parcel dest, int flags) {
+        public void writeToParcel(@NonNull Parcel dest, int flags) {
             dest.writeInt(this.id);
             dest.writeInt(this.X);
             dest.writeInt(this.Y);
@@ -169,7 +173,7 @@ public class PixelGridView extends View {
             dest.writeString(this.direction);
         }
 
-        public void readFromParcel(Parcel source) {
+        public void readFromParcel(@NonNull Parcel source) {
             this.id = source.readInt();
             this.X = source.readInt();
             this.Y = source.readInt();
@@ -179,7 +183,7 @@ public class PixelGridView extends View {
             this.direction = source.readString();
         }
 
-        protected Obstacle(Parcel in) {
+        protected Obstacle(@NonNull Parcel in) {
             this.id = in.readInt();
             this.X = in.readInt();
             this.Y = in.readInt();
@@ -190,11 +194,13 @@ public class PixelGridView extends View {
         }
 
         public static final Parcelable.Creator<Obstacle> CREATOR = new Parcelable.Creator<Obstacle>() {
+            @NonNull
             @Override
-            public Obstacle createFromParcel(Parcel source) {
+            public Obstacle createFromParcel(@NonNull Parcel source) {
                 return new Obstacle(source);
             }
 
+            @NonNull
             @Override
             public Obstacle[] newArray(int size) {
                 return new Obstacle[size];
@@ -208,7 +214,7 @@ public class PixelGridView extends View {
         int[] Y;
         String direction = "None";
 
-        private Robot(int X, int Y, int[] robotSize){
+        private Robot(int X, int Y, @NonNull int[] robotSize){
             this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
 
             this.X = new int[robotSize[0]];
@@ -292,11 +298,11 @@ public class PixelGridView extends View {
         }
     }
 
-    public PixelGridView(Context context) {
+    public PixelGridView(@NonNull Context context) {
         this(context, null);
     }
 
-    public PixelGridView(Context context, AttributeSet attrs) {
+    public PixelGridView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView, 0, 0);
@@ -370,6 +376,7 @@ public class PixelGridView extends View {
         invalidate();
     }
 
+    @NonNull
     public int[] getCurCoord() {
         return new int[]{robot.getX(), robot.getY()};
     }
@@ -382,7 +389,7 @@ public class PixelGridView extends View {
         return obstacles;
     }
 
-    public void setObstacles(HashSet<Obstacle> obstacles) {
+    public void setObstacles(@NonNull HashSet<Obstacle> obstacles) {
         this.obstacles = new HashSet<>(obstacles);
         Log.d(TAG, "setObstacles: " + obstacles.size());
         invalidate();
@@ -428,6 +435,7 @@ public class PixelGridView extends View {
         obstaclePointer.clear();
     }
 
+    @Nullable
     private Obstacle obtainTouchedObstacle(final int column, final int row) {
         Obstacle touchedObstacle = getTouchedObstacle(column, row);
 
@@ -444,6 +452,7 @@ public class PixelGridView extends View {
         return touchedObstacle;
     }
 
+    @Nullable
     private Obstacle getTouchedObstacle(final int column, final int row) {
         Obstacle touched = null;
 
@@ -457,6 +466,7 @@ public class PixelGridView extends View {
         return touched;
     }
 
+    @Nullable
     private Obstacle findObstacleByID(final int id) {
         Obstacle found = null;
 
@@ -470,6 +480,7 @@ public class PixelGridView extends View {
         return found;
     }
 
+    @Nullable
     private Obstacle findObstacleByGridCoord(int column, int row) {
         Obstacle found = null;
 
@@ -483,6 +494,7 @@ public class PixelGridView extends View {
         return found;
     }
 
+    @Nullable
     private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
         Obstacle touched = null;
 
@@ -497,7 +509,7 @@ public class PixelGridView extends View {
         return touched;
     }
 
-    private boolean checkMovable(int startX, int startY, int endX, int endY, String direction, String command) {
+    private boolean checkMovable(int startX, int startY, int endX, int endY, @NonNull String direction, @NonNull String command) {
         Log.d(TAG, "checkMovable: startX: " + startX + " endX:" + endX + " startY:" + startY + " endY:" + endY);
         Obstacle obstacle1 = null;
         Obstacle obstacle2 = null;
@@ -557,20 +569,20 @@ public class PixelGridView extends View {
                 cells[x][y] = new Cell(x * cellSize + (cellSize / 30), y * cellSize + (cellSize / 30), (x + 1) * cellSize, (y + 1) * cellSize);
     }
 
-    private void drawIndividualCell(Canvas canvas) {
+    private void drawIndividualCell(@NonNull Canvas canvas) {
         for (int x = 1; x <= numColumns; x++)
             for (int y = 0; y < numRows; y++)
                 canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, unexploredColor);
     }
 
-    private void drawGrid(Canvas canvas) {
+    private void drawGrid(@NonNull Canvas canvas) {
         for (int y = 0; y <= numRows; y++)
             canvas.drawLine(cells[1][y].startX, cells[1][y].startY - (cellSize / 30), cells[numRows][y].endX, cells[numRows][y].startY - (cellSize / 30), blackPaint);
         for (int x = 0; x <= numColumns; x++)
             canvas.drawLine(cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][0].startY - (cellSize / 30), cells[x][0].startX - (cellSize / 30) + cellSize, cells[x][numRows - 1].endY + (cellSize / 30), blackPaint);
     }
 
-    private void drawGridNumber(Canvas canvas) {
+    private void drawGridNumber(@NonNull Canvas canvas) {
         for (int x = 1; x <= numColumns; x++) {
             if (x > 9)
                 canvas.drawText(Integer.toString(x - 1), cells[x][numRows].startX + (cellSize / 5), cells[x][numRows].startY + (cellSize / 3), blackPaint);
@@ -596,7 +608,7 @@ public class PixelGridView extends View {
      * "nine", "one", "right_arrow", "seven",
      * "six", "stop", "three", "two", "up_arrow"
      **/
-    private void drawObstacle(Canvas canvas) {
+    private void drawObstacle(@NonNull Canvas canvas) {
         for (Obstacle obstacle : obstacles) {
             float startX = obstacle.X * cellSize + (cellSize / 30);
             float startY = obstacle.Y * cellSize + (cellSize / 30);
@@ -625,7 +637,7 @@ public class PixelGridView extends View {
         }
     }
 
-    private void drawRobot(Canvas canvas) {
+    private void drawRobot(@NonNull Canvas canvas) {
         RectF rect;
 
         int col = robot.getX() + 1;
@@ -664,7 +676,7 @@ public class PixelGridView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         canvas.drawColor(Color.WHITE);
 
         if (numColumns == 0 || numRows == 0) {
@@ -688,7 +700,7 @@ public class PixelGridView extends View {
      * Actual Coords Col: 1 - 20 Row: 0 - 19
      */
     @Override
-    public boolean onTouchEvent(final MotionEvent event) {
+    public boolean onTouchEvent(@NonNull final MotionEvent event) {
         boolean handled = false;
 
         Obstacle touchedObstacle;
@@ -854,7 +866,7 @@ public class PixelGridView extends View {
         }
 
         @Override
-        public void onLongPress(MotionEvent event) {
+        public void onLongPress(@NonNull MotionEvent event) {
             int column = (int) (event.getX() / cellSize);
             int row = (int) (event.getY() / cellSize);
 
@@ -905,7 +917,7 @@ public class PixelGridView extends View {
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");

@@ -234,7 +234,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     private final AdapterView.OnItemClickListener mScannedDeviceClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> mAdapterView, View mView,
+        public void onItemClick(AdapterView<?> mAdapterView, @NonNull View mView,
                                 int mPosition, long mLong) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
@@ -256,7 +256,7 @@ public class BluetoothActivity extends AppCompatActivity {
     };
 
     private final AdapterView.OnItemClickListener mPairedDeviceClickListener = new AdapterView.OnItemClickListener() {
-        public void onItemClick(AdapterView<?> mAdapterView, View mView,
+        public void onItemClick(AdapterView<?> mAdapterView, @NonNull View mView,
                                 int mPosition, long mLong) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
@@ -285,7 +285,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private final BroadcastReceiver ActionFoundReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(BluetoothActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
@@ -305,7 +305,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private final BroadcastReceiver BluetoothStatusReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             final String action = intent.getAction();
 
             try {
@@ -344,7 +344,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             if(intent.getAction().equals(EVENT_STATE_CONNECTED)){
                 connected = true;
                 setDeviceStatus(connected, connectedDevice);
@@ -362,7 +362,7 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     };
 
-    private boolean checkExist(ArrayAdapter<String> a, String exist) {
+    private boolean checkExist(@NonNull ArrayAdapter<String> a, String exist) {
         int count = a.getCount();
         for (int i = 0; i < count; i++) {
             if (a.getItem(i).equals(exist))
@@ -388,7 +388,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     //For Pairing
-    private void pairDevice(BluetoothDevice device) {
+    private void pairDevice(@NonNull BluetoothDevice device) {
         try {
             Log.d(TAG, "pairDevice: Start Pairing...");
             Method m = device.getClass().getMethod("createBond", (Class[]) null);
@@ -401,7 +401,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     //For UnPairing
-    private void unpairDevice(BluetoothDevice device) {
+    private void unpairDevice(@NonNull BluetoothDevice device) {
         try {
             Log.d(TAG, "unpairDevice: Start Un-Pairing...");
             Method m = device.getClass().getMethod("removeBond", (Class[]) null);
