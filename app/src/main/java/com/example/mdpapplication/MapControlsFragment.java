@@ -107,19 +107,15 @@ public class MapControlsFragment extends Fragment {
         b_set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    int col = Integer.parseInt(x.replace(" ", ""));
-                    int row = Integer.parseInt(y.replace(" ", ""));
-                    String direction = robotDirection.replace(" ", "").toUpperCase();
+                int col = Integer.parseInt(x.replace(" ", ""));
+                int row = Integer.parseInt(y.replace(" ", ""));
+                String direction = robotDirection.replace(" ", "").toUpperCase();
 
-                    if(col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction))
-                    {
-                        pixelGrid.setCurCoord(col, row, direction);
-                    }
-                    else{
-                        showToast("Invalid Input!");
-                    }
-                }catch(Exception e){
+                if(col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction))
+                {
+                    pixelGrid.setCurCoord(col, row, direction);
+                }
+                else{
                     showToast("Invalid Input!");
                 }
             }
