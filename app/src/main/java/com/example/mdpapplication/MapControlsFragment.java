@@ -6,13 +6,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,15 +107,19 @@ public class MapControlsFragment extends Fragment {
         b_set.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int col = Integer.parseInt(x.replace(" ", ""));
-                int row = Integer.parseInt(y.replace(" ", ""));
-                String direction = robotDirection.replace(" ", "").toUpperCase();
+                try{
+                    int col = Integer.parseInt(x.replace(" ", ""));
+                    int row = Integer.parseInt(y.replace(" ", ""));
+                    String direction = robotDirection.replace(" ", "").toUpperCase();
 
-                if(col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction))
-                {
-                    pixelGrid.setCurCoord(col, row, direction);
-                }
-                else{
+                    if(col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction))
+                    {
+                        pixelGrid.setCurCoord(col, row, direction);
+                    }
+                    else{
+                        showToast("Invalid Input!");
+                    }
+                }catch(Exception e){
                     showToast("Invalid Input!");
                 }
             }

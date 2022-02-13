@@ -785,8 +785,8 @@ public class PixelGridView extends View {
                     if (touchedObstacle != null) {
                         Obstacle overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
 
-                        while (overlappingObstacle != null) {
-                            Log.w(TAG, "ACTION_UP: Overlapped ID: " + overlappingObstacle.id);
+                        while (overlappingObstacle != null || !checkPlaceable((column - 1), (convertRow(row) - 1))) {
+                            //Log.w(TAG, "ACTION_UP: Overlapped ID: " + overlappingObstacle.id);
                             column++;
                             overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
                         }
@@ -797,7 +797,7 @@ public class PixelGridView extends View {
                             touchedObstacle.xOnGrid = column - 1;
                             touchedObstacle.yOnGrid = convertRow(row) - 1;
 
-                            bluetooth.write("PLACE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
 //                            int deletedCount = touchedObstacle.id;
 //                            fixCount(deletedCount);
