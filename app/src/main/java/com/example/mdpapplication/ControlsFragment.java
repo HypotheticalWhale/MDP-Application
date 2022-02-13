@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +24,24 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class ControlsFragment extends Fragment {
+    private static final String TAG = "ControlsFragment";
+
     BluetoothConnectionHelper bluetooth;
     String msg;
-    ImageButton sa,sr,sl,f,r,rl,rr;
-    ToggleButton explore,fastest;
+    ImageButton sa, sr, sl, f, r, rl, rr;
+    ToggleButton explore, fastest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        LayoutInflater lf = getActivity().getLayoutInflater();
-        View view = lf.inflate(R.layout.fragment_controls,container,false);
+        return inflater.inflate(R.layout.fragment_controls, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         Context context = getActivity().getApplicationContext();
-        bluetooth = MDPApplication.getBluetooth();;
+        bluetooth = MDPApplication.getBluetooth();
+
         sa = view.findViewById(R.id.send_arena);
         sr = view.findViewById(R.id.s_right);
         sl = view.findViewById(R.id.s_left);
@@ -48,12 +53,12 @@ public class ControlsFragment extends Fragment {
         fastest = view.findViewById(R.id.fastest);
 
         /**
-        *  f - Forward
-        *  b - Reverse
+         *  f - Forward
+         *  b - Reverse
          *  l - turn left
-        *  r - turn right
-        *  s - stop
-        */
+         *  r - turn right
+         *  s - stop
+         */
         sa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +122,41 @@ public class ControlsFragment extends Fragment {
                 bluetooth.write(msg);
             }
         });
+    }
 
-        return view;    }
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop: ");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach: ");
+        super.onDetach();
+    }
 }

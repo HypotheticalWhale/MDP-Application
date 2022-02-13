@@ -20,7 +20,8 @@ import java.util.List;
 
 public class ObstacleView extends View {
     private static final String TAG = "ObstacleGrid";
-    private int numColumns, numRows;
+    private final int numColumns;
+    private final int numRows;
     private int cellWidth, cellHeight;
 
     private final Paint blackPaint = new Paint();
@@ -33,7 +34,7 @@ public class ObstacleView extends View {
     private PixelGridView.Obstacle obstacle;
     private PopupWindow popupWindow;
 
-    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -43,7 +44,7 @@ public class ObstacleView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
-    private Context cachedContext;
+    private final Context cachedContext;
 
     public ObstacleView(Context context) {
         this(context, null);

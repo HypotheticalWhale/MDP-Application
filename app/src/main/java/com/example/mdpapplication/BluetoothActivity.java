@@ -384,12 +384,7 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     private void checkBluetoothOn(){
-        if (bluetoothAdapter.isEnabled()) {
-            bluetoothSwitch.setChecked(true);
-        }
-        else{
-            bluetoothSwitch.setChecked(false);
-        }
+        bluetoothSwitch.setChecked(bluetoothAdapter.isEnabled());
     }
 
     //For Pairing

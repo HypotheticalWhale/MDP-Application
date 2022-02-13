@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MapControlsFragment extends Fragment {
+    private static final String TAG = "MapControlsFragment";
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
 
     private static final List<String> ValidDirection = Arrays.asList( "N", "E", "S", "W");
@@ -36,9 +38,11 @@ public class MapControlsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        LayoutInflater lf = getActivity().getLayoutInflater();
-        View view =  lf.inflate(R.layout.fragment_map_controls, container, false); //pass the correct layout name for the fragment
+        return inflater.inflate(R.layout.fragment_map_controls, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
 
         b_reset = view.findViewById(R.id.b_reset);
         b_set = view.findViewById(R.id.b_set);
@@ -121,9 +125,8 @@ public class MapControlsFragment extends Fragment {
             }
         });
 
-        return view;
     }
-
+    
     private void updateTextInput(){
         int[] curCoords = pixelGrid.getCurCoord();
         x = String.valueOf(curCoords[0]);
@@ -150,4 +153,41 @@ public class MapControlsFragment extends Fragment {
             }
         }
     };
+
+
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop: ");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onDetach() {
+        Log.d(TAG, "onDetach: ");
+        super.onDetach();
+    }
 }

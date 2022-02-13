@@ -487,7 +487,7 @@ public class PixelGridView extends View {
 
         for (Obstacle obstacle : obstacles) {
             if (obstacle.X == column && obstacle.Y == row && obstacle.id != id) {
-                Log.w(TAG, "checkOverlappingObstacle: Column: " + String.valueOf(obstacle.X - (int) 1) + " Row: " + String.valueOf(convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
+                Log.w(TAG, "checkOverlappingObstacle: Column: " + (obstacle.X - (int) 1) + " Row: " + (convertRow(obstacle.Y) - (int) 1) + " ID: " + obstacle.id);
                 touched = obstacle;
                 break;
             }
@@ -754,7 +754,7 @@ public class PixelGridView extends View {
                     column = (int) (event.getX(actionIndex) / cellSize);
                     row = (int) (event.getY(actionIndex) / cellSize);
 
-                    Log.d(TAG, "ACTION_MOVE: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
+                    Log.d(TAG, "ACTION_MOVE: Column: " + (column - (int) 1) + " Row: " + (convertRow(row) - (int) 1));
 
                     touchedObstacle = obstaclePointer.get(pointerId);
 
@@ -777,7 +777,7 @@ public class PixelGridView extends View {
                 column = (int) (event.getX(actionIndex) / cellSize);
                 row = (int) (event.getY(actionIndex) / cellSize);
 
-                Log.d(TAG, "ACTION_UP: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
+                Log.d(TAG, "ACTION_UP: Column: " + (column - (int) 1) + " Row: " + (convertRow(row) - (int) 1));
 
                 touchedObstacle = getTouchedObstacle(column, row);
 
@@ -857,7 +857,7 @@ public class PixelGridView extends View {
             int column = (int) (event.getX() / cellSize);
             int row = (int) (event.getY() / cellSize);
 
-            Log.d(TAG, "onLongPress: Column: " + String.valueOf(column - (int) 1) + " Row: " + String.valueOf(convertRow(row) - (int) 1));
+            Log.d(TAG, "onLongPress: Column: " + (column - (int) 1) + " Row: " + (convertRow(row) - (int) 1));
             final Obstacle[] obstacle = {getTouchedObstacle(column, row)};
             if (obstacle[0] != null) {
                 if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
@@ -1033,5 +1033,5 @@ public class PixelGridView extends View {
         super.onDetachedFromWindow();
         //add your code.
         getContext().unregisterReceiver(mMessageReceiver);
-    };
+    }
 }
