@@ -7,7 +7,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -146,12 +148,20 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        SharedPreferences sharedPref = getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear().commit();
+
         Log.d(TAG, "onStop: ");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SharedPreferences sharedPref = getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear().commit();
+
         Log.d(TAG, "onDestroy: ");
     }
 }

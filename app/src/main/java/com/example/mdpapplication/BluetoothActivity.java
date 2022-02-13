@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -47,6 +48,10 @@ public class BluetoothActivity extends AppCompatActivity {
     TextView deviceStatus;
     View pairedSelected;
 
+    SharedPreferences sharedPref;
+    String connectedDevice;
+    Boolean connected;
+
     ArrayAdapter<String> btArrayAdapter;
 
     BluetoothConnectionHelper bluetooth;
@@ -65,6 +70,13 @@ public class BluetoothActivity extends AppCompatActivity {
         connectingLoadingBar = findViewById(R.id.connectingLoadingBar);
         bluetoothSwitch = findViewById(R.id.btSwitch);
         deviceStatus = findViewById(R.id.deviceStatus);
+
+        sharedPref = getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE);
+
+        connected = sharedPref.getBoolean("DeviceStatus", false);
+        connectedDevice = sharedPref.getString("DeviceConnected", connectedDevice);
+
+        setDeviceStatus(connected, connectedDevice);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -138,6 +150,7 @@ public class BluetoothActivity extends AppCompatActivity {
                     }
                 }
                 if (bluetoothAdapter.isEnabled()) {
+
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     ArrayList<String> devices = new ArrayList<String>();
                     ArrayAdapter pairedArray = new ArrayAdapter(BluetoothActivity.this, android.R.layout.simple_selectable_list_item, devices);
@@ -261,6 +274,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
                     BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
                     bluetooth.setDeviceInfo(btDevice.getName(), btDevice.getAddress());
+                    connectedDevice = btDevice.getName();
                     bluetooth.connectAsClient();
                     pairedSelected = mView;
                     connectingLoadingBar.setVisibility(View.VISIBLE);
@@ -294,26 +308,36 @@ public class BluetoothActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
 
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-                switch (state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        bluetoothSwitch.setChecked(false);
-                        pairedSelected.setEnabled(true);
-                        deviceStatus.setText("DEVICE DISCONNECTED");
-                        deviceStatus.setTextColor(Color.RED);
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        bluetoothSwitch.setChecked(true);
-                        pairedSelected.setEnabled(true);
-                        break;
-                    case BluetoothAdapter.STATE_DISCONNECTED:
-                        deviceStatus.setText("DEVICE DISCONNECTED");
-                        deviceStatus.setTextColor(Color.RED);
-                        pairedSelected.setEnabled(true);
-                        break;
+            try {
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                    final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                            BluetoothAdapter.ERROR);
+                    switch (state) {
+                        case BluetoothAdapter.STATE_OFF:
+                            bluetoothSwitch.setChecked(false);
+                            connected = false;
+                            setDeviceStatus(connected, "");
+                            if(pairedSelected != null){
+                                pairedSelected.setEnabled(true);
+                            }
+                            break;
+                        case BluetoothAdapter.STATE_ON:
+                            bluetoothSwitch.setChecked(true);
+                            if(pairedSelected != null){
+                                pairedSelected.setEnabled(true);
+                            }
+                            break;
+                        case BluetoothAdapter.STATE_DISCONNECTED:
+                            connected = false;
+                            setDeviceStatus(connected, "");
+                            if(pairedSelected != null){
+                                pairedSelected.setEnabled(true);
+                            }
+                            break;
+                    }
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "onReceive: ", e);
             }
         }
     };
@@ -322,16 +346,18 @@ public class BluetoothActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(EVENT_STATE_CONNECTED)){
-                deviceStatus.setText("DEVICE CONNECTED");
-                deviceStatus.setTextColor(Color.GREEN);
-                pairedSelected.setEnabled(false);
-                connectingLoadingBar.setVisibility(View.INVISIBLE);
+                connected = true;
+                setDeviceStatus(connected, connectedDevice);
+                if(pairedSelected != null){
+                    pairedSelected.setEnabled(false);
+                }
             }
             else if(intent.getAction().equals(EVENT_STATE_NONE)){
-                deviceStatus.setText("DEVICE DISCONNECTED");
-                deviceStatus.setTextColor(Color.RED);
-                pairedSelected.setEnabled(true);
-                connectingLoadingBar.setVisibility(View.INVISIBLE);
+                connected = false;
+                setDeviceStatus(connected, "");
+                if(pairedSelected != null){
+                    pairedSelected.setEnabled(true);
+                }
             }
         }
     };
@@ -343,6 +369,18 @@ public class BluetoothActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    private void setDeviceStatus(boolean connect, String deviceName){
+        if(connect){
+            deviceStatus.setText("CONNECTED TO " + deviceName);
+            deviceStatus.setTextColor(Color.GREEN);
+        }
+        else{
+            deviceStatus.setText("DISCONNECTED");
+            deviceStatus.setTextColor(Color.RED);
+        }
+        connectingLoadingBar.setVisibility(View.INVISIBLE);
     }
 
     private void checkBluetoothOn(){
@@ -439,7 +477,13 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
-        Log.d(TAG, "onDestroy: ");
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean("DeviceStatus", connected);
+        editor.putString("DeviceConnected", connectedDevice);
+        editor.commit();
+
+        Log.d(TAG, "onDestroy: DeviceStatus: " + connected);
     }
 }
 

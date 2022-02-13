@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ControlsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/r_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_rotate_left_24" />
+
+            <ImageButton
+                android:id="@+id/forward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_arrow_drop_up_24" />
+
+            <ImageButton
+                android:id="@+id/r_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_rotate_right_24" />
+
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/send_arena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_stadium_24" />
+
+            <TextView
+                android:id="@+id/explorationTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Exploration"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <ToggleButton
+                android:id="@+id/explore"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="Exploration"
+                android:textColor="#00000000"
+                android:textOff="EXPLORE"
+                android:textOn="STOP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_explore_24" />
+            <ImageButton
+                android:id="@+id/explorationResetImgBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/s_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_arrow_left_24" />
+
+
+            <ImageButton
+                android:id="@+id/reverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_arrow_drop_down_24" />
+
+            <ImageButton
+                android:id="@+id/s_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_arrow_right_24" />
+
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="match_parent" />
+
+            <ToggleButton
+                android:id="@+id/fastest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:text="FASTEST"
+                android:textColor="#00000000"
+                android:textOff="FASTEST"
+                android:textOn="STOP"
+                android:layout_marginBottom="5dp"
+                />
+
+            <TextView
+                android:id="@+id/fastestPathTimeTextView"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="00:00"
+                android:textSize="26sp" />
+            <ImageButton
+                android:id="@+id/fastestPathResetImgBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</FrameLayout>
