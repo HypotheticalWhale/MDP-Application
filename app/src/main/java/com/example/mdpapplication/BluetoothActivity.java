@@ -267,7 +267,7 @@ public class BluetoothActivity extends AppCompatActivity {
             bluetoothAdapter.cancelDiscovery();
             if (mView.isEnabled()) {
                 String mDeviceInfo = ((TextView) mView).getText().toString();
-                if (mDeviceInfo != "None Paired") {
+                if (!mDeviceInfo.equals("None Paired")) {
                     String mDeviceAddress = mDeviceInfo
                             .substring(mDeviceInfo.length() - 17);
                     Log.v(TAG, "Device_Address " + mDeviceAddress);
