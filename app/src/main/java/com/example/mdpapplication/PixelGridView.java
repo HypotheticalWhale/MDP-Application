@@ -533,6 +533,20 @@ public class PixelGridView extends View {
         return false;
     }
 
+    private boolean checkPlaceable(int X, int Y) {
+        Log.d(TAG, "checkPlaceable: startX: " + X + " startY:" + Y);
+
+        int startX = robot.getXArray()[0];
+        int startY = robot.getYArray()[0];
+        int endX = robot.getXArray()[1];
+        int endY = robot.getYArray()[1];
+
+        return (startX != X || endY != Y) &&
+                (startX != X || startY != Y) &&
+                (endX != X || endY != Y) &&
+                (endX != X || startY != Y);
+    }
+
     private void createCell() {
         cells = new Cell[numColumns + 1][numRows + 1];
         cellSize = getWidth() / (numColumns + 1);
@@ -695,7 +709,7 @@ public class PixelGridView extends View {
                 row = (int) (event.getY() / cellSize);
 
                 // check if we"ve touched inside some Obstacle
-                if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+                if (column > 0 && column <= numColumns && row >= 0 && row < numRows && checkPlaceable((column - 1), (convertRow(row) - 1))) {
                     touchedObstacle = obtainTouchedObstacle(column, row);
                     touchedObstacle.X = column;
                     touchedObstacle.Y = row;
@@ -776,26 +790,29 @@ public class PixelGridView extends View {
                             column++;
                             overlappingObstacle = checkOverlappingObstacle(column, row, touchedObstacle.id);
                         }
-                        if (column > 0 && column <= numColumns && row >= 0 && row < numRows) {
+
+                        if (column > 0 && column <= numColumns && row >= 0 && row < numRows && checkPlaceable((column - 1), (convertRow(row) - 1))) {
                             touchedObstacle.Y = row;
                             touchedObstacle.X = column;
                             touchedObstacle.xOnGrid = column - 1;
                             touchedObstacle.yOnGrid = convertRow(row) - 1;
 
-                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+                            bluetooth.write("PLACE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
-                            int deletedCount = touchedObstacle.id;
-                            //fixCount(deletedCount);
+//                            int deletedCount = touchedObstacle.id;
+//                            fixCount(deletedCount);
+//                            counter--;
                             obstacles.remove(touchedObstacle);
-                            //counter--;
+                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
                     if (touchedObstacle != null) {
-                        int deletedCount = touchedObstacle.id;
-                        //fixCount(deletedCount);
+//                        int deletedCount = touchedObstacle.id;
+//                        fixCount(deletedCount);
+//                        counter--;
                         obstacles.remove(touchedObstacle);
-                        //counter--;
+                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
                 }
 
@@ -875,7 +892,7 @@ public class PixelGridView extends View {
                         public void onDismiss() {
                             obstacle[0] = obstacleGrid.getObstacle();
                             Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
-                            bluetooth.write("{X: " + obstacle[0].X + ", Y:" + obstacle[0].Y + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
+                            bluetooth.write("DIRECTION {X: " + obstacle[0].xOnGrid + ", Y:" + obstacle[0].yOnGrid + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
                             invalidate();
                         }
                     });
