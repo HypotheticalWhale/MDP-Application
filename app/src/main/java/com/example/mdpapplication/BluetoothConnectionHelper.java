@@ -13,12 +13,10 @@ import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,9 +127,7 @@ public class BluetoothConnectionHelper extends Service {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mContext = context;
 
-        mHandler = new Handler(){
-
-            @SuppressLint("HandlerLeak")
+        mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg){
                 super.handleMessage(msg);

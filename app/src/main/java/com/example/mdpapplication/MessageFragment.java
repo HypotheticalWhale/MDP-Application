@@ -7,20 +7,16 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.Html;
-import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.AlignmentSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;

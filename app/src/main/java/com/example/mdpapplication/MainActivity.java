@@ -99,7 +99,6 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth) {
             Log.d(TAG, "onOptionsItemSelected: Going to Bluetooth Page");
             Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);

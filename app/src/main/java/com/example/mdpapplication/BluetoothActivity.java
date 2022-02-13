@@ -153,7 +153,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     ArrayList<String> devices = new ArrayList<String>();
-                    ArrayAdapter pairedArray = new ArrayAdapter(BluetoothActivity.this, android.R.layout.simple_selectable_list_item, devices);
+                    ArrayAdapter<String>  pairedArray = new ArrayAdapter<>(BluetoothActivity.this, android.R.layout.simple_selectable_list_item, devices);
                     pairedList.setAdapter(pairedArray);
                     pairedList.setOnItemClickListener(mPairedDeviceClickListener);
 
