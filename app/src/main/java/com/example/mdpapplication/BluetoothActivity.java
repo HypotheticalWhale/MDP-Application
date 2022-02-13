@@ -362,10 +362,10 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     };
 
-    private boolean checkExist(ArrayAdapter a, String exist) {
+    private boolean checkExist(ArrayAdapter<String> a, String exist) {
         int count = a.getCount();
         for (int i = 0; i < count; i++) {
-            if (a.getItem(i) == exist)
+            if (a.getItem(i).equals(exist))
                 return true;
         }
         return false;
