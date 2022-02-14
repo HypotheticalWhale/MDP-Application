@@ -147,17 +147,19 @@ public class BluetoothConnectionHelper extends Service {
 
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
 
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
-
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
                         }
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
                         }
                         else if(ValidRobotCommands.contains(receivedMessage)){
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
                         }
+
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
@@ -165,9 +167,11 @@ public class BluetoothConnectionHelper extends Service {
                         Log.d(TAG, "handleMessage: MESSAGE_SENT: " + sentMessage);
 
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
+
                         if(ValidRobotCommands.contains(sentMessage)){
                             sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
                         }
+
                         break;
                     case MESSAGE_TOAST:
                         String toastMessage = (String) msg.obj;
