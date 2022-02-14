@@ -53,7 +53,6 @@ public class BluetoothConnectionHelper extends Service {
     public static final int STATE_CONNECTED = 3; //connected to a device
 
     //For broadcast event
-    public static final String EVENT_DEVICE_LIST_UPDATED = "com.event.DEVICE_LIST_UPDATED";
     public static final String EVENT_STATE_NONE = "com.event.EVENT_STATE_NONE";
     public static final String EVENT_STATE_LISTEN = "com.event.EVENT_STATE_LISTEN";
     public static final String EVENT_STATE_CONNECTING = "com.event.EVENT_STATE_CONNECTING";
@@ -129,8 +128,8 @@ public class BluetoothConnectionHelper extends Service {
     /** Constructor
      *
      * */
-    public BluetoothConnectionHelper() {
-    }
+    public BluetoothConnectionHelper() { }
+
     public BluetoothConnectionHelper(Context context){
         super();
         arrayList = new ArrayList<String>();
@@ -147,6 +146,7 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = receivedMessage.trim();
 
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
+                        Log.d(TAG, "handleMessage: MESSAGE_READ: msg.obj: " + msg.describeContents());
 
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
 
@@ -163,6 +163,7 @@ public class BluetoothConnectionHelper extends Service {
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
                         Log.d(TAG, "handleMessage: MESSAGE_SENT: " + sentMessage);
+                        Log.d(TAG, "handleMessage: MESSAGE_SENT: msg.obj: " + msg.describeContents());
 
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
                         if(ValidRobotCommands.contains(sentMessage)){
@@ -180,25 +181,6 @@ public class BluetoothConnectionHelper extends Service {
         };
     }
 
-    /** Service LifeCycle
-     *
-     */
-    @Override
-    public void onCreate(){
-        super.onCreate();
-        //Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        mContext.registerReceiver(mReceiver, filter);
-    }
-
-    @Override
-    public void onDestroy(){
-        try{
-            unregisterReceiver(mReceiver);
-        }catch (IllegalArgumentException e){
-        }
-        super.onDestroy();
-    }
 
     /** Setter and Getters
      *
@@ -212,15 +194,6 @@ public class BluetoothConnectionHelper extends Service {
         if (mBluetoothAdapter.isDiscovering()){
             mBluetoothAdapter.cancelDiscovery();
         }
-
-        //clear listedDevice
-        arrayList = new ArrayList<String>();
-        arrayList.add(deviceName + "\n" + MACAddress);
-        pairDevice(mBluetoothAdapter.getRemoteDevice(MACAddress));
-    }
-
-    public ArrayList<String> getDeviceList(){
-        return BluetoothConnectionHelper.arrayList;
     }
 
     public int getState(){
@@ -231,59 +204,9 @@ public class BluetoothConnectionHelper extends Service {
         return receivedMessage;
     }
 
-    @SuppressLint("MissingPermission")
-    public void turnOffBT(){
-        if (mBluetoothAdapter.isEnabled()){
-            mBluetoothAdapter.disable();
-        }
-        arrayList = new ArrayList<String>();
-        sendIntentBroadcast(EVENT_DEVICE_LIST_UPDATED);
-        reconnectAttempt = -1;
-        isServer = false;
-    }
-
     /** Handle button clicks from BluetoothConnection
      *
      */
-
-    @SuppressLint("MissingPermission")
-    public void performDiscovery(){
-        //clear deviceInfo
-        targetDeviceName = "";
-        targetMACAddress = "";
-        connectedDeviceName = "";
-        connectedMACAddress = "";
-
-        //clear listedDevice
-        arrayList = new ArrayList<String>();
-
-        if (mBluetoothAdapter == null){
-            mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
-                    BLUETOOTH_NOT_SUPPORTED).sendToTarget();
-            return;
-        }
-
-        if (!mBluetoothAdapter.isEnabled()){
-            mHandler.obtainMessage(MESSAGE_TOAST, 1, -1,
-                    BLUETOOTH_NOT_ENABLED).sendToTarget();
-            return;
-        }
-
-        if (mBluetoothAdapter.isDiscovering()){
-            mBluetoothAdapter.cancelDiscovery();
-        }
-
-        //List paired device in ListView, Bluetooth must be on
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0){
-            for (BluetoothDevice device : pairedDevices){
-                arrayList.add(device.getName()+"\n"+device.getAddress());
-            }
-            sendIntentBroadcast(EVENT_DEVICE_LIST_UPDATED);
-        }
-        //List non-paired devices
-        mBluetoothAdapter.startDiscovery();
-    }
 
     public void connectAsServer(){
         isServer = true;
@@ -531,23 +454,6 @@ public class BluetoothConnectionHelper extends Service {
         }
     }
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver(){
-
-        @SuppressLint("MissingPermission")
-        @Override
-        public void onReceive(Context context, @NonNull Intent intent){
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)){
-                BluetoothDevice device = intent.getParcelableExtra(
-                        BluetoothDevice.EXTRA_DEVICE);
-                if (device.getBondState() != BluetoothDevice.BOND_BONDED){
-                    arrayList.add(device.getName()+"\n"+device.getAddress());
-                }
-                sendIntentBroadcast(EVENT_DEVICE_LIST_UPDATED);
-            }
-        }
-    };
-
     private class AcceptThread extends Thread{
         @Nullable
         private final BluetoothServerSocket mmServerSocket;
@@ -717,23 +623,6 @@ public class BluetoothConnectionHelper extends Service {
         }
 
     }//end of connectedThread
-
-    private void pairDevice(@NonNull BluetoothDevice device){
-        try{
-            Method method = device.getClass().getMethod("createBond", (Class[])null);
-            method.invoke(device, (Object[]) null);
-        }catch(Exception e){
-        }
-    }
-
-    //wont be using this
-    private void unpairDevice(@NonNull BluetoothDevice device){
-        try{
-            Method method = device.getClass().getMethod("removeBond", (Class[])null);
-            method.invoke(device, (Object[]) null);
-        }catch(Exception e){
-        }
-    }
 
     private void sendIntentBroadcast(String eventCode){
         Intent intent = new Intent();

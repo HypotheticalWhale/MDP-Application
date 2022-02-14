@@ -25,9 +25,16 @@
             android:id="@+id/btSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
             android:text="@string/bluetooth" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
         <Space
             android:layout_width="match_parent"
@@ -35,11 +42,19 @@
 
         <TextView
             android:id="@+id/deviceStatus"
+            style="@style/Widget.Material3.CheckedTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/device_disconnected"
             android:textAlignment="center"
             android:textColor="#FF0000" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
         <Space
             android:layout_width="match_parent"
@@ -77,8 +92,15 @@
             android:id="@+id/pairedList"
             android:layout_width="match_parent"
             android:layout_height="215dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
         <Space
             android:layout_width="match_parent"
@@ -104,8 +126,15 @@
             android:id="@+id/scannedList"
             android:layout_width="match_parent"
             android:layout_height="215dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
     </LinearLayout>
 
