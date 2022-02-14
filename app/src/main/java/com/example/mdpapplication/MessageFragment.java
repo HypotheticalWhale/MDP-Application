@@ -29,7 +29,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class message extends Fragment {
+public class MessageFragment extends Fragment {
     private static final String TAG = "message";
 
     Button b_send, b_clear;

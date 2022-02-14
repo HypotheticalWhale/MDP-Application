@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controls">
+    tools:context=".ControlFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,8 +71,7 @@
                 android:textOff="EXPLORE"
                 android:textOn="STOP"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_explore_24" />
+                android:layout_height="wrap_content" />
             <ImageButton
                 android:id="@+id/explorationResetImgBtn"
                 android:layout_width="wrap_content"
@@ -92,7 +91,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_arrow_left_24" />
-
 
             <ImageButton
                 android:id="@+id/reverse"
@@ -125,6 +123,14 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_rotate_right_24"
                 android:visibility="invisible" />
+            <TextView
+                android:id="@+id/fastestPathTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Fastest Path"
+                android:textSize="18sp"
+                android:textStyle="bold" />
             <ToggleButton
                 android:id="@+id/fastest"
                 android:layout_width="wrap_content"
@@ -136,17 +142,7 @@
                 android:textOff="FASTEST"
                 android:textOn="STOP"
                 android:layout_marginBottom="5dp"
-                />
-            <TextView
-                android:id="@+id/fastestPathTimeTextView"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="00:00"
-                android:textSize="26sp" />
+                />/
             <ImageButton
                 android:id="@+id/fastestPathResetImgBtn"
                 android:layout_width="wrap_content"
@@ -155,7 +151,9 @@
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent" />
         </LinearLayout>
-
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="70dp" />
 
 
     </LinearLayout>

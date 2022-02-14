@@ -15,7 +15,7 @@ import android.widget.Button;
 
 import com.google.android.material.textfield.TextInputLayout;
 
-public class mapControls extends Fragment {
+public class MapFragment extends Fragment {
 
     BluetoothConnectionHelper bluetooth;
     TextInputLayout corrInput;

@@ -33,7 +33,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MDPApplication" >
         <activity
-            android:name=".ApplicationActivity"
+            android:name=".BluetoothActivity"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
