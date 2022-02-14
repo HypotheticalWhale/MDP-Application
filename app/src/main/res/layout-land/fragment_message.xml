@@ -44,7 +44,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Message" />
+                    android:hint="@string/message" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:text="Clear Message Log"
+            android:text="@string/clear_message_log"
             tools:layout_editor_absoluteX="6dp"
             tools:layout_editor_absoluteY="177dp" />
 

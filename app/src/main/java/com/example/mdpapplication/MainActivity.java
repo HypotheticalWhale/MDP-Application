@@ -149,9 +149,6 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        SharedPreferences sharedPref = getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.clear().commit();
 
         Log.d(TAG, "onStop: ");
     }

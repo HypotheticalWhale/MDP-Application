@@ -373,11 +373,11 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private void setDeviceStatus(boolean connect, String deviceName){
         if(connect){
-            deviceStatus.setText("CONNECTED TO " + deviceName);
+            deviceStatus.setText("CONNECTED TO" + deviceName);
             deviceStatus.setTextColor(Color.GREEN);
         }
         else{
-            deviceStatus.setText("DISCONNECTED");
+            deviceStatus.setText(R.string.device_disconnected);
             deviceStatus.setTextColor(Color.RED);
         }
         connectingLoadingBar.setVisibility(View.INVISIBLE);
