@@ -78,6 +78,9 @@ public class BluetoothActivity extends AppCompatActivity {
 
         setDeviceStatus(connected, connectedDevice);
 
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.clear().commit();
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         ActionBar actionBar = getSupportActionBar();

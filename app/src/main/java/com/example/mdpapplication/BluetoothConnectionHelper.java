@@ -146,7 +146,6 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = receivedMessage.trim();
 
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
-                        Log.d(TAG, "handleMessage: MESSAGE_READ: msg.obj: " + msg.describeContents());
 
                         sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
 
@@ -162,8 +161,8 @@ public class BluetoothConnectionHelper extends Service {
                         break;
                     case MESSAGE_SENT:
                         String sentMessage = new String((byte[])msg.obj);
+
                         Log.d(TAG, "handleMessage: MESSAGE_SENT: " + sentMessage);
-                        Log.d(TAG, "handleMessage: MESSAGE_SENT: msg.obj: " + msg.describeContents());
 
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
                         if(ValidRobotCommands.contains(sentMessage)){

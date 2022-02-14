@@ -207,12 +207,12 @@ public class MessageFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         String log = Html.toHtml(msgLog, 0);
-        Log.d(TAG, "onSaveInstanceState: before: \n" + log);
+
         if (log.length() != 0) {
             log = log.replace("<p dir=\"ltr\">", "");
             log = log.replace("</p>", "");
         }
-        Log.d(TAG, "onSaveInstanceState: after: \n" + log);
+
         savedInstanceState.putString(STATE_LOG, log);
 
         // Always call the superclass so it can save the view hierarchy state
