@@ -25,9 +25,16 @@
             android:id="@+id/btSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
             android:text="@string/bluetooth" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
         <Space
             android:layout_width="match_parent"
@@ -37,9 +44,20 @@
             android:id="@+id/deviceStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/device_disconnected" />
+            android:text="@string/device_disconnected"
             android:textAlignment="center"
             android:textColor="#FF0000" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="?android:attr/listDivider" />
 
         <Space
             android:layout_width="match_parent"
@@ -94,6 +112,12 @@
 
             </LinearLayout>
 
+            <View
+                android:id="@+id/divider"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="?android:attr/listDivider" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -103,6 +127,7 @@
                     android:id="@+id/btn_scan"
                     android:layout_width="230dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:text="@string/scan_for_devices" />
 
