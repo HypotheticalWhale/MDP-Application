@@ -17,9 +17,9 @@ public class FragmentAdapter extends FragmentStateAdapter {
 
         switch (position){
             case 1:
-                return new ControlFragment();
+                return new ControlsFragment();
             case 2:
-                return new MapFragment();
+                return new MapControlsFragment();
         }
         return new MessageFragment();
     }
