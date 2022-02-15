@@ -143,8 +143,6 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = receivedMessage.trim();
                         boolean contains = Arrays.stream(ValidTargetStrings).anyMatch("s"::equals);
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
-
-
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
                         }
