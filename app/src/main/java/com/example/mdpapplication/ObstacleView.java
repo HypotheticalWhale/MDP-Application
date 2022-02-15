@@ -15,12 +15,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class ObstacleView extends View {
     private static final String TAG = "ObstacleGrid";
-    private int numColumns, numRows;
+    private final int numColumns;
+    private final int numRows;
     private int cellWidth, cellHeight;
 
     private final Paint blackPaint = new Paint();
@@ -28,12 +31,13 @@ public class ObstacleView extends View {
     private final Paint yellowPaint = new Paint();
     private final Paint targetScannedColor = new Paint();
 
+    @NonNull
     private final GestureDetector gestureDetector;
 
     private PixelGridView.Obstacle obstacle;
     private PopupWindow popupWindow;
 
-    private static List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -43,19 +47,21 @@ public class ObstacleView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
-    private Context cachedContext;
+    @NonNull
+    private final Context cachedContext;
 
-    public ObstacleView(Context context) {
+    public ObstacleView(@NonNull Context context) {
         this(context, null);
     }
 
-    public ObstacleView(Context context, AttributeSet attrs) {
+    public ObstacleView(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PixelGridView,
                 0, 0);
         this.numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
         this.numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+        typedArray.recycle();
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         whitePaint.setColor(Color.WHITE);
@@ -108,7 +114,7 @@ public class ObstacleView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         canvas.drawColor(Color.WHITE);
 
         if (numColumns == 0 || numRows == 0) {
@@ -155,7 +161,7 @@ public class ObstacleView extends View {
         }
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(@NonNull MotionEvent e1, @NonNull MotionEvent e2, float velocityX, float velocityY) {
             boolean result = false;
             try {
                 float diffY = e2.getY() - e1.getY();

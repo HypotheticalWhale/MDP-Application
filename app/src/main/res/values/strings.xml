@@ -11,7 +11,21 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="Bluetooth">Bluetooth</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="device_disconnected">DEVICE DISCONNECTED</string>
+    <string name="make_device_discoverable">Make Device Discoverable</string>
+    <string name="show_paired_devices">Show Paired Devices</string>
+    <string name="scan_for_devices">Scan for Devices</string>
+    <string name="message">Message</string>
+    <string name="control_panel">Control Panel</string>
+    <string name="maps_controls">Maps Controls</string>
+    <string name="x">X</string>
+    <string name="y">Y</string>
+    <string name="robot_direction">Robot Direction</string>
+    <string name="plot_robot">Plot Robot</string>
+    <string name="reset">Reset</string>
+    <string name="clear_message_log">Clear Message Log</string>
 </resources>

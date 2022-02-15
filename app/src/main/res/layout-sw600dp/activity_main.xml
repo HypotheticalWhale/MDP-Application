@@ -10,8 +10,8 @@
 
     <com.example.mdpapplication.PixelGridView
         android:id="@+id/pixelGrid"
-        android:layout_width="0dp"
-        android:layout_height="400dp"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
         android:layout_weight="1"
         app:columns="20"
         app:layout_constraintBottom_toTopOf="@+id/tabLayout"
