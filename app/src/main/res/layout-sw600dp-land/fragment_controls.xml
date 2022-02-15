@@ -101,6 +101,15 @@
                 android:layout_width="32dp"
                 android:layout_height="match_parent" />
 
+            <TextView
+                android:id="@+id/fastestPathTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Fastest Path"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
             <ToggleButton
                 android:id="@+id/fastest"
                 android:layout_width="wrap_content"
@@ -114,16 +123,6 @@
                 android:layout_marginBottom="5dp"
                 />
 
-            <TextView
-                android:id="@+id/fastestPathTimeTextView"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="00:00"
-                android:textSize="26sp" />
             <ImageButton
                 android:id="@+id/fastestPathResetImgBtn"
                 android:layout_width="wrap_content"
@@ -131,9 +130,8 @@
                 android:layout_marginBottom="28dp"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent" />
+
         </LinearLayout>
-
-
 
     </LinearLayout>
 

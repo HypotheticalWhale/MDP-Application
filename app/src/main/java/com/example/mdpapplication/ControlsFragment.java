@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class ControlsFragment extends Fragment {
@@ -20,6 +22,7 @@ public class ControlsFragment extends Fragment {
     String msg;
     ImageButton sa, sr, sl, f, r, rl, rr;
     ToggleButton explore, fastest;
+    TextView exploreText,fastestText;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -41,6 +44,9 @@ public class ControlsFragment extends Fragment {
         rr = view.findViewById(R.id.r_right);
         explore = view.findViewById(R.id.explore);
         fastest = view.findViewById(R.id.fastest);
+
+        exploreText = view.findViewById(R.id.explorationTitleTextView);
+        fastestText  = view.findViewById(R.id.fastestPathTitleTextView);
 
         /**
          *  f - Forward
@@ -98,18 +104,48 @@ public class ControlsFragment extends Fragment {
                 bluetooth.write(msg);
             }
         });
-        explore.setOnClickListener(new View.OnClickListener() {
+        explore.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
-            public void onClick(View v) {
-                msg = "beginExplore";
-                bluetooth.write(msg);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    msg = "beginExplore";
+                    bluetooth.write(msg);
+                    if(exploreText.getText().equals("Exploration")){
+                        exploreText.setText("Exploring");
+                    }
+                    if(exploreText.getText().equals("Exploration Stopped")){
+                        exploreText.setText("Exploring");
+                    }
+                }
+                else{
+                    msg = "stopExplore";
+                    bluetooth.write(msg);
+                    if(exploreText.getText().equals("Exploring")){
+                        exploreText.setText("Exploration Stopped");
+                    }
+                }
             }
         });
-        fastest.setOnClickListener(new View.OnClickListener() {
+        fastest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
-            public void onClick(View v) {
-                msg = "beginFastest";
-                bluetooth.write(msg);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    msg = "beginFastest";
+                    bluetooth.write(msg);
+                    if(fastestText.getText().equals("Fastest Path")){
+                        fastestText.setText("Fastest Pathing");
+                    }
+                    if(fastestText.getText().equals("Fastest Stopped")){
+                        fastestText.setText("Fastest Pathing");
+                    }
+                }
+                else{
+                    msg = "stopFastest";
+                    bluetooth.write(msg);
+                    if(fastestText.getText().equals("Fastest Pathing")){
+                        fastestText.setText("Fastest Stopped");
+                    }
+                }
             }
         });
     }
