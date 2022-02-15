@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -92,7 +94,15 @@ public class BluetoothConnectionHelper extends Service {
     private static String connectedDeviceName = "";
     private static int reconnectAttempt = 0;
     private static boolean isServer = false;
-
+    private static String[] ValidTargetStrings = {"Alphabet_A", "Alphabet_B", "Alphabet_C",
+            "Alphabet_D", "Alphabet_E", "Alphabet_F",
+            "Alphabet_G", "Alphabet_H", "Alphabet_S",
+            "Alphabet_T", "Alphabet_U", "Alphabet_V",
+            "Alphabet_W", "Alphabet_X", "Alphabet_Y",
+            "Alphabet_Z", "down_arrow",
+            "eight", "five", "four", "left_arrow",
+            "nine", "one", "right_arrow", "seven",
+            "six", "stop", "three", "two", "up_arrow"};
     //For auto connection to remote device
     private static final String RPIMACAddress = "";
     private static final String RPIDeviceName = "";
@@ -121,7 +131,6 @@ public class BluetoothConnectionHelper extends Service {
         arrayList = new ArrayList<String>();
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         mContext = context;
-
         mHandler = new Handler(){
 
             @SuppressLint("HandlerLeak")
@@ -132,10 +141,9 @@ public class BluetoothConnectionHelper extends Service {
                     case MESSAGE_READ:
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
-
+                        boolean contains = Arrays.stream(ValidTargetStrings).anyMatch("s"::equals);
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
 
-                        sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
 
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
@@ -143,8 +151,8 @@ public class BluetoothConnectionHelper extends Service {
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
                         }
-                        else{
-                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                        else if(contains){
+                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_SEND_MOVEMENT);
                         }
                         break;
                     case MESSAGE_SENT:
