@@ -2,6 +2,7 @@ package com.example.mdpapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -10,6 +11,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -24,10 +26,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.lang.reflect.Method;
@@ -53,6 +57,7 @@ public class BluetoothActivity extends AppCompatActivity {
     Boolean connected;
 
     ArrayAdapter<String> btArrayAdapter;
+    ArrayAdapter<String> pairedArray;
 
     BluetoothConnectionHelper bluetooth;
 
@@ -156,9 +161,10 @@ public class BluetoothActivity extends AppCompatActivity {
 
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
                     ArrayList<String> devices = new ArrayList<String>();
-                    ArrayAdapter<String>  pairedArray = new ArrayAdapter<>(BluetoothActivity.this, android.R.layout.simple_selectable_list_item, devices);
+                    pairedArray = new ArrayAdapter<>(BluetoothActivity.this, android.R.layout.simple_selectable_list_item, devices);
                     pairedList.setAdapter(pairedArray);
                     pairedList.setOnItemClickListener(mPairedDeviceClickListener);
+                    pairedList.setOnItemLongClickListener(mPairedDeviceLongClickListener);
 
                     if (pairedDevices.size() > 0) {
                         for (BluetoothDevice mDevice : pairedDevices) {
@@ -173,7 +179,6 @@ public class BluetoothActivity extends AppCompatActivity {
                     showToast("Bluetooth is not on!");
                 }
             }
-
         });
 
         btn_discover.setOnClickListener(new View.OnClickListener() {
@@ -286,6 +291,98 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     };
 
+    private final AdapterView.OnItemLongClickListener mPairedDeviceLongClickListener = new AdapterView.OnItemLongClickListener() {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(BluetoothActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+                    return false;
+                }
+            }
+
+            String mDeviceInfo = ((TextView) view).getText().toString();
+            String mDeviceAddress = mDeviceInfo
+                    .substring(mDeviceInfo.length() - 17);
+            BluetoothDevice btDevice = bluetoothAdapter.getRemoteDevice(mDeviceAddress);
+
+            new MaterialAlertDialogBuilder(BluetoothActivity.this)
+                    .setTitle("Unpair device?")
+                    .setMessage("Are you sure you want to unpair with " + btDevice.getName() + "?")
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    })
+                    .setPositiveButton("Unpair device", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            unpairDevice(btDevice);
+                            pairedArray.remove(mDeviceInfo);
+                            pairedArray.notifyDataSetChanged();
+                        }
+                    })
+                    .show();
+
+//            PopupMenu popup = new PopupMenu(BluetoothActivity.this, view);
+//            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                @Override
+//                public boolean onMenuItemClick(MenuItem item) {
+//                    switch (item.getItemId()) {
+//                        case R.id.disconnect:
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                                if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+//                                    ActivityCompat.requestPermissions(BluetoothActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+//                                    return false;
+//                                }
+//                            }
+//                            new MaterialAlertDialogBuilder(BluetoothActivity.this)
+//                                    .setTitle("Disconnect device?")
+//                                    .setMessage("Are you sure you want to disconnect with " + btDevice.getName() + "?")
+//                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog, int id) {
+//                                        }
+//                                    })
+//                                    .setPositiveButton("Disconnect device", new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog, int id) {
+//                                            bluetooth.disconnect();
+//                                        }
+//                                    })
+//                                    .show();
+//                            return true;
+//                        case R.id.unpair:
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                                if (ActivityCompat.checkSelfPermission(BluetoothActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+//                                    ActivityCompat.requestPermissions(BluetoothActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
+//                                    return false;
+//                                }
+//                            }
+//                            new MaterialAlertDialogBuilder(BluetoothActivity.this)
+//                                    .setTitle("Unpair device?")
+//                                    .setMessage("Are you sure you want to unpair with " + btDevice.getName() + "?")
+//                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog, int id) {
+//                                        }
+//                                    })
+//                                    .setPositiveButton("Unpair device", new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog, int id) {
+//                                            unpairDevice(btDevice);
+//                                            pairedArray.remove(mDeviceInfo);
+//                                            pairedArray.notifyDataSetChanged();
+//                                        }
+//                                    })
+//                                    .show();
+//                            return true;
+//                        default:
+//                            return false;
+//                    }
+//                }
+//            });
+//            popup.inflate(R.menu.popup_menu);
+//            popup.show();
+
+            return true;
+        }
+    };
+
     private final BroadcastReceiver ActionFoundReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, @NonNull Intent intent) {
@@ -320,23 +417,18 @@ public class BluetoothActivity extends AppCompatActivity {
                             bluetoothSwitch.setChecked(false);
                             connected = false;
                             setDeviceStatus(connected, "");
-                            if(pairedSelected != null){
-                                pairedSelected.setEnabled(true);
-                            }
+
                             break;
                         case BluetoothAdapter.STATE_ON:
                             bluetoothSwitch.setChecked(true);
-                            if(pairedSelected != null){
-                                pairedSelected.setEnabled(true);
-                            }
                             break;
                         case BluetoothAdapter.STATE_DISCONNECTED:
                             connected = false;
                             setDeviceStatus(connected, "");
-                            if(pairedSelected != null){
-                                pairedSelected.setEnabled(true);
-                            }
                             break;
+                    }
+                    if(pairedSelected != null){
+                        //pairedSelected.setEnabled(true);
                     }
                 }
             } catch (Exception e) {
@@ -352,14 +444,14 @@ public class BluetoothActivity extends AppCompatActivity {
                 connected = true;
                 setDeviceStatus(connected, connectedDevice);
                 if(pairedSelected != null){
-                    pairedSelected.setEnabled(false);
+                    //pairedSelected.setEnabled(false);
                 }
             }
             else if(intent.getAction().equals(EVENT_STATE_NONE)){
                 connected = false;
                 setDeviceStatus(connected, "");
                 if(pairedSelected != null){
-                    pairedSelected.setEnabled(true);
+                    //pairedSelected.setEnabled(true);
                 }
             }
         }
@@ -376,7 +468,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private void setDeviceStatus(boolean connect, String deviceName){
         if(connect){
-            deviceStatus.setText("CONNECTED TO" + deviceName);
+            deviceStatus.setText("CONNECTED TO " + deviceName);
             deviceStatus.setTextColor(Color.GREEN);
         }
         else{

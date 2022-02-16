@@ -463,6 +463,18 @@ public class BluetoothConnectionHelper extends Service {
         }
     }
 
+    public void disconnect(){
+        ConnectedThread r;
+        synchronized(obj){
+            if (mState != STATE_CONNECTED){
+                showToast("Device is not connected to any remote device");
+                return;
+            }
+            r = mConnectedThread;
+        }
+        r.cancel();
+    }
+
     private class AcceptThread extends Thread{
         @Nullable
         private final BluetoothServerSocket mmServerSocket;
@@ -522,7 +534,8 @@ public class BluetoothConnectionHelper extends Service {
             this.mmDevice = device;
             BluetoothSocket tmp = null;
             try{
-                tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+//                tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
             }catch(Exception e){
             }
             mmSocket = tmp;
@@ -625,9 +638,20 @@ public class BluetoothConnectionHelper extends Service {
         }
 
         public void cancel(){
-            try{
-                mmSocket.close();
-            }catch(IOException e){
+//            try{
+//                mmSocket.close();
+//            }catch(IOException e){
+//            }
+            if (mmInStream != null) {
+                try {mmInStream.close();} catch (Exception e) {}
+            }
+
+            if (mmOutStream != null) {
+                try {mmOutStream.close();} catch (Exception e) {}
+            }
+
+            if (mmSocket != null) {
+                try {mmSocket.close();} catch (Exception e) {}
             }
         }
 
