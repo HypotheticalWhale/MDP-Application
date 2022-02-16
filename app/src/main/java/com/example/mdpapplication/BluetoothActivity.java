@@ -19,7 +19,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -120,10 +122,12 @@ public class BluetoothActivity extends AppCompatActivity {
                         return;
                     }
                 }
+
                 if (bluetoothSwitch.isChecked()) {
                     showToast("Turning On Bluetooth...");
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivity(intent);
+//                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//                    startActivity(intent);
+                    bluetoothAdapter.enable();
                 } else {
                     bluetoothAdapter.disable();
                     showToast("Turning Off Bluetooth...");
@@ -322,7 +326,7 @@ public class BluetoothActivity extends AppCompatActivity {
                     })
                     .show();
 
-//            PopupMenu popup = new PopupMenu(BluetoothActivity.this, view);
+//            PopupMenu popup = new PopupMenu(BluetoothActivity.this, view, Gravity.RIGHT);
 //            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 //                @Override
 //                public boolean onMenuItemClick(MenuItem item) {
