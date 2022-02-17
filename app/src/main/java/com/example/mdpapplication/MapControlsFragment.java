@@ -32,7 +32,7 @@ public class MapControlsFragment extends Fragment {
     BluetoothConnectionHelper bluetooth;
     TextInputLayout xInput, yInput, directionInput;
     PixelGridView pixelGrid;
-    Button b_reset, b_set;
+    Button b_reset, b_set, btn_test;
     String x,y,robotDirection;
 
 
@@ -47,6 +47,7 @@ public class MapControlsFragment extends Fragment {
 
         b_reset = view.findViewById(R.id.b_reset);
         b_set = view.findViewById(R.id.b_set);
+        btn_test = view.findViewById(R.id.btn_test);
 
         xInput = view.findViewById(R.id.xInput);
         yInput = view.findViewById(R.id.yInput);
@@ -123,6 +124,13 @@ public class MapControlsFragment extends Fragment {
                 else{
                     showToast("Invalid Input!");
                 }
+            }
+        });
+
+        btn_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.testDistance();
             }
         });
 

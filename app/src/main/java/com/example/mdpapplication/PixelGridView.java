@@ -495,6 +495,95 @@ public class PixelGridView extends View {
     }
 
     @Nullable
+    private Obstacle findObstacleUsingRobot(Robot robot) {
+        Obstacle obst = null;
+
+        String direction = robot.getDirection();
+
+        int startX = robot.getXArray()[0];
+        int startY = robot.getYArray()[0];
+        int endX = robot.getXArray()[1];
+        int endY = robot.getYArray()[1];
+
+        int X1=0, Y1=0, X2=0, Y2=0;
+
+        /**
+         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
+         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
+         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
+         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
+         */
+
+        if (direction.equals("N")) {
+            X1 = startX;
+            Y1 = endY;
+            X2 = endX;
+            Y2 = endY;
+        } else if (direction.equals("E")) { // Rotate by 90 degrees (X,Y) to (-Y,X)
+            X1 = -endY;
+            Y1 = endX;
+            X2 = -startY;
+            Y2 = endX;
+        } else if (direction.equals("S")) { // Rotate by 180 degrees (X,Y) to (-X,-Y)
+            X1 = -endX;
+            Y1 = -startY;
+            X2 = -startX;
+            Y2 = -startY;
+        } else if (direction.equals("W")) { // Rotate by 270 degrees (X,Y) to (Y,-X)
+            X1 = startY;
+            Y1 = -startX;
+            X2 = endY;
+            Y2 = -startX;
+        }
+
+        Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
+
+        for (Obstacle obstacle : obstacles) {
+            int obsX=0, obsY=0;
+
+            Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
+
+            if (direction.equals("N")) {
+                obsX = obstacle.xOnGrid;
+                obsY = obstacle.yOnGrid;
+            } else if (direction.equals("E")) {
+                obsX = -obstacle.yOnGrid;
+                obsY = obstacle.xOnGrid;
+            } else if (direction.equals("S")) {
+                obsX = -obstacle.xOnGrid;
+                obsY = -obstacle.yOnGrid;
+            } else if (direction.equals("W")) {
+                obsX = obstacle.yOnGrid;
+                obsY = -obstacle.xOnGrid;
+            }
+
+            double dist1 = Math.sqrt(Math.pow((obsX - X1), 2) + Math.pow((obsY - Y1), 2));
+            double dist2 = Math.sqrt(Math.pow((obsX - X2), 2) + Math.pow((obsY - Y2), 2));
+
+            Log.d(TAG, "findObstacleUsingRobot: dist1: " + dist1);
+            Log.d(TAG, "findObstacleUsingRobot: dist2: " + dist2);
+
+            double angleX1 = Math.toDegrees(Math.acos((obsX - X1)/dist1));
+            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1)/dist1));
+
+            Log.d(TAG, "findObstacleUsingRobot: angleX1: " + angleX1);
+            Log.d(TAG, "findObstacleUsingRobot: angleY1: " + angleY1);
+
+            double angleX2 = Math.toDegrees(Math.acos((obsX - X2)/dist2));
+            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2)/dist2));
+
+            Log.d(TAG, "findObstacleUsingRobot: angleX2: " + angleX2);
+            Log.d(TAG, "findObstacleUsingRobot: angleY2: " + angleY2);
+        }
+
+        return obst;
+    }
+
+    public void testDistance(){
+        findObstacleUsingRobot(robot);
+    }
+
+    @Nullable
     private Obstacle checkOverlappingObstacle(final int column, final int row, final int id) {
         Obstacle touched = null;
 
@@ -513,6 +602,13 @@ public class PixelGridView extends View {
         Log.d(TAG, "checkMovable: startX: " + startX + " endX:" + endX + " startY:" + startY + " endY:" + endY);
         Obstacle obstacle1 = null;
         Obstacle obstacle2 = null;
+
+        /**
+         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
+         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
+         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
+         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
+         */
 
         if ((startX >= 0 && endX < numColumns && startY >= 0 && endY < numRows)) {
             if ((command.equals("f") && direction.equals("N")) ||

@@ -154,7 +154,9 @@ public class BluetoothConnectionHelper extends Service {
                     case MESSAGE_READ:
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
-                        boolean contains = Arrays.stream(ValidTargetStrings).anyMatch("s"::equals);
+
+                        //boolean contains = Arrays.stream(ValidTargetStrings).anyMatch("s"::equals);
+
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
@@ -162,7 +164,10 @@ public class BluetoothConnectionHelper extends Service {
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
                         }
-                        else if(contains){
+//                        else if(contains){
+//                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_SEND_MOVEMENT);
+//                        }
+                        else if(ValidRobotCommands.contains(receivedMessage)){
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_SEND_MOVEMENT);
                         }
 
@@ -638,21 +643,27 @@ public class BluetoothConnectionHelper extends Service {
         }
 
         public void cancel(){
-//            try{
-//                mmSocket.close();
-//            }catch(IOException e){
+            try{
+                mmSocket.close();
+            }catch(IOException e){
+            }
+//            if (mmInStream != null) {
+//                try {mmInStream.close();} catch (Exception e) {
+//                    Log.e(TAG, "cancel: ", e);
+//                }
 //            }
-            if (mmInStream != null) {
-                try {mmInStream.close();} catch (Exception e) {}
-            }
-
-            if (mmOutStream != null) {
-                try {mmOutStream.close();} catch (Exception e) {}
-            }
-
-            if (mmSocket != null) {
-                try {mmSocket.close();} catch (Exception e) {}
-            }
+//
+//            if (mmOutStream != null) {
+//                try {mmOutStream.close();} catch (Exception e) {
+//                    Log.e(TAG, "cancel: ", e);
+//                }
+//            }
+//
+//            if (mmSocket != null) {
+//                try {mmSocket.close();} catch (Exception e) {
+//                    Log.e(TAG, "cancel: ", e);
+//                }
+//            }
         }
 
     }//end of connectedThread
