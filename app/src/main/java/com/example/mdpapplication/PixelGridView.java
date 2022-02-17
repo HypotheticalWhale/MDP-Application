@@ -28,7 +28,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -579,8 +582,144 @@ public class PixelGridView extends View {
         return obst;
     }
 
+    @Nullable
+    private List<Obstacle> findObstacleUsingRobot(Robot robot, int noOfObstacle) {
+        class ObstacleExtraInfo{
+            Obstacle obstacle;
+            double distance;
+            double angle;
+
+
+            public ObstacleExtraInfo(Obstacle obstacle, double distance, double angle) {
+                this.obstacle = obstacle;
+                this.distance = distance;
+                this.angle = angle;
+            }
+
+            public Obstacle getObstacle() {
+                return obstacle;
+            }
+
+            public void setObstacle(Obstacle obstacle) {
+                this.obstacle = obstacle;
+            }
+
+            public double getDistance() {
+                return distance;
+            }
+
+            public void setDistance(double distance) {
+                this.distance = distance;
+            }
+
+            public double getAngle() {
+                return angle;
+            }
+
+            public void setAngle(double angle) {
+                this.angle = angle;
+            }
+        }
+
+        List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);;
+        List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());;
+
+        String direction = robot.getDirection();
+
+        int startX = robot.getXArray()[0];
+        int startY = robot.getYArray()[0];
+        int endX = robot.getXArray()[1];
+        int endY = robot.getYArray()[1];
+
+        double X=0, Y=0;
+
+        /**
+         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
+         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
+         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
+         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
+         */
+
+        if (direction.equals("N")) {
+            X = (startX + endX)/2;
+            Y = endY;
+        } else if (direction.equals("E")) { // Rotate by 90 degrees (X,Y) to (-Y,X)
+            X = (-endY-startY)/2;
+            Y = endX;
+        } else if (direction.equals("S")) { // Rotate by 180 degrees (X,Y) to (-X,-Y)
+            X = (-endX-startX)/2;
+            Y = -startY;
+        } else if (direction.equals("W")) { // Rotate by 270 degrees (X,Y) to (Y,-X)
+            X = (startY+endY)/2;
+            Y = -startX;
+        }
+
+        Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
+
+        for (Obstacle obstacle : obstacles) {
+            int obsX=0, obsY=0;
+
+            Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
+
+            if (direction.equals("N")) {
+                obsX = obstacle.xOnGrid;
+                obsY = obstacle.yOnGrid;
+            } else if (direction.equals("E")) {
+                obsX = -obstacle.yOnGrid;
+                obsY = obstacle.xOnGrid;
+            } else if (direction.equals("S")) {
+                obsX = -obstacle.xOnGrid;
+                obsY = -obstacle.yOnGrid;
+            } else if (direction.equals("W")) {
+                obsX = obstacle.yOnGrid;
+                obsY = -obstacle.xOnGrid;
+            }
+
+            double dist = Math.sqrt(Math.pow((obsX - X), 2) + Math.pow((obsY - Y), 2));
+
+            Log.d(TAG, "findObstacleUsingRobot: dist: " + dist);
+
+            double angleX = Math.toDegrees(Math.acos((obsX - X)/dist));
+            double angleY = Math.toDegrees(Math.asin((obsY - Y)/dist));
+
+            Log.d(TAG, "findObstacleUsingRobot: angleX: " + angleX);
+            Log.d(TAG, "findObstacleUsingRobot: angleY: " + angleY);
+
+            ObstacleExtraInfo temp = new ObstacleExtraInfo(obstacle, dist, Math.round(angleY*100)/100);
+            obstacleExtraInfo.add(temp);
+        }
+
+        obstacleExtraInfo.sort((o1, o2) -> {
+            if (o1.getDistance() > o2.getDistance()) {
+                return 1;
+            } else if (o1.getDistance() < o2.getDistance()) {
+                return -1;
+            }
+            return -1;
+        });
+
+        int count=0;
+
+        for (ObstacleExtraInfo obstacle : obstacleExtraInfo) {
+            if(count == noOfObstacle)
+            {
+                break;
+            }
+            Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getAngle(): " + obstacle.getAngle());
+
+            if(obstacle.getAngle() >= 45 && obstacle.getAngle() <= 135){
+                Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getObstacle().id: " + obstacle.getObstacle().id);
+                Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getDistance(): " + obstacle.getDistance());
+                obstacleList.add(obstacle.getObstacle());
+                count++;
+            }
+        }
+
+        return obstacleList;
+    }
+
     public void testDistance(){
-        findObstacleUsingRobot(robot);
+        findObstacleUsingRobot(robot, 3);
     }
 
     @Nullable
