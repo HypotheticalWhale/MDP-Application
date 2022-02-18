@@ -266,8 +266,11 @@ public class PixelGridView extends View {
 
         public void setX(int x){
             if(x == 19){
-                X[0] = x-1;
-                X[1] = x+robotSize[0]-2;
+                for(int i = 0; i<this.X.length; i++){
+                    this.X[i] = x+(i+1);
+                }
+//                X[0] = x-1;
+//                X[1] = x+robotSize[0]-2;
             }else{
                 for(int i = 0; i<this.X.length; i++){
                     this.X[i] = x+i;
@@ -283,8 +286,11 @@ public class PixelGridView extends View {
 
         public void setY(int y){
             if( y == 19){
-                Y[0] = y-1;
-                Y[1] = y+robotSize[0]-2;
+                for(int i = 0; i<this.Y.length; i++){
+                    this.Y[i] = y-(i+1);
+                }
+//                Y[0] = y-1;
+//                Y[1] = y+robotSize[0]-2;
             }else{
                 for(int i = 0; i<this.Y.length; i++){
                     this.Y[i] = y+i;
@@ -794,6 +800,68 @@ public class PixelGridView extends View {
         return false;
     }
 
+    private boolean checkMovable(int[] X, int[] Y, @NonNull String direction, @NonNull String command) {
+        Log.d(TAG, "checkMovable: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
+
+        Obstacle[] obstacleArray = new Obstacle[X.length];
+
+        int startX = X[0];
+        int middleX = X[1];
+        int endX = X[2];
+
+        int startY = Y[0];
+        int middleY = Y[1];
+        int endY = Y[2];
+
+        /**
+         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
+         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
+         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
+         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
+         */
+
+        if ((X[0] >= 0 && X[2] < numColumns && Y[0] >= 0 && Y[2] < numRows)) {
+            if ((command.equals("f") && direction.equals("N")) ||
+                    (command.equals("b") && direction.equals("S")) ||
+                    (command.equals("sl") && direction.equals("E")) ||
+                    (command.equals("sr") && direction.equals("W"))) {
+                for(int i = 0; i<obstacleArray.length;i++){
+                    obstacleArray[i] = findObstacleByGridCoord(X[i], Y[2]);
+                }
+            } else if ((command.equals("f") && direction.equals("E")) ||
+                    (command.equals("b") && direction.equals("W")) ||
+                    (command.equals("sl") && direction.equals("S")) ||
+                    (command.equals("sr") && direction.equals("N"))) {
+                for(int i = 0; i<obstacleArray.length;i++){
+                    obstacleArray[i] = findObstacleByGridCoord(X[2], Y[i]);
+                }
+            } else if ((command.equals("f") && direction.equals("S")) ||
+                    (command.equals("b") && direction.equals("N")) ||
+                    (command.equals("sl") && direction.equals("W")) ||
+                    (command.equals("sr") && direction.equals("E"))) {
+                for(int i = 0; i<obstacleArray.length;i++){
+                    obstacleArray[i] = findObstacleByGridCoord(X[i], Y[0]);
+                }
+            } else if ((command.equals("f") && direction.equals("W")) ||
+                    (command.equals("b") && direction.equals("E")) ||
+                    (command.equals("sl") && direction.equals("N")) ||
+                    (command.equals("sr") && direction.equals("S"))) {
+                for(int i = 0; i<obstacleArray.length;i++){
+                    obstacleArray[i] = findObstacleByGridCoord(X[0], Y[i]);
+                }
+            }
+
+//            for(Obstacle obstacle: obstacleArray){
+//                Log.d(TAG, "checkMovable: " + obstacle);
+//                if(obstacle != null)
+//                    return false;
+//            }
+//            return true;
+            return obstacleArray[0] == null && obstacleArray[1] == null && obstacleArray[2] == null;
+        }
+        return false;
+    }
+
     private boolean checkPlaceable(int X, int Y) {
         Log.d(TAG, "checkPlaceable: startX: " + X + " startY:" + Y);
 
@@ -1170,42 +1238,74 @@ public class PixelGridView extends View {
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");
 
-                int startX = robot.getXArray()[0];
-                int startY = robot.getYArray()[0];
-                int endX = robot.getXArray()[1];
-                int endY = robot.getYArray()[1];
+                /**
+                 * X[0]: startX
+                 * X[1]: middleX
+                 * X[2]: endX
+                 *
+                 * Y[0]: startY
+                 * Y[1]: middleY
+                 * Y[2]: endY
+                 */
+
+                int[] X = robot.getXArray();
+                int[] Y = robot.getYArray();
 
                 String direction = robot.getDirection();
 
-                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + startX + " endX: " + endX + " startY: " + startY + " endY: " + endY + " Direction: " + direction);
+                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
 
                 if ((message.equals("f") && direction.equals("N")) ||
                         (message.equals("b") && direction.equals("S")) ||
                         (message.equals("sl") && direction.equals("E")) ||
                         (message.equals("sr") && direction.equals("W"))) {
-                    if (checkMovable(startX, startY + 1, endX, endY + 1, direction, message)) {
-                        setCurCoord(startX, startY + 1, direction);
+//                    if (checkMovable(startX, startY + 1, endX, endY + 1, direction, message)) {
+//                        setCurCoord(startX, startY + 1, direction);
+//                    }
+                    for(int y: Y){
+                        y++;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("E")) ||
                         (message.equals("b") && direction.equals("W")) ||
                         (message.equals("sl") && direction.equals("S")) ||
                         (message.equals("sr") && direction.equals("N"))) {
-                    if (checkMovable(startX + 1, startY, endX + 1, endY, direction, message)) {
-                        setCurCoord(startX + 1, startY, direction);
+//                    if (checkMovable(startX + 1, startY, endX + 1, endY, direction, message)) {
+//                        setCurCoord(startX + 1, startY, direction);
+//                    }
+                    for(int x: X){
+                        x++;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("S")) ||
                         (message.equals("b") && direction.equals("N")) ||
                         (message.equals("sl") && direction.equals("W")) ||
                         (message.equals("sr") && direction.equals("E"))) {
-                    if (checkMovable(startX, startY - 1, endX, endY - 1, direction, message)) {
-                        setCurCoord(startX, startY - 1, direction);
+//                    if (checkMovable(startX, startY - 1, endX, endY - 1, direction, message)) {
+//                        setCurCoord(startX, startY - 1, direction);
+//                    }
+                    for(int y: Y){
+                        y--;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("W")) ||
                         (message.equals("b") && direction.equals("E")) ||
                         (message.equals("sl") && direction.equals("N")) ||
                         (message.equals("sr") && direction.equals("S"))) {
-                    if (checkMovable(startX - 1, startY, endX - 1, endY, direction, message)) {
-                        setCurCoord(startX - 1, startY, direction);
+//                    if (checkMovable(startX - 1, startY, endX - 1, endY, direction, message)) {
+//                        setCurCoord(startX - 1, startY, direction);
+//                    }
+                    for(int x: X){
+                        x--;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
@@ -1218,7 +1318,8 @@ public class PixelGridView extends View {
                         direction = "S";
                     }
 
-                    setCurCoord(startX, startY, direction);
+//                    setCurCoord(startX, startY, direction);
+                    setCurCoord(X[0], Y[0], direction);
                 } else if (message.equals("r")) {
                     if (direction.equals("N")) {
                         direction = "E";
@@ -1230,7 +1331,8 @@ public class PixelGridView extends View {
                         direction = "N";
                     }
 
-                    setCurCoord(startX, startY, direction);
+//                    setCurCoord(startX, startY, direction);
+                    setCurCoord(X[0], Y[0], direction);
                 }
 
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
