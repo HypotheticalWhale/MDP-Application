@@ -15,6 +15,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class ControlsFragment extends Fragment {
     private static final String TAG = "ControlsFragment";
 
@@ -23,6 +30,7 @@ public class ControlsFragment extends Fragment {
     ImageButton sa, sr, sl, f, r, rl, rr, stop;
     ToggleButton explore, fastest;
     TextView exploreText,fastestText,robotStatus;
+    PixelGridView pixelGrid;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -34,6 +42,7 @@ public class ControlsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Context context = getActivity().getApplicationContext();
         bluetooth = MDPApplication.getBluetooth();
+
         robotStatus = view.findViewById(R.id.robotStatus);
         sa = view.findViewById(R.id.send_arena);
         sr = view.findViewById(R.id.s_right);
@@ -45,6 +54,8 @@ public class ControlsFragment extends Fragment {
         stop = view.findViewById(R.id.stop);
         explore = view.findViewById(R.id.explore);
         fastest = view.findViewById(R.id.fastest);
+
+        pixelGrid = getActivity().findViewById(R.id.pixelGrid);
 
         exploreText = view.findViewById(R.id.explorationTitleTextView);
         fastestText  = view.findViewById(R.id.fastestPathTitleTextView);
@@ -64,6 +75,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         sr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,6 +84,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         sl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,6 +93,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         f.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +102,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +111,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +120,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         rr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,6 +129,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Moving");
             }
         });
+
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +138,7 @@ public class ControlsFragment extends Fragment {
                 robotStatus.setText("Stopped Moving");
             }
         });
+
         explore.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -143,6 +162,7 @@ public class ControlsFragment extends Fragment {
                 }
             }
         });
+
         fastest.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

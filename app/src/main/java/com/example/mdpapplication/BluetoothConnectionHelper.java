@@ -6,17 +6,14 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,12 +22,10 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothConnectionHelper extends Service {
@@ -106,9 +101,10 @@ public class BluetoothConnectionHelper extends Service {
     //For auto connection to remote device
     private static final String RPIMACAddress = "";
     private static final String RPIDeviceName = "";
-    private TextView robotStatus;
+
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
             "l", "sl", "sr");
+
     private static ArrayList<String> ValidTargetStrings = new ArrayList<String>(Arrays.asList("Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
@@ -159,21 +155,20 @@ public class BluetoothConnectionHelper extends Service {
                         boolean contains = ValidTargetStrings.contains(receivedMessage);
 
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
+
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
-                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_ROBOT_STATUS_SCANNING);
-
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS_SCANNING);
                         }
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
-
                         }
                         else if(contains){
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
-                        else if(ValidRobotCommands.contains(receivedMessage)){
-                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_SEND_MOVEMENT);
-                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_ROBOT_STATUS_MOVE);
+                        else if(ValidRobotCommands.contains(receivedMessage)) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS_MOVE);
                         }
 
                         break;

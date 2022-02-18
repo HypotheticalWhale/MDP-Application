@@ -163,7 +163,6 @@ public class MapControlsFragment extends Fragment {
         }
     };
 
-
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");

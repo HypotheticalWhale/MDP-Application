@@ -90,6 +90,7 @@
                 android:text="Robot Status:"
                 android:textAllCaps="false"
                 android:textSize="20dp" />
+
             <TextView
                 android:id="@+id/robotStatus"
                 android:textAllCaps="false"
@@ -98,6 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Ready" />
+
         </LinearLayout>
 
         <Space

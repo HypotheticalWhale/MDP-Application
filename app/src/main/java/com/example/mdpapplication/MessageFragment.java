@@ -64,10 +64,14 @@ public class MessageFragment extends Fragment {
         btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
         tInput = view.findViewById(R.id.textInput);
+
         Context context = getActivity().getApplicationContext();
         bluetooth = MDPApplication.getBluetooth();
+
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS_MOVE));
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS_SCANNING));
 
         tView.setText("Application Started");
         msgLog = new SpannableStringBuilder();
@@ -123,12 +127,14 @@ public class MessageFragment extends Fragment {
         public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
             if(intent.getAction().equals(EVENT_ROBOT_STATUS_MOVE)){
+                Log.d(TAG, "onReceive: " + EVENT_ROBOT_STATUS_MOVE);
                 robotStatus.setText("Moving");
             }
-            if(intent.getAction().equals(EVENT_ROBOT_STATUS_SCANNING)){
+            else if(intent.getAction().equals(EVENT_ROBOT_STATUS_SCANNING)){
+                Log.d(TAG, "onReceive: " + EVENT_ROBOT_STATUS_MOVE);
                 robotStatus.setText("Looking for Targets");
             }
-            if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
+            else if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 String message = intent.getStringExtra("key");
                 logMsg("Message Received: " + message);
             }
