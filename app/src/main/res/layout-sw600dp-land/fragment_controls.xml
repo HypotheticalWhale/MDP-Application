@@ -97,9 +97,11 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_arrow_right_24" />
 
-            <Space
-                android:layout_width="32dp"
-                android:layout_height="match_parent" />
+            <ImageButton
+                android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_stop_24" />
 
             <TextView
                 android:id="@+id/fastestPathTitleTextView"
