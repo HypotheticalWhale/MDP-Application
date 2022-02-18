@@ -37,13 +37,12 @@ public class ObstacleView extends View {
     private PixelGridView.Obstacle obstacle;
     private PopupWindow popupWindow;
 
-
-    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList("Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
             "Alphabet_W", "Alphabet_X", "Alphabet_Y",
-            "Alphabet_Z", "down_arrow",
+            "Alphabet_Z", "down_arrow", "bullseye",
             "eight", "five", "four", "left_arrow",
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");

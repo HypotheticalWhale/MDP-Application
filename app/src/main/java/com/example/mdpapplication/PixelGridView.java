@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
@@ -34,6 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PixelGridView extends View {
     private static final String TAG = "PixelGridView";
@@ -76,7 +79,7 @@ public class PixelGridView extends View {
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
             "Alphabet_W", "Alphabet_X", "Alphabet_Y",
-            "Alphabet_Z", "down_arrow",
+            "Alphabet_Z", "down_arrow", "bullseye",
             "eight", "five", "four", "left_arrow",
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
@@ -1262,51 +1265,111 @@ public class PixelGridView extends View {
 
                 int[] X = robot.getXArray().clone();
                 int[] Y = robot.getYArray().clone();
+                List<String> ValidRobotMovementCommands = Arrays.asList("f", "b", "sl", "sr");
 
                 String direction = robot.getDirection();
 
+                Handler handler = new Handler(Looper.getMainLooper());
+                Runnable moveThread;
+
                 Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
 
-                if ((message.equals("f") && direction.equals("N")) ||
-                        (message.equals("b") && direction.equals("S")) ||
-                        (message.equals("sl") && direction.equals("E")) ||
-                        (message.equals("sr") && direction.equals("W"))) {
-                    for (int i = 0; i < Y.length; i++) {
-                        Y[i] = Y[i] + 1;
-                    }
-                    if (checkMovable(X, Y, direction, message)) {
-                        setCurCoord(X[0], Y[0], direction);
-                    }
-                } else if ((message.equals("f") && direction.equals("E")) ||
-                        (message.equals("b") && direction.equals("W")) ||
-                        (message.equals("sl") && direction.equals("S")) ||
-                        (message.equals("sr") && direction.equals("N"))) {
-                    for (int i = 0; i < X.length; i++) {
-                        X[i] = X[i] + 1;
-                    }
-                    if (checkMovable(X, Y, direction, message)) {
-                        setCurCoord(X[0], Y[0], direction);
-                    }
-                } else if ((message.equals("f") && direction.equals("S")) ||
-                        (message.equals("b") && direction.equals("N")) ||
-                        (message.equals("sl") && direction.equals("W")) ||
-                        (message.equals("sr") && direction.equals("E"))) {
-                    for (int i = 0; i < Y.length; i++) {
-                        Y[i] = Y[i] - 1;
-                    }
-                    if (checkMovable(X, Y, direction, message)) {
-                        setCurCoord(X[0], Y[0], direction);
-                    }
-                } else if ((message.equals("f") && direction.equals("W")) ||
-                        (message.equals("b") && direction.equals("E")) ||
-                        (message.equals("sl") && direction.equals("N")) ||
-                        (message.equals("sr") && direction.equals("S"))) {
-                    for (int i = 0; i < X.length; i++) {
-                        X[i] = X[i] - 1;
-                    }
-                    if (checkMovable(X, Y, direction, message)) {
-                        setCurCoord(X[0], Y[0], direction);
-                    }
+//                if ((message.equals("f") && direction.equals("N")) ||
+//                        (message.equals("b") && direction.equals("S")) ||
+//                        (message.equals("sl") && direction.equals("E")) ||
+//                        (message.equals("sr") && direction.equals("W"))) {
+//                    for (int i = 0; i < Y.length; i++) {
+//                        Y[i] = Y[i] + 1;
+//                    }
+//                    if (checkMovable(X, Y, direction, message)) {
+//                        setCurCoord(X[0], Y[0], direction);
+//                    }
+//                } else if ((message.equals("f") && direction.equals("E")) ||
+//                        (message.equals("b") && direction.equals("W")) ||
+//                        (message.equals("sl") && direction.equals("S")) ||
+//                        (message.equals("sr") && direction.equals("N"))) {
+//                    for (int i = 0; i < X.length; i++) {
+//                        X[i] = X[i] + 1;
+//                    }
+//                    if (checkMovable(X, Y, direction, message)) {
+//                        setCurCoord(X[0], Y[0], direction);
+//                    }
+//                } else if ((message.equals("f") && direction.equals("S")) ||
+//                        (message.equals("b") && direction.equals("N")) ||
+//                        (message.equals("sl") && direction.equals("W")) ||
+//                        (message.equals("sr") && direction.equals("E"))) {
+//                    for (int i = 0; i < Y.length; i++) {
+//                        Y[i] = Y[i] - 1;
+//                    }
+//                    if (checkMovable(X, Y, direction, message)) {
+//                        setCurCoord(X[0], Y[0], direction);
+//                    }
+//                } else if ((message.equals("f") && direction.equals("W")) ||
+//                        (message.equals("b") && direction.equals("E")) ||
+//                        (message.equals("sl") && direction.equals("N")) ||
+//                        (message.equals("sr") && direction.equals("S"))) {
+//                    for (int i = 0; i < X.length; i++) {
+//                        X[i] = X[i] - 1;
+//                    }
+//                    if (checkMovable(X, Y, direction, message)) {
+//                        setCurCoord(X[0], Y[0], direction);
+//                    }
+//                }
+
+                if (ValidRobotMovementCommands.contains(message)) {
+                    String finalDirection = direction;
+                    AtomicBoolean finalRun = new AtomicBoolean(false);
+                    AtomicBoolean finalRun1 = finalRun;
+                    moveThread = new Runnable(){
+                        public void run() {
+                            if ((message.equals("f") && finalDirection.equals("N")) ||
+                                    (message.equals("b") && finalDirection.equals("S")) ||
+                                    (message.equals("sl") && finalDirection.equals("E")) ||
+                                    (message.equals("sr") && finalDirection.equals("W"))) {
+                                for (int i = 0; i < Y.length; i++) {
+                                    Y[i] = Y[i] + 1;
+                                }
+                                if (checkMovable(X, Y, finalDirection, message)) {
+                                    setCurCoord(X[0], Y[0], finalDirection);
+                                }
+                            } else if ((message.equals("f") && finalDirection.equals("E")) ||
+                                    (message.equals("b") && finalDirection.equals("W")) ||
+                                    (message.equals("sl") && finalDirection.equals("S")) ||
+                                    (message.equals("sr") && finalDirection.equals("N"))) {
+                                for (int i = 0; i < X.length; i++) {
+                                    X[i] = X[i] + 1;
+                                }
+                                if (checkMovable(X, Y, finalDirection, message)) {
+                                    setCurCoord(X[0], Y[0], finalDirection);
+                                }
+                            } else if ((message.equals("f") && finalDirection.equals("S")) ||
+                                    (message.equals("b") && finalDirection.equals("N")) ||
+                                    (message.equals("sl") && finalDirection.equals("W")) ||
+                                    (message.equals("sr") && finalDirection.equals("E"))) {
+                                for (int i = 0; i < Y.length; i++) {
+                                    Y[i] = Y[i] - 1;
+                                }
+                                if (checkMovable(X, Y, finalDirection, message)) {
+                                    setCurCoord(X[0], Y[0], finalDirection);
+                                }
+                            } else if ((message.equals("f") && finalDirection.equals("W")) ||
+                                    (message.equals("b") && finalDirection.equals("E")) ||
+                                    (message.equals("sl") && finalDirection.equals("N")) ||
+                                    (message.equals("sr") && finalDirection.equals("S"))) {
+                                for (int i = 0; i < X.length; i++) {
+                                    X[i] = X[i] - 1;
+                                }
+                                if (checkMovable(X, Y, finalDirection, message)) {
+                                    setCurCoord(X[0], Y[0], finalDirection);
+                                }
+                            }
+                            if(finalRun1.get()){
+                                handler.postDelayed(this, 5000);
+                            }
+                        }
+                    };
+                    handler.postDelayed(moveThread, 5000);
+                    finalRun1.set(true);
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";
@@ -1379,7 +1442,7 @@ public class PixelGridView extends View {
                 }
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
                 Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: " + intent.getStringExtra("key"));
-                try{
+                try {
                     String[] message = intent.getStringExtra("key").split(",");
 
                     int col = Integer.parseInt(message[1].replace(" ", ""));
@@ -1389,7 +1452,7 @@ public class PixelGridView extends View {
                     Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
 
                     setCurCoord(col, row, direction);
-                }catch (Exception e){
+                } catch (Exception e) {
                     Log.e(TAG, "onReceive: EVENT_ROBOT_MOVES: ", e);
                 }
             }

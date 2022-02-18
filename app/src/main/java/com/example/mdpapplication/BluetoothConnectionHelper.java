@@ -58,8 +58,7 @@ public class BluetoothConnectionHelper extends Service {
     public static final String EVENT_SEND_MOVEMENT = "com.event.EVENT_SEND_MOVEMENT";
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
     public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
-    public static final String EVENT_ROBOT_STATUS_MOVE = "com.event.EVENT_ROBOT_STATUS_MOVE";
-    public static final String EVENT_ROBOT_STATUS_SCANNING = "com.event.EVENT_ROBOT_STATUS_SCANNING";
+    public static final String EVENT_ROBOT_STATUS = "com.event.EVENT_ROBOT_STATUS";
 
     //For showing toast
     private final String BLUETOOTH_NOT_SUPPORTED = "Device does not support bluetooth.";
@@ -105,15 +104,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
             "l", "sl", "sr");
 
-    private static ArrayList<String> ValidTargetStrings = new ArrayList<String>(Arrays.asList("Alphabet_A", "Alphabet_B", "Alphabet_C",
-            "Alphabet_D", "Alphabet_E", "Alphabet_F",
-            "Alphabet_G", "Alphabet_H", "Alphabet_S",
-            "Alphabet_T", "Alphabet_U", "Alphabet_V",
-            "Alphabet_W", "Alphabet_X", "Alphabet_Y",
-            "Alphabet_Z", "down_arrow",
-            "eight", "five", "four", "left_arrow",
-            "nine", "one", "right_arrow", "seven",
-            "six", "stop", "three", "two", "up_arrow"));
+    private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Looking for Target", "Stop");
 
     /** Service Binding
      *
@@ -152,23 +143,22 @@ public class BluetoothConnectionHelper extends Service {
                         receivedMessage = new String((byte[])msg.obj);
                         receivedMessage = receivedMessage.trim();
 
-                        boolean contains = ValidTargetStrings.contains(receivedMessage);
-
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
 
                         if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
-                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS_SCANNING);
+                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
-                        }
-                        else if(contains){
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
                         else if(ValidRobotCommands.contains(receivedMessage)) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
-                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS_MOVE);
+                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
+                        }
+                        else if(ValidRobotStatus.contains(receivedMessage)) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS);
                         }
 
                         break;
