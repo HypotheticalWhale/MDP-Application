@@ -35,11 +35,10 @@
                 android:src="@drawable/ic_baseline_rotate_right_24" />
 
             <ImageButton
-                android:id="@+id/placeholder1"
+                android:id="@+id/stop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_rotate_right_24"
-                android:visibility="invisible" />
+                android:src="@drawable/ic_baseline_stop_24" />
 
 
             <ImageButton

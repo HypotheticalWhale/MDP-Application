@@ -879,7 +879,7 @@ public class PixelGridView extends View {
         int row = convertRow(robot.getY());
         String direction = robot.getDirection();
 
-        rect = new RectF(col * cellSize, (row - 2) * cellSize, (col + 2) * cellSize, row * cellSize);
+        rect = new RectF(col * cellSize, (row - 3) * cellSize, (col + 3) * cellSize, row * cellSize);
 
         Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 

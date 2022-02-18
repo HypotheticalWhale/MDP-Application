@@ -20,7 +20,7 @@ public class ControlsFragment extends Fragment {
 
     BluetoothConnectionHelper bluetooth;
     String msg;
-    ImageButton sa, sr, sl, f, r, rl, rr;
+    ImageButton sa, sr, sl, f, r, rl, rr, stop;
     ToggleButton explore, fastest;
     TextView exploreText,fastestText;
 
@@ -42,6 +42,7 @@ public class ControlsFragment extends Fragment {
         r = view.findViewById(R.id.reverse);
         rl = view.findViewById(R.id.r_left);
         rr = view.findViewById(R.id.r_right);
+        stop = view.findViewById(R.id.stop);
         explore = view.findViewById(R.id.explore);
         fastest = view.findViewById(R.id.fastest);
 
@@ -101,6 +102,13 @@ public class ControlsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 msg = "r";
+                bluetooth.write(msg);
+            }
+        });
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                msg = "s";
                 bluetooth.write(msg);
             }
         });
