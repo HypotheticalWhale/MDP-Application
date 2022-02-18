@@ -71,7 +71,7 @@ public class PixelGridView extends View {
     private final GestureDetectorCompat gestureDetector;
     private final BluetoothConnectionHelper bluetooth;
 
-    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList("Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -211,29 +211,24 @@ public class PixelGridView extends View {
         };
     }
 
-    public static class Robot{
+    public static class Robot {
         int[] robotSize;
         int[] X;
         int[] Y;
         String direction = "None";
 
-        private Robot(int X, int Y, @NonNull int[] robotSize){
+        private Robot(int X, int Y, @NonNull int[] robotSize) {
             this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
 
             this.X = new int[robotSize[0]];
-            for(int i = 0; i<this.X.length; i++){
-                this.X[i] = X+i;
+            for (int i = 0; i < this.X.length; i++) {
+                this.X[i] = X + i;
             }
-//            this.X[0] = X;
-//            this.X[1] = X+robotSize[0]-1;
-
 
             this.Y = new int[robotSize[1]];
-            for(int i = 0; i<this.Y.length; i++){
-                this.Y[i] = Y+i;
+            for (int i = 0; i < this.Y.length; i++) {
+                this.Y[i] = Y + i;
             }
-//            this.Y[0] = Y;
-//            this.Y[1] = Y+robotSize[1]-1;
         }
 
         public int[] getRobotSize() {
@@ -260,44 +255,50 @@ public class PixelGridView extends View {
             Y = y;
         }
 
-        public int getX(){
+        public int getX() {
             return X[0];
         }
 
-        public void setX(int x){
-            if(x == 19){
-                for(int i = 0; i<this.X.length; i++){
-                    this.X[i] = x+(i+1);
+        public void setX(int x) {
+            if (x == 18) {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x - (i + 1);
                 }
-//                X[0] = x-1;
-//                X[1] = x+robotSize[0]-2;
-            }else{
-                for(int i = 0; i<this.X.length; i++){
-                    this.X[i] = x+i;
+            } else if (x == 19) {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x - (i + 2);
                 }
-//                X[0] = x;
-//                X[1] = x+robotSize[0]-1;
+            } else {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x + i;
+                }
             }
+//            for (int i = 0; i < this.X.length; i++) {
+//                this.X[i] = x + i;
+//            }
         }
 
-        public int getY(){
+        public int getY() {
             return Y[0];
         }
 
-        public void setY(int y){
-            if( y == 19){
-                for(int i = 0; i<this.Y.length; i++){
-                    this.Y[i] = y-(i+1);
+        public void setY(int y) {
+            if (y == 18) {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y - (i + 1);
                 }
-//                Y[0] = y-1;
-//                Y[1] = y+robotSize[0]-2;
-            }else{
-                for(int i = 0; i<this.Y.length; i++){
-                    this.Y[i] = y+i;
+            } else if (y == 19) {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y - (i + 2);
                 }
-//                Y[0] = y;
-//                Y[1] = y+robotSize[0]-1;
+            } else {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y + i;
+                }
             }
+//            for (int i = 0; i < this.Y.length; i++) {
+//                this.Y[i] = y + i;
+//            }
         }
 
         public String getDirection() {
@@ -356,7 +357,7 @@ public class PixelGridView extends View {
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
 
-        robot = new Robot(0,0, new int[]{3, 3});
+        robot = new Robot(0, 0, new int[]{3, 3});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -391,6 +392,8 @@ public class PixelGridView extends View {
     }
 
     public void setCurCoord(int col, int row, String direction) {
+        Log.d(TAG, "setCurCoord: Column: " + col + " Row: " + row + " Direction: " + direction);
+
         robot.setX(col);
         robot.setY(row);
         robot.setDirection(direction);
@@ -426,7 +429,7 @@ public class PixelGridView extends View {
     public void resetGrid() {
         calculateDimensions();
 
-        robot = new Robot(0,0, new int[]{3, 3});
+        robot = new Robot(0, 0, new int[]{3, 3});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -527,7 +530,7 @@ public class PixelGridView extends View {
         int endX = robot.getXArray()[1];
         int endY = robot.getYArray()[1];
 
-        int X1=0, Y1=0, X2=0, Y2=0;
+        int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0;
 
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
@@ -561,7 +564,7 @@ public class PixelGridView extends View {
         Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
 
         for (Obstacle obstacle : obstacles) {
-            int obsX=0, obsY=0;
+            int obsX = 0, obsY = 0;
 
             Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
 
@@ -585,14 +588,14 @@ public class PixelGridView extends View {
             Log.d(TAG, "findObstacleUsingRobot: dist1: " + dist1);
             Log.d(TAG, "findObstacleUsingRobot: dist2: " + dist2);
 
-            double angleX1 = Math.toDegrees(Math.acos((obsX - X1)/dist1));
-            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1)/dist1));
+            double angleX1 = Math.toDegrees(Math.acos((obsX - X1) / dist1));
+            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1) / dist1));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX1: " + angleX1);
             Log.d(TAG, "findObstacleUsingRobot: angleY1: " + angleY1);
 
-            double angleX2 = Math.toDegrees(Math.acos((obsX - X2)/dist2));
-            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2)/dist2));
+            double angleX2 = Math.toDegrees(Math.acos((obsX - X2) / dist2));
+            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2) / dist2));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX2: " + angleX2);
             Log.d(TAG, "findObstacleUsingRobot: angleY2: " + angleY2);
@@ -603,7 +606,7 @@ public class PixelGridView extends View {
 
     @Nullable
     private List<Obstacle> findObstacleUsingRobot(Robot robot, int noOfObstacle) {
-        class ObstacleExtraInfo{
+        class ObstacleExtraInfo {
             Obstacle obstacle;
             double distance;
             double angle;
@@ -640,17 +643,19 @@ public class PixelGridView extends View {
             }
         }
 
-        List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);;
-        List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());;
+        List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);
+        List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());
 
         String direction = robot.getDirection();
 
         int startX = robot.getXArray()[0];
         int startY = robot.getYArray()[0];
-        int endX = robot.getXArray()[1];
-        int endY = robot.getYArray()[1];
+        int middleX = robot.getXArray()[1];
+        int middleY = robot.getYArray()[1];
+        int endX = robot.getXArray()[2];
+        int endY = robot.getYArray()[2];
 
-        double X=0, Y=0;
+        double X = 0, Y = 0;
 
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
@@ -660,23 +665,23 @@ public class PixelGridView extends View {
          */
 
         if (direction.equals("N")) {
-            X = (startX + endX)/2;
+            X = middleX;
             Y = endY;
         } else if (direction.equals("E")) { // Rotate by 90 degrees (X,Y) to (-Y,X)
-            X = (-endY-startY)/2;
+            X = -middleY;
             Y = endX;
         } else if (direction.equals("S")) { // Rotate by 180 degrees (X,Y) to (-X,-Y)
-            X = (-endX-startX)/2;
+            X = -middleX;
             Y = -startY;
         } else if (direction.equals("W")) { // Rotate by 270 degrees (X,Y) to (Y,-X)
-            X = (startY+endY)/2;
+            X = middleY;
             Y = -startX;
         }
 
         Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
 
         for (Obstacle obstacle : obstacles) {
-            int obsX=0, obsY=0;
+            int obsX = 0, obsY = 0;
 
             Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
 
@@ -698,13 +703,28 @@ public class PixelGridView extends View {
 
             Log.d(TAG, "findObstacleUsingRobot: dist: " + dist);
 
-            double angleX = Math.toDegrees(Math.acos((obsX - X)/dist));
-            double angleY = Math.toDegrees(Math.asin((obsY - Y)/dist));
+            double angleX = Math.toDegrees(Math.acos((obsX - X) / dist));
+            double angleY = Math.toDegrees(Math.asin((obsY - Y) / dist));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX: " + angleX);
             Log.d(TAG, "findObstacleUsingRobot: angleY: " + angleY);
 
-            ObstacleExtraInfo temp = new ObstacleExtraInfo(obstacle, dist, Math.round(angleY*100)/100);
+            angleX = Math.round(angleX * 100) / 100;
+            angleY = Math.round(angleY * 100) / 100;
+
+            Log.d(TAG, "findObstacleUsingRobot: rounded angleX: " + angleX);
+            Log.d(TAG, "findObstacleUsingRobot: rounded angleY: " + angleY);
+
+            ObstacleExtraInfo temp = null;
+
+            if (angleX == angleY) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleX);
+            } else if (angleY < 0) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleY);
+            } else if (angleX > angleY) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleX);
+            }
+
             obstacleExtraInfo.add(temp);
         }
 
@@ -717,16 +737,15 @@ public class PixelGridView extends View {
             return -1;
         });
 
-        int count=0;
+        int count = 0;
 
         for (ObstacleExtraInfo obstacle : obstacleExtraInfo) {
-            if(count == noOfObstacle)
-            {
+            if (count == noOfObstacle) {
                 break;
             }
             Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getAngle(): " + obstacle.getAngle());
 
-            if(obstacle.getAngle() >= 45 && obstacle.getAngle() <= 135){
+            if (obstacle.getAngle() >= 45 && obstacle.getAngle() <= 135) {
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getObstacle().id: " + obstacle.getObstacle().id);
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getDistance(): " + obstacle.getDistance());
                 obstacleList.add(obstacle.getObstacle());
@@ -737,7 +756,7 @@ public class PixelGridView extends View {
         return obstacleList;
     }
 
-    public void testDistance(){
+    public void testDistance() {
         findObstacleUsingRobot(robot, 3);
     }
 
@@ -805,14 +824,6 @@ public class PixelGridView extends View {
 
         Obstacle[] obstacleArray = new Obstacle[X.length];
 
-        int startX = X[0];
-        int middleX = X[1];
-        int endX = X[2];
-
-        int startY = Y[0];
-        int middleY = Y[1];
-        int endY = Y[2];
-
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
          * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
@@ -825,39 +836,39 @@ public class PixelGridView extends View {
                     (command.equals("b") && direction.equals("S")) ||
                     (command.equals("sl") && direction.equals("E")) ||
                     (command.equals("sr") && direction.equals("W"))) {
-                for(int i = 0; i<obstacleArray.length;i++){
+                for (int i = 0; i < obstacleArray.length; i++) {
                     obstacleArray[i] = findObstacleByGridCoord(X[i], Y[2]);
                 }
             } else if ((command.equals("f") && direction.equals("E")) ||
                     (command.equals("b") && direction.equals("W")) ||
                     (command.equals("sl") && direction.equals("S")) ||
                     (command.equals("sr") && direction.equals("N"))) {
-                for(int i = 0; i<obstacleArray.length;i++){
+                for (int i = 0; i < obstacleArray.length; i++) {
                     obstacleArray[i] = findObstacleByGridCoord(X[2], Y[i]);
                 }
             } else if ((command.equals("f") && direction.equals("S")) ||
                     (command.equals("b") && direction.equals("N")) ||
                     (command.equals("sl") && direction.equals("W")) ||
                     (command.equals("sr") && direction.equals("E"))) {
-                for(int i = 0; i<obstacleArray.length;i++){
+                for (int i = 0; i < obstacleArray.length; i++) {
                     obstacleArray[i] = findObstacleByGridCoord(X[i], Y[0]);
                 }
             } else if ((command.equals("f") && direction.equals("W")) ||
                     (command.equals("b") && direction.equals("E")) ||
                     (command.equals("sl") && direction.equals("N")) ||
                     (command.equals("sr") && direction.equals("S"))) {
-                for(int i = 0; i<obstacleArray.length;i++){
+                for (int i = 0; i < obstacleArray.length; i++) {
                     obstacleArray[i] = findObstacleByGridCoord(X[0], Y[i]);
                 }
             }
 
-//            for(Obstacle obstacle: obstacleArray){
-//                Log.d(TAG, "checkMovable: " + obstacle);
-//                if(obstacle != null)
-//                    return false;
-//            }
-//            return true;
-            return obstacleArray[0] == null && obstacleArray[1] == null && obstacleArray[2] == null;
+            for (Obstacle obstacle : obstacleArray) {
+                Log.d(TAG, "checkMovable: " + obstacle);
+                if (obstacle != null)
+                    return false;
+            }
+            return true;
+
         }
         return false;
     }
@@ -865,15 +876,16 @@ public class PixelGridView extends View {
     private boolean checkPlaceable(int X, int Y) {
         Log.d(TAG, "checkPlaceable: startX: " + X + " startY:" + Y);
 
-        int startX = robot.getXArray()[0];
-        int startY = robot.getYArray()[0];
-        int endX = robot.getXArray()[1];
-        int endY = robot.getYArray()[1];
+        int[] x = robot.getXArray().clone();
+        int[] y = robot.getYArray().clone();
 
-        return (startX != X || endY != Y) &&
-                (startX != X || startY != Y) &&
-                (endX != X || endY != Y) &&
-                (endX != X || startY != Y);
+        for(int i = 0; i < x.length; i++){
+            for(int j = 0; j<y.length; j++){
+                if(x[i] == X && y[j] == Y)
+                    return false;
+            }
+        }
+        return true;
     }
 
     private void createCell() {
@@ -1248,8 +1260,8 @@ public class PixelGridView extends View {
                  * Y[2]: endY
                  */
 
-                int[] X = robot.getXArray();
-                int[] Y = robot.getYArray();
+                int[] X = robot.getXArray().clone();
+                int[] Y = robot.getYArray().clone();
 
                 String direction = robot.getDirection();
 
@@ -1259,11 +1271,8 @@ public class PixelGridView extends View {
                         (message.equals("b") && direction.equals("S")) ||
                         (message.equals("sl") && direction.equals("E")) ||
                         (message.equals("sr") && direction.equals("W"))) {
-//                    if (checkMovable(startX, startY + 1, endX, endY + 1, direction, message)) {
-//                        setCurCoord(startX, startY + 1, direction);
-//                    }
-                    for(int y: Y){
-                        y++;
+                    for (int i = 0; i < Y.length; i++) {
+                        Y[i] = Y[i] + 1;
                     }
                     if (checkMovable(X, Y, direction, message)) {
                         setCurCoord(X[0], Y[0], direction);
@@ -1272,11 +1281,8 @@ public class PixelGridView extends View {
                         (message.equals("b") && direction.equals("W")) ||
                         (message.equals("sl") && direction.equals("S")) ||
                         (message.equals("sr") && direction.equals("N"))) {
-//                    if (checkMovable(startX + 1, startY, endX + 1, endY, direction, message)) {
-//                        setCurCoord(startX + 1, startY, direction);
-//                    }
-                    for(int x: X){
-                        x++;
+                    for (int i = 0; i < X.length; i++) {
+                        X[i] = X[i] + 1;
                     }
                     if (checkMovable(X, Y, direction, message)) {
                         setCurCoord(X[0], Y[0], direction);
@@ -1285,11 +1291,8 @@ public class PixelGridView extends View {
                         (message.equals("b") && direction.equals("N")) ||
                         (message.equals("sl") && direction.equals("W")) ||
                         (message.equals("sr") && direction.equals("E"))) {
-//                    if (checkMovable(startX, startY - 1, endX, endY - 1, direction, message)) {
-//                        setCurCoord(startX, startY - 1, direction);
-//                    }
-                    for(int y: Y){
-                        y--;
+                    for (int i = 0; i < Y.length; i++) {
+                        Y[i] = Y[i] - 1;
                     }
                     if (checkMovable(X, Y, direction, message)) {
                         setCurCoord(X[0], Y[0], direction);
@@ -1298,11 +1301,8 @@ public class PixelGridView extends View {
                         (message.equals("b") && direction.equals("E")) ||
                         (message.equals("sl") && direction.equals("N")) ||
                         (message.equals("sr") && direction.equals("S"))) {
-//                    if (checkMovable(startX - 1, startY, endX - 1, endY, direction, message)) {
-//                        setCurCoord(startX - 1, startY, direction);
-//                    }
-                    for(int x: X){
-                        x--;
+                    for (int i = 0; i < X.length; i++) {
+                        X[i] = X[i] - 1;
                     }
                     if (checkMovable(X, Y, direction, message)) {
                         setCurCoord(X[0], Y[0], direction);
@@ -1318,7 +1318,6 @@ public class PixelGridView extends View {
                         direction = "S";
                     }
 
-//                    setCurCoord(startX, startY, direction);
                     setCurCoord(X[0], Y[0], direction);
                 } else if (message.equals("r")) {
                     if (direction.equals("N")) {
@@ -1331,7 +1330,6 @@ public class PixelGridView extends View {
                         direction = "N";
                     }
 
-//                    setCurCoord(startX, startY, direction);
                     setCurCoord(X[0], Y[0], direction);
                 }
 
@@ -1370,7 +1368,7 @@ public class PixelGridView extends View {
 
                 Obstacle target = findObstacleByID(obstacleNo);
 
-                if(target != null){
+                if (target != null) {
                     target.targetID = targetID;
                 }
 
