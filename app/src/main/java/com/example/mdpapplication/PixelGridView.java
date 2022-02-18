@@ -71,7 +71,7 @@ public class PixelGridView extends View {
     private final GestureDetectorCompat gestureDetector;
     private final BluetoothConnectionHelper bluetooth;
 
-    private static final List<String> ValidTargetStrings = Arrays.asList( "Alphabet_A", "Alphabet_B", "Alphabet_C",
+    private static final List<String> ValidTargetStrings = Arrays.asList("Alphabet_A", "Alphabet_B", "Alphabet_C",
             "Alphabet_D", "Alphabet_E", "Alphabet_F",
             "Alphabet_G", "Alphabet_H", "Alphabet_S",
             "Alphabet_T", "Alphabet_U", "Alphabet_V",
@@ -211,22 +211,24 @@ public class PixelGridView extends View {
         };
     }
 
-    public static class Robot{
+    public static class Robot {
         int[] robotSize;
         int[] X;
         int[] Y;
         String direction = "None";
 
-        private Robot(int X, int Y, @NonNull int[] robotSize){
+        private Robot(int X, int Y, @NonNull int[] robotSize) {
             this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
 
             this.X = new int[robotSize[0]];
-            this.X[0] = X;
-            this.X[1] = X+robotSize[0]-1;
+            for (int i = 0; i < this.X.length; i++) {
+                this.X[i] = X + i;
+            }
 
             this.Y = new int[robotSize[1]];
-            this.Y[0] = Y;
-            this.Y[1] = Y+robotSize[1]-1;
+            for (int i = 0; i < this.Y.length; i++) {
+                this.Y[i] = Y + i;
+            }
         }
 
         public int[] getRobotSize() {
@@ -253,32 +255,50 @@ public class PixelGridView extends View {
             Y = y;
         }
 
-        public int getX(){
+        public int getX() {
             return X[0];
         }
 
-        public void setX(int x){
-            if(x == 19){
-                X[0] = x-1;
-                X[1] = x+robotSize[0]-2;
-            }else{
-                X[0] = x;
-                X[1] = x+robotSize[0]-1;
+        public void setX(int x) {
+            if (x == 18) {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x - (i + 1);
+                }
+            } else if (x == 19) {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x - (i + 2);
+                }
+            } else {
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x + i;
+                }
             }
+//            for (int i = 0; i < this.X.length; i++) {
+//                this.X[i] = x + i;
+//            }
         }
 
-        public int getY(){
+        public int getY() {
             return Y[0];
         }
 
-        public void setY(int y){
-            if( y == 19){
-                Y[0] = y-1;
-                Y[1] = y+robotSize[0]-2;
-            }else{
-                Y[0] = y;
-                Y[1] = y+robotSize[0]-1;
+        public void setY(int y) {
+            if (y == 18) {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y - (i + 1);
+                }
+            } else if (y == 19) {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y - (i + 2);
+                }
+            } else {
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y + i;
+                }
             }
+//            for (int i = 0; i < this.Y.length; i++) {
+//                this.Y[i] = y + i;
+//            }
         }
 
         public String getDirection() {
@@ -337,7 +357,7 @@ public class PixelGridView extends View {
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
 
-        robot = new Robot(0,0, new int[]{2, 2});
+        robot = new Robot(0, 0, new int[]{3, 3});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -372,6 +392,8 @@ public class PixelGridView extends View {
     }
 
     public void setCurCoord(int col, int row, String direction) {
+        Log.d(TAG, "setCurCoord: Column: " + col + " Row: " + row + " Direction: " + direction);
+
         robot.setX(col);
         robot.setY(row);
         robot.setDirection(direction);
@@ -407,7 +429,7 @@ public class PixelGridView extends View {
     public void resetGrid() {
         calculateDimensions();
 
-        robot = new Robot(0,0, new int[]{2, 2});
+        robot = new Robot(0, 0, new int[]{3, 3});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -508,7 +530,7 @@ public class PixelGridView extends View {
         int endX = robot.getXArray()[1];
         int endY = robot.getYArray()[1];
 
-        int X1=0, Y1=0, X2=0, Y2=0;
+        int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0;
 
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
@@ -542,7 +564,7 @@ public class PixelGridView extends View {
         Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
 
         for (Obstacle obstacle : obstacles) {
-            int obsX=0, obsY=0;
+            int obsX = 0, obsY = 0;
 
             Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
 
@@ -566,14 +588,14 @@ public class PixelGridView extends View {
             Log.d(TAG, "findObstacleUsingRobot: dist1: " + dist1);
             Log.d(TAG, "findObstacleUsingRobot: dist2: " + dist2);
 
-            double angleX1 = Math.toDegrees(Math.acos((obsX - X1)/dist1));
-            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1)/dist1));
+            double angleX1 = Math.toDegrees(Math.acos((obsX - X1) / dist1));
+            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1) / dist1));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX1: " + angleX1);
             Log.d(TAG, "findObstacleUsingRobot: angleY1: " + angleY1);
 
-            double angleX2 = Math.toDegrees(Math.acos((obsX - X2)/dist2));
-            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2)/dist2));
+            double angleX2 = Math.toDegrees(Math.acos((obsX - X2) / dist2));
+            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2) / dist2));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX2: " + angleX2);
             Log.d(TAG, "findObstacleUsingRobot: angleY2: " + angleY2);
@@ -584,7 +606,7 @@ public class PixelGridView extends View {
 
     @Nullable
     private List<Obstacle> findObstacleUsingRobot(Robot robot, int noOfObstacle) {
-        class ObstacleExtraInfo{
+        class ObstacleExtraInfo {
             Obstacle obstacle;
             double distance;
             double angle;
@@ -621,17 +643,19 @@ public class PixelGridView extends View {
             }
         }
 
-        List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);;
-        List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());;
+        List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);
+        List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());
 
         String direction = robot.getDirection();
 
         int startX = robot.getXArray()[0];
         int startY = robot.getYArray()[0];
-        int endX = robot.getXArray()[1];
-        int endY = robot.getYArray()[1];
+        int middleX = robot.getXArray()[1];
+        int middleY = robot.getYArray()[1];
+        int endX = robot.getXArray()[2];
+        int endY = robot.getYArray()[2];
 
-        double X=0, Y=0;
+        double X = 0, Y = 0;
 
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
@@ -641,23 +665,23 @@ public class PixelGridView extends View {
          */
 
         if (direction.equals("N")) {
-            X = (startX + endX)/2;
+            X = middleX;
             Y = endY;
         } else if (direction.equals("E")) { // Rotate by 90 degrees (X,Y) to (-Y,X)
-            X = (-endY-startY)/2;
+            X = -middleY;
             Y = endX;
         } else if (direction.equals("S")) { // Rotate by 180 degrees (X,Y) to (-X,-Y)
-            X = (-endX-startX)/2;
+            X = -middleX;
             Y = -startY;
         } else if (direction.equals("W")) { // Rotate by 270 degrees (X,Y) to (Y,-X)
-            X = (startY+endY)/2;
+            X = middleY;
             Y = -startX;
         }
 
         Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
 
         for (Obstacle obstacle : obstacles) {
-            int obsX=0, obsY=0;
+            int obsX = 0, obsY = 0;
 
             Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
 
@@ -679,13 +703,28 @@ public class PixelGridView extends View {
 
             Log.d(TAG, "findObstacleUsingRobot: dist: " + dist);
 
-            double angleX = Math.toDegrees(Math.acos((obsX - X)/dist));
-            double angleY = Math.toDegrees(Math.asin((obsY - Y)/dist));
+            double angleX = Math.toDegrees(Math.acos((obsX - X) / dist));
+            double angleY = Math.toDegrees(Math.asin((obsY - Y) / dist));
 
             Log.d(TAG, "findObstacleUsingRobot: angleX: " + angleX);
             Log.d(TAG, "findObstacleUsingRobot: angleY: " + angleY);
 
-            ObstacleExtraInfo temp = new ObstacleExtraInfo(obstacle, dist, Math.round(angleY*100)/100);
+            angleX = Math.round(angleX * 100) / 100;
+            angleY = Math.round(angleY * 100) / 100;
+
+            Log.d(TAG, "findObstacleUsingRobot: rounded angleX: " + angleX);
+            Log.d(TAG, "findObstacleUsingRobot: rounded angleY: " + angleY);
+
+            ObstacleExtraInfo temp = null;
+
+            if (angleX == angleY) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleX);
+            } else if (angleY < 0) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleY);
+            } else if (angleX > angleY) {
+                temp = new ObstacleExtraInfo(obstacle, dist, angleX);
+            }
+
             obstacleExtraInfo.add(temp);
         }
 
@@ -698,16 +737,15 @@ public class PixelGridView extends View {
             return -1;
         });
 
-        int count=0;
+        int count = 0;
 
         for (ObstacleExtraInfo obstacle : obstacleExtraInfo) {
-            if(count == noOfObstacle)
-            {
+            if (count == noOfObstacle) {
                 break;
             }
             Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getAngle(): " + obstacle.getAngle());
 
-            if(obstacle.getAngle() >= 45 && obstacle.getAngle() <= 135){
+            if (obstacle.getAngle() >= 45 && obstacle.getAngle() <= 135) {
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getObstacle().id: " + obstacle.getObstacle().id);
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getDistance(): " + obstacle.getDistance());
                 obstacleList.add(obstacle.getObstacle());
@@ -718,7 +756,7 @@ public class PixelGridView extends View {
         return obstacleList;
     }
 
-    public void testDistance(){
+    public void testDistance() {
         findObstacleUsingRobot(robot, 3);
     }
 
@@ -781,18 +819,73 @@ public class PixelGridView extends View {
         return false;
     }
 
+    private boolean checkMovable(int[] X, int[] Y, @NonNull String direction, @NonNull String command) {
+        Log.d(TAG, "checkMovable: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
+
+        Obstacle[] obstacleArray = new Obstacle[X.length];
+
+        /**
+         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
+         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
+         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
+         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
+         */
+
+        if ((X[0] >= 0 && X[2] < numColumns && Y[0] >= 0 && Y[2] < numRows)) {
+            if ((command.equals("f") && direction.equals("N")) ||
+                    (command.equals("b") && direction.equals("S")) ||
+                    (command.equals("sl") && direction.equals("E")) ||
+                    (command.equals("sr") && direction.equals("W"))) {
+                for (int i = 0; i < obstacleArray.length; i++) {
+                    obstacleArray[i] = findObstacleByGridCoord(X[i], Y[2]);
+                }
+            } else if ((command.equals("f") && direction.equals("E")) ||
+                    (command.equals("b") && direction.equals("W")) ||
+                    (command.equals("sl") && direction.equals("S")) ||
+                    (command.equals("sr") && direction.equals("N"))) {
+                for (int i = 0; i < obstacleArray.length; i++) {
+                    obstacleArray[i] = findObstacleByGridCoord(X[2], Y[i]);
+                }
+            } else if ((command.equals("f") && direction.equals("S")) ||
+                    (command.equals("b") && direction.equals("N")) ||
+                    (command.equals("sl") && direction.equals("W")) ||
+                    (command.equals("sr") && direction.equals("E"))) {
+                for (int i = 0; i < obstacleArray.length; i++) {
+                    obstacleArray[i] = findObstacleByGridCoord(X[i], Y[0]);
+                }
+            } else if ((command.equals("f") && direction.equals("W")) ||
+                    (command.equals("b") && direction.equals("E")) ||
+                    (command.equals("sl") && direction.equals("N")) ||
+                    (command.equals("sr") && direction.equals("S"))) {
+                for (int i = 0; i < obstacleArray.length; i++) {
+                    obstacleArray[i] = findObstacleByGridCoord(X[0], Y[i]);
+                }
+            }
+
+            for (Obstacle obstacle : obstacleArray) {
+                Log.d(TAG, "checkMovable: " + obstacle);
+                if (obstacle != null)
+                    return false;
+            }
+            return true;
+
+        }
+        return false;
+    }
+
     private boolean checkPlaceable(int X, int Y) {
         Log.d(TAG, "checkPlaceable: startX: " + X + " startY:" + Y);
 
-        int startX = robot.getXArray()[0];
-        int startY = robot.getYArray()[0];
-        int endX = robot.getXArray()[1];
-        int endY = robot.getYArray()[1];
+        int[] x = robot.getXArray().clone();
+        int[] y = robot.getYArray().clone();
 
-        return (startX != X || endY != Y) &&
-                (startX != X || startY != Y) &&
-                (endX != X || endY != Y) &&
-                (endX != X || startY != Y);
+        for(int i = 0; i < x.length; i++){
+            for(int j = 0; j<y.length; j++){
+                if(x[i] == X && y[j] == Y)
+                    return false;
+            }
+        }
+        return true;
     }
 
     private void createCell() {
@@ -1045,13 +1138,13 @@ public class PixelGridView extends View {
                             touchedObstacle.xOnGrid = column - 1;
                             touchedObstacle.yOnGrid = convertRow(row) - 1;
 
-                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
 //                            int deletedCount = touchedObstacle.id;
 //                            fixCount(deletedCount);
 //                            counter--;
                             obstacles.remove(touchedObstacle);
-                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
@@ -1060,7 +1153,7 @@ public class PixelGridView extends View {
 //                        fixCount(deletedCount);
 //                        counter--;
                         obstacles.remove(touchedObstacle);
-                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
                 }
 
@@ -1140,7 +1233,7 @@ public class PixelGridView extends View {
                         public void onDismiss() {
                             obstacle[0] = obstacleGrid.getObstacle();
                             Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
-                            bluetooth.write("DIRECTION {X: " + obstacle[0].xOnGrid + ", Y:" + obstacle[0].yOnGrid + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
+//                            bluetooth.write("DIRECTION {X: " + obstacle[0].xOnGrid + ", Y:" + obstacle[0].yOnGrid + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
                             invalidate();
                         }
                     });
@@ -1157,42 +1250,62 @@ public class PixelGridView extends View {
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");
 
-                int startX = robot.getXArray()[0];
-                int startY = robot.getYArray()[0];
-                int endX = robot.getXArray()[1];
-                int endY = robot.getYArray()[1];
+                /**
+                 * X[0]: startX
+                 * X[1]: middleX
+                 * X[2]: endX
+                 *
+                 * Y[0]: startY
+                 * Y[1]: middleY
+                 * Y[2]: endY
+                 */
+
+                int[] X = robot.getXArray().clone();
+                int[] Y = robot.getYArray().clone();
 
                 String direction = robot.getDirection();
 
-                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + startX + " endX: " + endX + " startY: " + startY + " endY: " + endY + " Direction: " + direction);
+                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
 
                 if ((message.equals("f") && direction.equals("N")) ||
                         (message.equals("b") && direction.equals("S")) ||
                         (message.equals("sl") && direction.equals("E")) ||
                         (message.equals("sr") && direction.equals("W"))) {
-                    if (checkMovable(startX, startY + 1, endX, endY + 1, direction, message)) {
-                        setCurCoord(startX, startY + 1, direction);
+                    for (int i = 0; i < Y.length; i++) {
+                        Y[i] = Y[i] + 1;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("E")) ||
                         (message.equals("b") && direction.equals("W")) ||
                         (message.equals("sl") && direction.equals("S")) ||
                         (message.equals("sr") && direction.equals("N"))) {
-                    if (checkMovable(startX + 1, startY, endX + 1, endY, direction, message)) {
-                        setCurCoord(startX + 1, startY, direction);
+                    for (int i = 0; i < X.length; i++) {
+                        X[i] = X[i] + 1;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("S")) ||
                         (message.equals("b") && direction.equals("N")) ||
                         (message.equals("sl") && direction.equals("W")) ||
                         (message.equals("sr") && direction.equals("E"))) {
-                    if (checkMovable(startX, startY - 1, endX, endY - 1, direction, message)) {
-                        setCurCoord(startX, startY - 1, direction);
+                    for (int i = 0; i < Y.length; i++) {
+                        Y[i] = Y[i] - 1;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if ((message.equals("f") && direction.equals("W")) ||
                         (message.equals("b") && direction.equals("E")) ||
                         (message.equals("sl") && direction.equals("N")) ||
                         (message.equals("sr") && direction.equals("S"))) {
-                    if (checkMovable(startX - 1, startY, endX - 1, endY, direction, message)) {
-                        setCurCoord(startX - 1, startY, direction);
+                    for (int i = 0; i < X.length; i++) {
+                        X[i] = X[i] - 1;
+                    }
+                    if (checkMovable(X, Y, direction, message)) {
+                        setCurCoord(X[0], Y[0], direction);
                     }
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
@@ -1205,7 +1318,7 @@ public class PixelGridView extends View {
                         direction = "S";
                     }
 
-                    setCurCoord(startX, startY, direction);
+                    setCurCoord(X[0], Y[0], direction);
                 } else if (message.equals("r")) {
                     if (direction.equals("N")) {
                         direction = "E";
@@ -1217,7 +1330,7 @@ public class PixelGridView extends View {
                         direction = "N";
                     }
 
-                    setCurCoord(startX, startY, direction);
+                    setCurCoord(X[0], Y[0], direction);
                 }
 
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
@@ -1245,33 +1358,40 @@ public class PixelGridView extends View {
 //                    } catch (JSONException e) {
 //                        e.printStackTrace();
 //                    }
+                try {
+                    Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
 
-                Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
+                    String[] message = intent.getStringExtra("key").split(",");
 
-                String[] message = intent.getStringExtra("key").split(",");
+                    int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
+                    String targetID = message[2].replace(" ", "");
 
-                int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
-                String targetID = message[2].replace(" ", "");
+                    Obstacle target = findObstacleByID(obstacleNo);
 
-                Obstacle target = findObstacleByID(obstacleNo);
+                    if (target != null) {
+                        target.targetID = targetID;
+                    }
 
-                if(target != null){
-                    target.targetID = targetID;
+                    invalidate();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "onReceive: EVENT_TARGET_SCANNED: ", e);
                 }
-
-                invalidate();
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
                 Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: " + intent.getStringExtra("key"));
+                try{
+                    String[] message = intent.getStringExtra("key").split(",");
 
-                String[] message = intent.getStringExtra("key").split(",");
+                    int col = Integer.parseInt(message[1].replace(" ", ""));
+                    int row = Integer.parseInt(message[2].replace(" ", ""));
+                    String direction = message[3].replace(" ", "");
 
-                int col = Integer.parseInt(message[1].replace(" ", ""));
-                int row = Integer.parseInt(message[2].replace(" ", ""));
-                String direction = message[3].replace(" ", "");
+                    Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
 
-                Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
-
-                setCurCoord(col, row, direction);
+                    setCurCoord(col, row, direction);
+                }catch (Exception e){
+                    Log.e(TAG, "onReceive: EVENT_ROBOT_MOVES: ", e);
+                }
             }
         }
     };
