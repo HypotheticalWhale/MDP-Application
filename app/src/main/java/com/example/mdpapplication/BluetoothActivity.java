@@ -571,7 +571,6 @@ public class BluetoothActivity extends AppCompatActivity {
             }
         }
         bluetoothAdapter.cancelDiscovery();
-
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("DeviceStatus", connected);
         editor.putString("DeviceConnected", connectedDevice);

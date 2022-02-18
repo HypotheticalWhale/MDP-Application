@@ -22,7 +22,7 @@ public class ControlsFragment extends Fragment {
     String msg;
     ImageButton sa, sr, sl, f, r, rl, rr, stop;
     ToggleButton explore, fastest;
-    TextView exploreText,fastestText;
+    TextView exploreText,fastestText,robotStatus;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -34,7 +34,7 @@ public class ControlsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         Context context = getActivity().getApplicationContext();
         bluetooth = MDPApplication.getBluetooth();
-
+        robotStatus = view.findViewById(R.id.robotStatus);
         sa = view.findViewById(R.id.send_arena);
         sr = view.findViewById(R.id.s_right);
         sl = view.findViewById(R.id.s_left);
@@ -61,6 +61,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "sendArena";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         sr.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +69,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "sr";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         sl.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +77,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "sl";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         f.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +85,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "f";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         r.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +93,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "b";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         rl.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +101,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "l";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         rr.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +109,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "r";
                 bluetooth.write(msg);
+                robotStatus.setText("Moving");
             }
         });
         stop.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +117,7 @@ public class ControlsFragment extends Fragment {
             public void onClick(View v) {
                 msg = "s";
                 bluetooth.write(msg);
+                robotStatus.setText("Stopped Moving");
             }
         });
         explore.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
@@ -118,6 +126,7 @@ public class ControlsFragment extends Fragment {
                 if(isChecked){
                     msg = "beginExplore";
                     bluetooth.write(msg);
+                    robotStatus.setText("Exploring");
                     if(exploreText.getText().equals("Exploration")){
                         exploreText.setText("Exploring");
                     }
@@ -140,6 +149,7 @@ public class ControlsFragment extends Fragment {
                 if(isChecked){
                     msg = "beginFastest";
                     bluetooth.write(msg);
+                    robotStatus.setText("Fastest Path");
                     if(fastestText.getText().equals("Fastest Path")){
                         fastestText.setText("Fastest Pathing");
                     }

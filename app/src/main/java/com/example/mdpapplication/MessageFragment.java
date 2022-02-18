@@ -38,11 +38,13 @@ public class MessageFragment extends Fragment {
 
     public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
     public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
+    public static final String EVENT_ROBOT_STATUS_MOVE = "com.event.EVENT_ROBOT_STATUS_MOVE";
+    public static final String EVENT_ROBOT_STATUS_SCANNING = "com.event.EVENT_ROBOT_STATUS_SCANNING";
 
     private static final String STATE_LOG = "log";
 
     Button btn_send, btn_clear;
-    TextView tView;
+    TextView tView,robotStatus;
     TextInputLayout tInput;
 
     BluetoothConnectionHelper bluetooth;
@@ -57,12 +59,11 @@ public class MessageFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+        robotStatus = view.findViewById(R.id.robotStatus);
         btn_send = view.findViewById(R.id.btn_send);
         btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
         tInput = view.findViewById(R.id.textInput);
-
         Context context = getActivity().getApplicationContext();
         bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
@@ -121,6 +122,12 @@ public class MessageFragment extends Fragment {
         @Override
         public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
+            if(intent.getAction().equals(EVENT_ROBOT_STATUS_MOVE)){
+                robotStatus.setText("Moving");
+            }
+            if(intent.getAction().equals(EVENT_ROBOT_STATUS_SCANNING)){
+                robotStatus.setText("Looking for Targets");
+            }
             if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 String message = intent.getStringExtra("key");
                 logMsg("Message Received: " + message);
@@ -129,6 +136,7 @@ public class MessageFragment extends Fragment {
                 String message = intent.getStringExtra("key");
                 logMsg("Message Sent: " + message);
             }
+
         }
     };
 
