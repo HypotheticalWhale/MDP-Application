@@ -97,7 +97,7 @@ public class ControlsFragment extends Fragment {
                         array.put(item);
                     }
 
-                    json.put("Obstacles", array);
+                    json.put("obstacles", array);
 
                     msg = json.toString();
 
