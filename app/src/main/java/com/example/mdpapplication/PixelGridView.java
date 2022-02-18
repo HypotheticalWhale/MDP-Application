@@ -1332,6 +1332,9 @@ public class PixelGridView extends View {
                                 if (checkMovable(X, Y, finalDirection, message)) {
                                     setCurCoord(X[0], Y[0], finalDirection);
                                 }
+                                else{
+                                    finalRun1.set(false);
+                                }
                             } else if ((message.equals("f") && finalDirection.equals("E")) ||
                                     (message.equals("b") && finalDirection.equals("W")) ||
                                     (message.equals("sl") && finalDirection.equals("S")) ||
@@ -1341,6 +1344,9 @@ public class PixelGridView extends View {
                                 }
                                 if (checkMovable(X, Y, finalDirection, message)) {
                                     setCurCoord(X[0], Y[0], finalDirection);
+                                }
+                                else{
+                                    finalRun1.set(false);
                                 }
                             } else if ((message.equals("f") && finalDirection.equals("S")) ||
                                     (message.equals("b") && finalDirection.equals("N")) ||
@@ -1352,6 +1358,9 @@ public class PixelGridView extends View {
                                 if (checkMovable(X, Y, finalDirection, message)) {
                                     setCurCoord(X[0], Y[0], finalDirection);
                                 }
+                                else{
+                                    finalRun1.set(false);
+                                }
                             } else if ((message.equals("f") && finalDirection.equals("W")) ||
                                     (message.equals("b") && finalDirection.equals("E")) ||
                                     (message.equals("sl") && finalDirection.equals("N")) ||
@@ -1362,13 +1371,21 @@ public class PixelGridView extends View {
                                 if (checkMovable(X, Y, finalDirection, message)) {
                                     setCurCoord(X[0], Y[0], finalDirection);
                                 }
+                                else{
+                                    finalRun1.set(false);
+                                }
                             }
                             if(finalRun1.get()){
-                                handler.postDelayed(this, 5000);
+                                handler.postDelayed(this, 1000);
                             }
                         }
                     };
-                    handler.postDelayed(moveThread, 5000);
+                    handler.postDelayed(moveThread, 1000);
+                    try{
+                        Thread.sleep(1000);
+                    }catch (InterruptedException e){
+
+                    }
                     finalRun1.set(true);
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
