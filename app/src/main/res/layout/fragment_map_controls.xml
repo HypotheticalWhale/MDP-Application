@@ -63,7 +63,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:text="@string/plot_robot" />
 
             <Button
@@ -71,6 +70,7 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:text="@string/reset" />
 
         </LinearLayout>
@@ -84,6 +84,7 @@
                 android:id="@+id/btn_obstacles"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:text="@string/send_obstacles" />
 
@@ -91,6 +92,7 @@
                 android:id="@+id/btn_test"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:text="Find Distance Test" />
 

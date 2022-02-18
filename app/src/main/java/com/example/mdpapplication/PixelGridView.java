@@ -87,6 +87,10 @@ public class PixelGridView extends View {
     @NonNull
     private final Context cachedContext;
 
+    private final AtomicBoolean finalRun = new AtomicBoolean(false);
+    Handler handler = new Handler(Looper.getMainLooper());
+    Runnable moveThread;
+
     /**
      * Stores data about obstacle
      */
@@ -324,6 +328,42 @@ public class PixelGridView extends View {
         }
     }
 
+    private static class ScannedObstacle {
+        String target;
+        int vertial;
+        int horizontal;
+
+        public ScannedObstacle(String target, int vertial, int horizontal) {
+            this.target = target;
+            this.vertial = vertial;
+            this.horizontal = horizontal;
+        }
+
+        public String getTarget() {
+            return target;
+        }
+
+        public void setTarget(String target) {
+            this.target = target;
+        }
+
+        public int getVertial() {
+            return vertial;
+        }
+
+        public void setVertial(int vertial) {
+            this.vertial = vertial;
+        }
+
+        public int getHorizontal() {
+            return horizontal;
+        }
+
+        public void setHorizontal(int horizontal) {
+            this.horizontal = horizontal;
+        }
+    }
+
     public PixelGridView(@NonNull Context context) {
         this(context, null);
     }
@@ -523,92 +563,7 @@ public class PixelGridView extends View {
     }
 
     @Nullable
-    private Obstacle findObstacleUsingRobot(Robot robot) {
-        Obstacle obst = null;
-
-        String direction = robot.getDirection();
-
-        int startX = robot.getXArray()[0];
-        int startY = robot.getYArray()[0];
-        int endX = robot.getXArray()[1];
-        int endY = robot.getYArray()[1];
-
-        int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0;
-
-        /**
-         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
-         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
-         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
-         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
-         */
-
-        if (direction.equals("N")) {
-            X1 = startX;
-            Y1 = endY;
-            X2 = endX;
-            Y2 = endY;
-        } else if (direction.equals("E")) { // Rotate by 90 degrees (X,Y) to (-Y,X)
-            X1 = -endY;
-            Y1 = endX;
-            X2 = -startY;
-            Y2 = endX;
-        } else if (direction.equals("S")) { // Rotate by 180 degrees (X,Y) to (-X,-Y)
-            X1 = -endX;
-            Y1 = -startY;
-            X2 = -startX;
-            Y2 = -startY;
-        } else if (direction.equals("W")) { // Rotate by 270 degrees (X,Y) to (Y,-X)
-            X1 = startY;
-            Y1 = -startX;
-            X2 = endY;
-            Y2 = -startX;
-        }
-
-        Log.d(TAG, "findObstacleUsingRobot: direction: " + direction);
-
-        for (Obstacle obstacle : obstacles) {
-            int obsX = 0, obsY = 0;
-
-            Log.d(TAG, "findObstacleUsingRobot: obstacle.id: " + obstacle.id);
-
-            if (direction.equals("N")) {
-                obsX = obstacle.xOnGrid;
-                obsY = obstacle.yOnGrid;
-            } else if (direction.equals("E")) {
-                obsX = -obstacle.yOnGrid;
-                obsY = obstacle.xOnGrid;
-            } else if (direction.equals("S")) {
-                obsX = -obstacle.xOnGrid;
-                obsY = -obstacle.yOnGrid;
-            } else if (direction.equals("W")) {
-                obsX = obstacle.yOnGrid;
-                obsY = -obstacle.xOnGrid;
-            }
-
-            double dist1 = Math.sqrt(Math.pow((obsX - X1), 2) + Math.pow((obsY - Y1), 2));
-            double dist2 = Math.sqrt(Math.pow((obsX - X2), 2) + Math.pow((obsY - Y2), 2));
-
-            Log.d(TAG, "findObstacleUsingRobot: dist1: " + dist1);
-            Log.d(TAG, "findObstacleUsingRobot: dist2: " + dist2);
-
-            double angleX1 = Math.toDegrees(Math.acos((obsX - X1) / dist1));
-            double angleY1 = Math.toDegrees(Math.asin((obsY - Y1) / dist1));
-
-            Log.d(TAG, "findObstacleUsingRobot: angleX1: " + angleX1);
-            Log.d(TAG, "findObstacleUsingRobot: angleY1: " + angleY1);
-
-            double angleX2 = Math.toDegrees(Math.acos((obsX - X2) / dist2));
-            double angleY2 = Math.toDegrees(Math.asin((obsY - Y2) / dist2));
-
-            Log.d(TAG, "findObstacleUsingRobot: angleX2: " + angleX2);
-            Log.d(TAG, "findObstacleUsingRobot: angleY2: " + angleY2);
-        }
-
-        return obst;
-    }
-
-    @Nullable
-    private List<Obstacle> findObstacleUsingRobot(Robot robot, int noOfObstacle) {
+    private List<Obstacle> findObstacleUsingRobot(Robot robot, int noOfObstacle, List<ScannedObstacle> scanned) {
         class ObstacleExtraInfo {
             Obstacle obstacle;
             double distance;
@@ -648,6 +603,7 @@ public class PixelGridView extends View {
 
         List<Obstacle> obstacleList = new ArrayList<>(noOfObstacle);
         List<ObstacleExtraInfo> obstacleExtraInfo = new ArrayList<>(obstacles.size());
+        List<ObstacleExtraInfo> found = new ArrayList<>(obstacles.size());
 
         String direction = robot.getDirection();
 
@@ -752,15 +708,65 @@ public class PixelGridView extends View {
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getObstacle().id: " + obstacle.getObstacle().id);
                 Log.d(TAG, "findObstacleUsingRobot: obstaclesWithDistance: obstacle.getDistance(): " + obstacle.getDistance());
                 obstacleList.add(obstacle.getObstacle());
+                found.add(obstacle);
                 count++;
             }
         }
+
+//        scanned.sort((o1, o2) -> {
+//            if (o1.getVertial() > o2.getVertial()) {
+//                return 1;
+//            } else if (o1.getVertial() < o2.getVertial()) {
+//                return -1;
+//            }
+//            return -1;
+//        });
+//
+//        int i = 0;
+//
+//        for(Obstacle obstacle: obstacleList){
+//            obstacle.targetID = scanned.get(i).getTarget();
+//            i++;
+//        }
+
+        scanned.sort((o1, o2) -> {
+            if (o1.getHorizontal() < o2.getHorizontal()) {
+                return 1;
+            } else if (o1.getHorizontal() > o2.getHorizontal()) {
+                return -1;
+            }
+            return -1;
+        });
+
+        found.sort((o1, o2) -> {
+            if (o1.getAngle() > o2.getAngle()) {
+                return 1;
+            } else if (o1.getAngle() < o2.getAngle()) {
+                return -1;
+            }
+            return -1;
+        });
+
+        int i = 0;
+
+        for (ObstacleExtraInfo obstacle : found) {
+            obstacle.getObstacle().targetID = scanned.get(i).getTarget();
+            i++;
+        }
+
+        invalidate();
 
         return obstacleList;
     }
 
     public void testDistance() {
-        findObstacleUsingRobot(robot, 3);
+
+        List<ScannedObstacle> scanned = new ArrayList<>();
+        scanned.add(new ScannedObstacle("six", 1, 3));
+        scanned.add(new ScannedObstacle("seven", 2, 1));
+        scanned.add(new ScannedObstacle("eight", 3, 2));
+
+        findObstacleUsingRobot(robot, 3, scanned);
     }
 
     @Nullable
@@ -776,50 +782,6 @@ public class PixelGridView extends View {
         }
 
         return touched;
-    }
-
-    private boolean checkMovable(int startX, int startY, int endX, int endY, @NonNull String direction, @NonNull String command) {
-        Log.d(TAG, "checkMovable: startX: " + startX + " endX:" + endX + " startY:" + startY + " endY:" + endY);
-        Obstacle obstacle1 = null;
-        Obstacle obstacle2 = null;
-
-        /**
-         * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
-         * endX = Right of robot when facing North, Front of robot when facing East, Left of robot when facing South, Back of robot when facing West
-         * startY = Back of robot when facing North, Right of robot when facing East, Front of robot when facing South, Left of robot when facing West
-         * endY = Front of robot when facing North, Left of robot when facing East, Back of robot when facing South, Right of robot when facing West
-         */
-
-        if ((startX >= 0 && endX < numColumns && startY >= 0 && endY < numRows)) {
-            if ((command.equals("f") && direction.equals("N")) ||
-                    (command.equals("b") && direction.equals("S")) ||
-                    (command.equals("sl") && direction.equals("E")) ||
-                    (command.equals("sr") && direction.equals("W"))) {
-                obstacle1 = findObstacleByGridCoord(startX, endY);
-                obstacle2 = findObstacleByGridCoord(endX, endY);
-            } else if ((command.equals("f") && direction.equals("E")) ||
-                    (command.equals("b") && direction.equals("W")) ||
-                    (command.equals("sl") && direction.equals("S")) ||
-                    (command.equals("sr") && direction.equals("N"))) {
-                obstacle1 = findObstacleByGridCoord(endX, startY);
-                obstacle2 = findObstacleByGridCoord(endX, endY);
-            } else if ((command.equals("f") && direction.equals("S")) ||
-                    (command.equals("b") && direction.equals("N")) ||
-                    (command.equals("sl") && direction.equals("W")) ||
-                    (command.equals("sr") && direction.equals("E"))) {
-                obstacle1 = findObstacleByGridCoord(startX, startY);
-                obstacle2 = findObstacleByGridCoord(endX, startY);
-            } else if ((command.equals("f") && direction.equals("W")) ||
-                    (command.equals("b") && direction.equals("E")) ||
-                    (command.equals("sl") && direction.equals("N")) ||
-                    (command.equals("sr") && direction.equals("S"))) {
-                obstacle1 = findObstacleByGridCoord(startX, startY);
-                obstacle2 = findObstacleByGridCoord(startX, endY);
-            }
-
-            return obstacle1 == null && obstacle2 == null;
-        }
-        return false;
     }
 
     private boolean checkMovable(int[] X, int[] Y, @NonNull String direction, @NonNull String command) {
@@ -1269,9 +1231,6 @@ public class PixelGridView extends View {
 
                 String direction = robot.getDirection();
 
-                Handler handler = new Handler(Looper.getMainLooper());
-                Runnable moveThread;
-
                 Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
 
 //                if ((message.equals("f") && direction.equals("N")) ||
@@ -1317,76 +1276,11 @@ public class PixelGridView extends View {
 //                }
 
                 if (ValidRobotMovementCommands.contains(message)) {
-                    String finalDirection = direction;
-                    AtomicBoolean finalRun = new AtomicBoolean(false);
-                    AtomicBoolean finalRun1 = finalRun;
-                    moveThread = new Runnable(){
-                        public void run() {
-                            if ((message.equals("f") && finalDirection.equals("N")) ||
-                                    (message.equals("b") && finalDirection.equals("S")) ||
-                                    (message.equals("sl") && finalDirection.equals("E")) ||
-                                    (message.equals("sr") && finalDirection.equals("W"))) {
-                                for (int i = 0; i < Y.length; i++) {
-                                    Y[i] = Y[i] + 1;
-                                }
-                                if (checkMovable(X, Y, finalDirection, message)) {
-                                    setCurCoord(X[0], Y[0], finalDirection);
-                                }
-                                else{
-                                    finalRun1.set(false);
-                                }
-                            } else if ((message.equals("f") && finalDirection.equals("E")) ||
-                                    (message.equals("b") && finalDirection.equals("W")) ||
-                                    (message.equals("sl") && finalDirection.equals("S")) ||
-                                    (message.equals("sr") && finalDirection.equals("N"))) {
-                                for (int i = 0; i < X.length; i++) {
-                                    X[i] = X[i] + 1;
-                                }
-                                if (checkMovable(X, Y, finalDirection, message)) {
-                                    setCurCoord(X[0], Y[0], finalDirection);
-                                }
-                                else{
-                                    finalRun1.set(false);
-                                }
-                            } else if ((message.equals("f") && finalDirection.equals("S")) ||
-                                    (message.equals("b") && finalDirection.equals("N")) ||
-                                    (message.equals("sl") && finalDirection.equals("W")) ||
-                                    (message.equals("sr") && finalDirection.equals("E"))) {
-                                for (int i = 0; i < Y.length; i++) {
-                                    Y[i] = Y[i] - 1;
-                                }
-                                if (checkMovable(X, Y, finalDirection, message)) {
-                                    setCurCoord(X[0], Y[0], finalDirection);
-                                }
-                                else{
-                                    finalRun1.set(false);
-                                }
-                            } else if ((message.equals("f") && finalDirection.equals("W")) ||
-                                    (message.equals("b") && finalDirection.equals("E")) ||
-                                    (message.equals("sl") && finalDirection.equals("N")) ||
-                                    (message.equals("sr") && finalDirection.equals("S"))) {
-                                for (int i = 0; i < X.length; i++) {
-                                    X[i] = X[i] - 1;
-                                }
-                                if (checkMovable(X, Y, finalDirection, message)) {
-                                    setCurCoord(X[0], Y[0], finalDirection);
-                                }
-                                else{
-                                    finalRun1.set(false);
-                                }
-                            }
-                            if(finalRun1.get()){
-                                handler.postDelayed(this, 1000);
-                            }
-                        }
-                    };
+                    finalRun.set(false);
+                    handler.removeCallbacks(moveThread);
+                    moveThread = new moveThread(X,Y,message,direction);
+                    finalRun.set(true);
                     handler.postDelayed(moveThread, 1000);
-                    try{
-                        Thread.sleep(1000);
-                    }catch (InterruptedException e){
-
-                    }
-                    finalRun1.set(true);
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";
@@ -1397,6 +1291,9 @@ public class PixelGridView extends View {
                     } else if (direction.equals("W")) {
                         direction = "S";
                     }
+
+                    finalRun.set(false);
+                    handler.removeCallbacks(moveThread);
 
                     setCurCoord(X[0], Y[0], direction);
                 } else if (message.equals("r")) {
@@ -1410,7 +1307,13 @@ public class PixelGridView extends View {
                         direction = "N";
                     }
 
+                    finalRun.set(false);
+                    handler.removeCallbacks(moveThread);
+
                     setCurCoord(X[0], Y[0], direction);
+                } else if (message.equals("s")){
+                    finalRun.set(false);
+                    handler.removeCallbacks(moveThread);
                 }
 
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
@@ -1475,6 +1378,80 @@ public class PixelGridView extends View {
             }
         }
     };
+
+    private class moveThread implements Runnable {
+        int[] X;
+        int[] Y;
+        String message;
+        String direction;
+
+        public moveThread(int[] X, int[] Y,String message, String direction){
+            this.X = X.clone();
+            this.Y = Y.clone();
+            this.message = message;
+            this.direction = direction;
+        }
+
+        public void run()
+        {
+            if ((message.equals("f") && direction.equals("N")) ||
+                    (message.equals("b") && direction.equals("S")) ||
+                    (message.equals("sl") && direction.equals("E")) ||
+                    (message.equals("sr") && direction.equals("W"))) {
+                for (int i = 0; i < Y.length; i++) {
+                    Y[i] = Y[i] + 1;
+                }
+                if (checkMovable(X, Y, direction, message)) {
+                    setCurCoord(X[0], Y[0], direction);
+                }
+                else{
+                    finalRun.set(false);
+                }
+            } else if ((message.equals("f") && direction.equals("E")) ||
+                    (message.equals("b") && direction.equals("W")) ||
+                    (message.equals("sl") && direction.equals("S")) ||
+                    (message.equals("sr") && direction.equals("N"))) {
+                for (int i = 0; i < X.length; i++) {
+                    X[i] = X[i] + 1;
+                }
+                if (checkMovable(X, Y, direction, message)) {
+                    setCurCoord(X[0], Y[0], direction);
+                }
+                else{
+                    finalRun.set(false);
+                }
+            } else if ((message.equals("f") && direction.equals("S")) ||
+                    (message.equals("b") && direction.equals("N")) ||
+                    (message.equals("sl") && direction.equals("W")) ||
+                    (message.equals("sr") && direction.equals("E"))) {
+                for (int i = 0; i < Y.length; i++) {
+                    Y[i] = Y[i] - 1;
+                }
+                if (checkMovable(X, Y, direction, message)) {
+                    setCurCoord(X[0], Y[0], direction);
+                }
+                else{
+                    finalRun.set(false);
+                }
+            } else if ((message.equals("f") && direction.equals("W")) ||
+                    (message.equals("b") && direction.equals("E")) ||
+                    (message.equals("sl") && direction.equals("N")) ||
+                    (message.equals("sr") && direction.equals("S"))) {
+                for (int i = 0; i < X.length; i++) {
+                    X[i] = X[i] - 1;
+                }
+                if (checkMovable(X, Y, direction, message)) {
+                    setCurCoord(X[0], Y[0], direction);
+                }
+                else{
+                    finalRun.set(false);
+                }
+            }
+            if(finalRun.get()){
+                handler.postDelayed(this, 1000);
+            }
+        }
+    }
 
     @Override
     protected void onDetachedFromWindow() {

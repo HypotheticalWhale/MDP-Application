@@ -59,6 +59,7 @@ public class BluetoothConnectionHelper extends Service {
     public static final String EVENT_TARGET_SCANNED = "com.event.EVENT_TARGET_SCANNED";
     public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
     public static final String EVENT_ROBOT_STATUS = "com.event.EVENT_ROBOT_STATUS";
+    public static final String EVENT_MULTIPLE_TARGET_SCANNED = "com.event.EVENT_MULTIPLE_TARGET_SCANNED";
 
     //For showing toast
     private final String BLUETOOTH_NOT_SUPPORTED = "Device does not support bluetooth.";
@@ -102,7 +103,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final String RPIDeviceName = "";
 
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
-            "l", "sl", "sr");
+            "l", "s", "sl", "sr");
 
     private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Looking for Target", "Stop");
 
@@ -151,6 +152,10 @@ public class BluetoothConnectionHelper extends Service {
                         }
                         else if(receivedMessage.contains("ROBOT")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_MOVES);
+                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
+                        }
+                        else if(receivedMessage.contains("MULTIPLE")) {
+                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_MULTIPLE_TARGET_SCANNED);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
                         else if(ValidRobotCommands.contains(receivedMessage)) {
