@@ -1138,13 +1138,13 @@ public class PixelGridView extends View {
                             touchedObstacle.xOnGrid = column - 1;
                             touchedObstacle.yOnGrid = convertRow(row) - 1;
 
-                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
 //                            int deletedCount = touchedObstacle.id;
 //                            fixCount(deletedCount);
 //                            counter--;
                             obstacles.remove(touchedObstacle);
-                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
@@ -1153,7 +1153,7 @@ public class PixelGridView extends View {
 //                        fixCount(deletedCount);
 //                        counter--;
                         obstacles.remove(touchedObstacle);
-                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
+//                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
                 }
 
@@ -1233,7 +1233,7 @@ public class PixelGridView extends View {
                         public void onDismiss() {
                             obstacle[0] = obstacleGrid.getObstacle();
                             Log.d(TAG, "onDismiss: direction: " + obstacle[0].direction);
-                            bluetooth.write("DIRECTION {X: " + obstacle[0].xOnGrid + ", Y:" + obstacle[0].yOnGrid + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
+//                            bluetooth.write("DIRECTION {X: " + obstacle[0].xOnGrid + ", Y:" + obstacle[0].yOnGrid + ", id:" + obstacle[0].id + " direction: " + obstacle[0].direction + " }");
                             invalidate();
                         }
                     });
@@ -1358,33 +1358,40 @@ public class PixelGridView extends View {
 //                    } catch (JSONException e) {
 //                        e.printStackTrace();
 //                    }
+                try {
+                    Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
 
-                Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
+                    String[] message = intent.getStringExtra("key").split(",");
 
-                String[] message = intent.getStringExtra("key").split(",");
+                    int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
+                    String targetID = message[2].replace(" ", "");
 
-                int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
-                String targetID = message[2].replace(" ", "");
+                    Obstacle target = findObstacleByID(obstacleNo);
 
-                Obstacle target = findObstacleByID(obstacleNo);
+                    if (target != null) {
+                        target.targetID = targetID;
+                    }
 
-                if (target != null) {
-                    target.targetID = targetID;
+                    invalidate();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "onReceive: EVENT_TARGET_SCANNED: ", e);
                 }
-
-                invalidate();
             } else if (intent.getAction().equals(EVENT_ROBOT_MOVES)) {
                 Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: " + intent.getStringExtra("key"));
+                try{
+                    String[] message = intent.getStringExtra("key").split(",");
 
-                String[] message = intent.getStringExtra("key").split(",");
+                    int col = Integer.parseInt(message[1].replace(" ", ""));
+                    int row = Integer.parseInt(message[2].replace(" ", ""));
+                    String direction = message[3].replace(" ", "");
 
-                int col = Integer.parseInt(message[1].replace(" ", ""));
-                int row = Integer.parseInt(message[2].replace(" ", ""));
-                String direction = message[3].replace(" ", "");
+                    Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
 
-                Log.d(TAG, "onReceive: EVENT_ROBOT_MOVES: Column:" + col + " Row:" + row + " Direction:" + direction);
-
-                setCurCoord(col, row, direction);
+                    setCurCoord(col, row, direction);
+                }catch (Exception e){
+                    Log.e(TAG, "onReceive: EVENT_ROBOT_MOVES: ", e);
+                }
             }
         }
     };

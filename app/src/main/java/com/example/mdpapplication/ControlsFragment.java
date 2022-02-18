@@ -15,6 +15,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 public class ControlsFragment extends Fragment {
     private static final String TAG = "ControlsFragment";
 
@@ -23,6 +31,7 @@ public class ControlsFragment extends Fragment {
     ImageButton sa, sr, sl, f, r, rl, rr, stop;
     ToggleButton explore, fastest;
     TextView exploreText,fastestText;
+    PixelGridView pixelGrid;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -46,6 +55,8 @@ public class ControlsFragment extends Fragment {
         explore = view.findViewById(R.id.explore);
         fastest = view.findViewById(R.id.fastest);
 
+        pixelGrid = getActivity().findViewById(R.id.pixelGrid);
+
         exploreText = view.findViewById(R.id.explorationTitleTextView);
         fastestText  = view.findViewById(R.id.fastestPathTitleTextView);
 
@@ -56,11 +67,44 @@ public class ControlsFragment extends Fragment {
          *  r - turn right
          *  s - stop
          */
+
         sa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                msg = "sendArena";
-                bluetooth.write(msg);
+//                msg = "sendArena";
+                try{
+                    List<PixelGridView.Obstacle> obstacles = new ArrayList<>(pixelGrid.getObstacles());
+
+                    obstacles.sort((o1, o2) -> {
+                        if (o1.getId() > o2.getId()) {
+                            return 1;
+                        } else if (o1.getId() < o2.getId()) {
+                            return -1;
+                        }
+                        return -1;
+                    });
+
+                    JSONObject json = new JSONObject();
+
+                    JSONArray array = new JSONArray();
+
+                    for(PixelGridView.Obstacle obstacle: obstacles){
+                        JSONObject item = new JSONObject();
+                        item.put("X", obstacle.X);
+                        item.put("Y", obstacle.Y);
+                        item.put("id", obstacle.id);
+                        item.put("direction", obstacle.direction);
+                        array.put(item);
+                    }
+
+                    json.put("Obstacles", array);
+
+                    msg = json.toString();
+
+                    bluetooth.write(msg);
+                }catch (JSONException e){
+                    Log.e(TAG, "onClick: ", e);
+                }
             }
         });
         sr.setOnClickListener(new View.OnClickListener() {
