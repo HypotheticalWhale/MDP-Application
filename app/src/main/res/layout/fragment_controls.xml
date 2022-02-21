@@ -37,11 +37,6 @@
 
 
             <ImageButton
-                android:id="@+id/send_arena"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_stadium_24" />
-            <ImageButton
                 android:id="@+id/stop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,24 +49,15 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/s_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_arrow_left_24" />
-
+            <Space
+                android:layout_width="56dp"
+                android:layout_height="match_parent" />
 
             <ImageButton
                 android:id="@+id/reverse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_arrow_drop_down_24" />
-
-            <ImageButton
-                android:id="@+id/s_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_arrow_right_24" />
 
 
         </LinearLayout>

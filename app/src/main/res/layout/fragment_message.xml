@@ -63,10 +63,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_clear"
@@ -77,26 +73,6 @@
                 android:text="@string/clear_message_log"
                 tools:layout_editor_absoluteX="6dp"
                 tools:layout_editor_absoluteY="177dp" />
-
-            <TextView
-                android:id="@+id/r_status"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Robot Status:"
-                android:textAllCaps="false"
-                android:textSize="20dp" />
-
-            <TextView
-                android:id="@+id/robotStatus"
-                android:textAllCaps="false"
-                android:textSize="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Ready" />
-
-        </LinearLayout>
 
 
         <Space

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -38,18 +39,18 @@ public class MessageFragment extends Fragment {
 
     public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
     public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
-    public static final String EVENT_ROBOT_STATUS_MOVE = "com.event.EVENT_ROBOT_STATUS_MOVE";
-    public static final String EVENT_ROBOT_STATUS_SCANNING = "com.event.EVENT_ROBOT_STATUS_SCANNING";
 
     private static final String STATE_LOG = "log";
 
     Button btn_send, btn_clear;
-    TextView tView,robotStatus;
+    TextView tView;
     TextInputLayout tInput;
 
     BluetoothConnectionHelper bluetooth;
     String sendMsg;
     SpannableStringBuilder msgLog;
+
+    SharedPreferences sharedPref;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -59,7 +60,6 @@ public class MessageFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        robotStatus = view.findViewById(R.id.robotStatus);
         btn_send = view.findViewById(R.id.btn_send);
         btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
@@ -70,8 +70,6 @@ public class MessageFragment extends Fragment {
 
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
-        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS_MOVE));
-        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS_SCANNING));
 
         tView.setText("Application Started");
         msgLog = new SpannableStringBuilder();
@@ -126,23 +124,14 @@ public class MessageFragment extends Fragment {
         @Override
         public void onReceive(Context context, @NonNull Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getAction().equals(EVENT_ROBOT_STATUS_MOVE)){
-                Log.d(TAG, "onReceive: " + EVENT_ROBOT_STATUS_MOVE);
-                robotStatus.setText("Moving");
-            }
-            else if(intent.getAction().equals(EVENT_ROBOT_STATUS_SCANNING)){
-                Log.d(TAG, "onReceive: " + EVENT_ROBOT_STATUS_MOVE);
-                robotStatus.setText("Looking for Targets");
-            }
-            else if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
-                String message = intent.getStringExtra("key");
+            String message = intent.getStringExtra("key");
+
+            if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 logMsg("Message Received: " + message);
             }
             else if(intent.getAction().equals(EVENT_MESSAGE_SENT)){
-                String message = intent.getStringExtra("key");
                 logMsg("Message Sent: " + message);
             }
-
         }
     };
 
