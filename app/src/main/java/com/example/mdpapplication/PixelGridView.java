@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -391,7 +392,7 @@ public class PixelGridView extends View {
         targetScannedColor.setTextSize(30);
         targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
-        yellowPaint.setStrokeWidth(8);
+        yellowPaint.setStrokeWidth(6);
 
         bluetooth = MDPApplication.getBluetooth();
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_SEND_MOVEMENT));
@@ -512,7 +513,7 @@ public class PixelGridView extends View {
                 touchedObstacle = new Obstacle(column, row, (column - 1), (convertRow(row) - 1), counter);
                 counter++;
 
-                Log.w(TAG, "Added Obstacle " + touchedObstacle);
+                Log.w(TAG, "Added Obstacle: id: " + touchedObstacle.id + " X: " + touchedObstacle.X + " Y: " + touchedObstacle.Y);
                 obstacles.add(touchedObstacle);
             }
         }
@@ -919,13 +920,13 @@ public class PixelGridView extends View {
             }
 
             if (obstacle.direction.equals("N")) {
-                canvas.drawLine(startX, startY + 5, endX, startY + 5, yellowPaint);
+                canvas.drawLine(startX, startY + 3, endX, startY + 3, yellowPaint);
             } else if (obstacle.direction.equals("E")) {
-                canvas.drawLine(endX - 5, startY, endX - 5, endY, yellowPaint);
+                canvas.drawLine(endX - 3, startY, endX - 3, endY, yellowPaint);
             } else if (obstacle.direction.equals("S")) {
-                canvas.drawLine(startX, endY - 5, endX, endY - 5, yellowPaint);
+                canvas.drawLine(startX, endY - 3, endX, endY - 3, yellowPaint);
             } else if (obstacle.direction.equals("W")) {
-                canvas.drawLine(startX + 5, startY, startX + 5, endY, yellowPaint);
+                canvas.drawLine(startX + 3, startY, startX + 3, endY, yellowPaint);
             }
         }
     }
@@ -1037,12 +1038,17 @@ public class PixelGridView extends View {
                 row = (int) (event.getY(actionIndex) / cellSize);
 
                 // check if we"ve touched inside some Obstacle
-                touchedObstacle = obtainTouchedObstacle(column, row);
-                obstaclePointer.put(pointerId, touchedObstacle);
-                touchedObstacle.X = column;
-                touchedObstacle.Y = row;
-                touchedObstacle.xOnGrid = column - 1;
-                touchedObstacle.yOnGrid = convertRow(row) - 1;
+                try{
+                    touchedObstacle = obtainTouchedObstacle(column, row);
+                    obstaclePointer.put(pointerId, touchedObstacle);
+                    touchedObstacle.X = column;
+                    touchedObstacle.Y = row;
+                    touchedObstacle.xOnGrid = column - 1;
+                    touchedObstacle.yOnGrid = convertRow(row) - 1;
+                } catch(Exception e){
+                    Log.e(TAG, "onTouchEvent: ", e);
+                }
+
 
                 invalidate();
                 handled = true;
@@ -1175,6 +1181,30 @@ public class PixelGridView extends View {
                     PixelGridView pixelGrid = findViewById(R.id.pixelGrid);
 
                     // create the popup window
+//                    int x = 0;
+//                    int y = 0;
+//                    int length = 0;
+//
+//                    int screenSize = getResources().getConfiguration().screenLayout &
+//                            Configuration.SCREENLAYOUT_SIZE_MASK;
+//
+//                    switch(screenSize) {
+//                        case Configuration.SCREENLAYOUT_SIZE_LARGE:
+//                            length = (int) (cellSize + (cellSize / 30)) * 5;
+//                            x = (int) (event.getX() - cellSize * 2);
+//                            y = (int) (event.getY() + cellSize * 1.5);
+//                            Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
+//                            break;
+//                        case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+//                            length = (int) (cellSize + (cellSize / 30)) * 4;
+//                            x = (int) (event.getX() - cellSize * 2);
+//                            y = (int) (event.getY() + cellSize * 2.5);
+//                            Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
+//                            break;
+//                        default:
+//                            break;
+//                    }
+
                     int length = (int) (cellSize + (cellSize / 30)) * 4;
 
                     boolean focusable = true; // lets taps outside the popup also dismiss it
@@ -1185,7 +1215,6 @@ public class PixelGridView extends View {
                     int x = (int) (event.getX() - cellSize * 2);
                     int y = (int) (event.getY() + cellSize * 2.5);
                     Log.d(TAG, "onLongPress: X: " + x + " Y: " + y);
-
 
                     popupWindow.showAtLocation(pixelGrid, Gravity.NO_GRAVITY, x, y);
 

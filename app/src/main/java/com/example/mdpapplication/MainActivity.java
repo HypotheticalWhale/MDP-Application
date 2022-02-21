@@ -9,13 +9,16 @@ import androidx.viewpager2.widget.ViewPager2;
 
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
@@ -30,17 +33,23 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     private static final String STATE_ROBOT_DIRECTION = "robot direction";
     private static final String STATE_COUNTER = "counter";
 
+    public static final String EVENT_ROBOT_STATUS = "com.event.EVENT_ROBOT_STATUS";
+
     private BluetoothAdapter mBluetoothAdapter;
 
     TabLayout tabLayout;
     ViewPager2 viewPager;
     FragmentAdapter adapter;
     PixelGridView pixelGrid;
+    BluetoothConnectionHelper bluetooth;
+    TextView robotStatus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        robotStatus = findViewById(R.id.robotStatus);
 
         pixelGrid = findViewById(R.id.pixelGrid);
         tabLayout = findViewById(R.id.tabLayout);
@@ -49,6 +58,11 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         adapter = new FragmentAdapter(fm, getLifecycle());
         viewPager.setAdapter(adapter);
+
+        Context context = getApplicationContext();
+        bluetooth = MDPApplication.getBluetooth();
+
+        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS));
 
         if (savedInstanceState != null) {
             // Restore value of members from saved state
@@ -110,6 +124,18 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, @NonNull Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("key");
+
+            if(intent.getAction().equals(EVENT_ROBOT_STATUS)){
+                robotStatus.setText(message);
+            }
+        }
+    };
 
     //toast message function
     private void showToast(String msg) {

@@ -105,7 +105,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
             "l", "s", "sl", "sr");
 
-    private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Looking for Target", "Stop");
+    private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Turning Right", "Turning Left", "Stop");
 
     /** Service Binding
      *
@@ -513,6 +513,7 @@ public class BluetoothConnectionHelper extends Service {
                     }catch(IOException e){ }
                     break;
                 }
+
             }
         }
 

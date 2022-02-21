@@ -20,7 +20,7 @@ public class ControlsFragment extends Fragment {
 
     BluetoothConnectionHelper bluetooth;
     String msg;
-    ImageButton sa, sr, sl, f, r, rl, rr, stop;
+    ImageButton f, r, rl, rr, stop;
     ToggleButton explore, fastest;
     TextView exploreText,fastestText;
     PixelGridView pixelGrid;
@@ -36,9 +36,6 @@ public class ControlsFragment extends Fragment {
         Context context = getActivity().getApplicationContext();
         bluetooth = MDPApplication.getBluetooth();
 
-        sa = view.findViewById(R.id.send_arena);
-        sr = view.findViewById(R.id.s_right);
-        sl = view.findViewById(R.id.s_left);
         f = view.findViewById(R.id.forward);
         r = view.findViewById(R.id.reverse);
         rl = view.findViewById(R.id.r_left);
@@ -59,29 +56,6 @@ public class ControlsFragment extends Fragment {
          *  r - turn right
          *  s - stop
          */
-        sa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                msg = "sendArena";
-                bluetooth.write(msg);
-            }
-        });
-
-        sr.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                msg = "sr";
-                bluetooth.write(msg);
-            }
-        });
-
-        sl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                msg = "sl";
-                bluetooth.write(msg);
-            }
-        });
 
         f.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -71,7 +71,7 @@ public class ObstacleView extends View {
         targetScannedColor.setTextSize(90);
         targetScannedColor.setTextAlign(Paint.Align.CENTER);
         yellowPaint.setColor(Color.YELLOW);
-        yellowPaint.setStrokeWidth(70);
+        yellowPaint.setStrokeWidth(60);
 
         gestureDetector = new GestureDetector(context, new GestureListener());
 

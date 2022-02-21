@@ -39,12 +39,11 @@ public class MessageFragment extends Fragment {
 
     public static final String EVENT_MESSAGE_RECEIVED = "com.event.EVENT_MESSAGE_RECEIVED";
     public static final String EVENT_MESSAGE_SENT = "com.event.EVENT_MESSAGE_SENT";
-    public static final String EVENT_ROBOT_STATUS = "com.event.EVENT_ROBOT_STATUS";
 
     private static final String STATE_LOG = "log";
 
     Button btn_send, btn_clear;
-    TextView tView,robotStatus;
+    TextView tView;
     TextInputLayout tInput;
 
     BluetoothConnectionHelper bluetooth;
@@ -61,7 +60,6 @@ public class MessageFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        robotStatus = view.findViewById(R.id.robotStatus);
         btn_send = view.findViewById(R.id.btn_send);
         btn_clear = view.findViewById(R.id.btn_clear);
         tView = view.findViewById(R.id.textView);
@@ -72,7 +70,6 @@ public class MessageFragment extends Fragment {
 
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_RECEIVED));
         context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_MESSAGE_SENT));
-        context.registerReceiver(mMessageReceiver, new IntentFilter(EVENT_ROBOT_STATUS));
 
         tView.setText("Application Started");
         msgLog = new SpannableStringBuilder();
@@ -82,12 +79,6 @@ public class MessageFragment extends Fragment {
             if(msgLog.length() != 0){
                 tView.setText(msgLog);
             }
-        }
-
-        sharedPref = getActivity().getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE);
-
-        if(sharedPref.getBoolean("DeviceStatus", false)){
-            robotStatus.setText("Connected");
         }
 
         tView.setMovementMethod(new ScrollingMovementMethod());
@@ -135,10 +126,7 @@ public class MessageFragment extends Fragment {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("key");
 
-            if(intent.getAction().equals(EVENT_ROBOT_STATUS)){
-                robotStatus.setText(message);
-            }
-            else if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
+            if(intent.getAction().equals(EVENT_MESSAGE_RECEIVED)){
                 logMsg("Message Received: " + message);
             }
             else if(intent.getAction().equals(EVENT_MESSAGE_SENT)){
