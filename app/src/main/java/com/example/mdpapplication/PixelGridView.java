@@ -1309,7 +1309,7 @@ public class PixelGridView extends View {
                     handler.removeCallbacks(moveThread);
                     moveThread = new moveThread(X,Y,message,direction);
                     finalRun.set(true);
-                    handler.postDelayed(moveThread, 1000);
+                    handler.postDelayed(moveThread, 500);
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";
@@ -1477,7 +1477,7 @@ public class PixelGridView extends View {
                 }
             }
             if(finalRun.get()){
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 500);
             }
         }
     }
