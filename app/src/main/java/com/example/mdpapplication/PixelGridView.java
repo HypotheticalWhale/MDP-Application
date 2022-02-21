@@ -969,6 +969,15 @@ public class PixelGridView extends View {
         return (numRows - row);
     }
 
+    private boolean containACommand(String receivedMessage, List<String> Commands){
+        for(String command : Commands){
+            if(receivedMessage.contains(command)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         canvas.drawColor(Color.WHITE);
@@ -1304,12 +1313,19 @@ public class PixelGridView extends View {
 //                    }
 //                }
 
-                if (ValidRobotMovementCommands.contains(message)) {
+                if (containACommand(message, ValidRobotMovementCommands)) {
+                    int distance = 1;
+                    if(message.length() > 1){
+                        distance = Integer.parseInt(message.substring(1,4))/10;
+                        message = message.substring(0,1);
+                    }
+
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
-                    moveThread = new moveThread(X,Y,message,direction);
+                    moveThread = new moveThread(X,Y,message,direction, distance);
                     finalRun.set(true);
                     handler.postDelayed(moveThread, 500);
+
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";
@@ -1413,16 +1429,19 @@ public class PixelGridView extends View {
         int[] Y;
         String message;
         String direction;
+        int distance;
+        int count;
 
-        public moveThread(int[] X, int[] Y,String message, String direction){
+        public moveThread(int[] X, int[] Y, String message, String direction, int distance) {
             this.X = X.clone();
             this.Y = Y.clone();
             this.message = message;
             this.direction = direction;
+            this.distance = distance;
+            count = 0;
         }
 
-        public void run()
-        {
+        public void run() {
             if ((message.equals("f") && direction.equals("N")) ||
                     (message.equals("b") && direction.equals("S")) ||
                     (message.equals("sl") && direction.equals("E")) ||
@@ -1432,8 +1451,7 @@ public class PixelGridView extends View {
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
-                }
-                else{
+                } else {
                     finalRun.set(false);
                 }
             } else if ((message.equals("f") && direction.equals("E")) ||
@@ -1445,8 +1463,7 @@ public class PixelGridView extends View {
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
-                }
-                else{
+                } else {
                     finalRun.set(false);
                 }
             } else if ((message.equals("f") && direction.equals("S")) ||
@@ -1458,8 +1475,7 @@ public class PixelGridView extends View {
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
-                }
-                else{
+                } else {
                     finalRun.set(false);
                 }
             } else if ((message.equals("f") && direction.equals("W")) ||
@@ -1471,13 +1487,18 @@ public class PixelGridView extends View {
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
-                }
-                else{
+                } else {
                     finalRun.set(false);
                 }
             }
-            if(finalRun.get()){
-                handler.postDelayed(this, 500);
+
+            count++;
+            Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
+
+            if (finalRun.get()) {
+                if (count != distance) {
+                    handler.postDelayed(this, 500);
+                }
             }
         }
     }

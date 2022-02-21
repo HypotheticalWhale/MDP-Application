@@ -158,7 +158,7 @@ public class BluetoothConnectionHelper extends Service {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_MULTIPLE_TARGET_SCANNED);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
-                        else if(ValidRobotCommands.contains(receivedMessage)) {
+                        else if(containACommand(receivedMessage, ValidRobotCommands)) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
@@ -174,9 +174,9 @@ public class BluetoothConnectionHelper extends Service {
 
                         sendIntentBroadcastWithMsg(sentMessage, EVENT_MESSAGE_SENT);
 
-                        if(ValidRobotCommands.contains(sentMessage)){
-                            sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
-                        }
+//                        if(ValidRobotCommands.contains(sentMessage)){
+//                            sendIntentBroadcastWithMsg(sentMessage, EVENT_SEND_MOVEMENT);
+//                        }
 
                         break;
                     case MESSAGE_TOAST:
@@ -190,6 +190,14 @@ public class BluetoothConnectionHelper extends Service {
         };
     }
 
+    private boolean containACommand(String receivedMessage, List<String> Commands){
+        for(String command : Commands){
+            if(receivedMessage.contains(command)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /** Setter and Getters
      *
