@@ -510,13 +510,35 @@ public class BluetoothConnectionHelper extends Service {
                     stopService();
                     break;
                 }
+
                 //If a connection was accepted
-                if (socket != null){
-                    connected(socket, socket.getRemoteDevice());
-                    try{
-                        mmServerSocket.close();
-                    }catch(IOException e){ }
-                    break;
+//                if (socket != null){
+//                    connected(socket, socket.getRemoteDevice());
+//                    try{
+//                        mmServerSocket.close();
+//                    }catch(IOException e){ }
+//                    break;
+//                }
+
+                if (socket != null) {
+                    synchronized (this) {
+                        switch (mState) {
+                            case STATE_LISTEN:
+                            case STATE_CONNECTING:
+                                // Situation normal. Start the connected thread.
+                                connected(socket, socket.getRemoteDevice());
+                                break;
+                            case STATE_NONE:
+                            case STATE_CONNECTED:
+                                // Either not ready or already connected. Terminate new socket.
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    Log.e(TAG, "Could not close unwanted socket", e);
+                                }
+                                break;
+                        }
+                    }
                 }
             }
         }
