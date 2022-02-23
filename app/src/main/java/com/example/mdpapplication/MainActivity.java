@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +36,8 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     private static final String STATE_COUNTER = "counter";
 
     public static final String EVENT_ROBOT_STATUS = "com.event.EVENT_ROBOT_STATUS";
+
+    private static final String ROBOT_STATUS = "status";
 
     private BluetoothAdapter mBluetoothAdapter;
 
@@ -72,6 +76,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
             String direction = savedInstanceState.getString(STATE_ROBOT_DIRECTION);
             pixelGrid.setCurCoord(curCoord[0], curCoord[1], direction);
             pixelGrid.setCounter(savedInstanceState.getInt(STATE_COUNTER));
+            robotStatus.setText(savedInstanceState.getString(ROBOT_STATUS));
         }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -149,6 +154,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
         savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
         savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
         savedInstanceState.putInt(STATE_COUNTER, pixelGrid.getCounter());
+        savedInstanceState.putString(ROBOT_STATUS, (String) robotStatus.getText());
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);

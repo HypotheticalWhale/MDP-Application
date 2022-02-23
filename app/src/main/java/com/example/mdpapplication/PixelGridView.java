@@ -281,9 +281,6 @@ public class PixelGridView extends View {
                     this.X[i] = x + i;
                 }
             }
-//            for (int i = 0; i < this.X.length; i++) {
-//                this.X[i] = x + i;
-//            }
         }
 
         public int getY() {
@@ -304,9 +301,6 @@ public class PixelGridView extends View {
                     this.Y[i] = y + i;
                 }
             }
-//            for (int i = 0; i < this.Y.length; i++) {
-//                this.Y[i] = y + i;
-//            }
         }
 
         public String getDirection() {
@@ -1120,18 +1114,12 @@ public class PixelGridView extends View {
 
 //                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
-//                            int deletedCount = touchedObstacle.id;
-//                            fixCount(deletedCount);
-//                            counter--;
                             obstacles.remove(touchedObstacle);
 //                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
                     if (touchedObstacle != null) {
-//                        int deletedCount = touchedObstacle.id;
-//                        fixCount(deletedCount);
-//                        counter--;
                         obstacles.remove(touchedObstacle);
 //                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
@@ -1265,53 +1253,11 @@ public class PixelGridView extends View {
 
                 int[] X = robot.getXArray().clone();
                 int[] Y = robot.getYArray().clone();
-                List<String> ValidRobotMovementCommands = Arrays.asList("f", "b", "sl", "sr");
+                List<String> ValidRobotMovementCommands = Arrays.asList("f", "b");
 
                 String direction = robot.getDirection();
 
                 Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
-
-//                if ((message.equals("f") && direction.equals("N")) ||
-//                        (message.equals("b") && direction.equals("S")) ||
-//                        (message.equals("sl") && direction.equals("E")) ||
-//                        (message.equals("sr") && direction.equals("W"))) {
-//                    for (int i = 0; i < Y.length; i++) {
-//                        Y[i] = Y[i] + 1;
-//                    }
-//                    if (checkMovable(X, Y, direction, message)) {
-//                        setCurCoord(X[0], Y[0], direction);
-//                    }
-//                } else if ((message.equals("f") && direction.equals("E")) ||
-//                        (message.equals("b") && direction.equals("W")) ||
-//                        (message.equals("sl") && direction.equals("S")) ||
-//                        (message.equals("sr") && direction.equals("N"))) {
-//                    for (int i = 0; i < X.length; i++) {
-//                        X[i] = X[i] + 1;
-//                    }
-//                    if (checkMovable(X, Y, direction, message)) {
-//                        setCurCoord(X[0], Y[0], direction);
-//                    }
-//                } else if ((message.equals("f") && direction.equals("S")) ||
-//                        (message.equals("b") && direction.equals("N")) ||
-//                        (message.equals("sl") && direction.equals("W")) ||
-//                        (message.equals("sr") && direction.equals("E"))) {
-//                    for (int i = 0; i < Y.length; i++) {
-//                        Y[i] = Y[i] - 1;
-//                    }
-//                    if (checkMovable(X, Y, direction, message)) {
-//                        setCurCoord(X[0], Y[0], direction);
-//                    }
-//                } else if ((message.equals("f") && direction.equals("W")) ||
-//                        (message.equals("b") && direction.equals("E")) ||
-//                        (message.equals("sl") && direction.equals("N")) ||
-//                        (message.equals("sr") && direction.equals("S"))) {
-//                    for (int i = 0; i < X.length; i++) {
-//                        X[i] = X[i] - 1;
-//                    }
-//                    if (checkMovable(X, Y, direction, message)) {
-//                        setCurCoord(X[0], Y[0], direction);
-//                    }
-//                }
 
                 if (containACommand(message, ValidRobotMovementCommands)) {
                     int distance = 1;
@@ -1325,7 +1271,6 @@ public class PixelGridView extends View {
                     moveThread = new moveThread(X,Y,message,direction, distance);
                     finalRun.set(true);
                     handler.postDelayed(moveThread, 500);
-
                 } else if (message.equals("l")) {
                     if (direction.equals("N")) {
                         direction = "W";

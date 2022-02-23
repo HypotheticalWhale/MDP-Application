@@ -103,7 +103,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final String RPIDeviceName = "";
 
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
-            "l", "s", "sl", "sr");
+            "l", "s");
 
     private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Turning Right", "Turning Left", "Stop");
 
@@ -146,7 +146,10 @@ public class BluetoothConnectionHelper extends Service {
 
                         Log.d(TAG, "handleMessage: MESSAGE_READ: " + receivedMessage);
 
-                        if(receivedMessage.contains("TARGET")) {
+                       if(ValidRobotStatus.contains(receivedMessage)) {
+                           sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS);
+                       }
+                        else if(receivedMessage.contains("TARGET")) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_TARGET_SCANNED);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
@@ -161,9 +164,6 @@ public class BluetoothConnectionHelper extends Service {
                         else if(containACommand(receivedMessage, ValidRobotCommands)) {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
-                        }
-                        else if(ValidRobotStatus.contains(receivedMessage)) {
-                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_ROBOT_STATUS);
                         }
 
                         break;
