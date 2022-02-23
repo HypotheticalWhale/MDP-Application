@@ -30,7 +30,6 @@
         android:layout_weight="1"
         android:text="Robot Status:"
         android:textAllCaps="false"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
