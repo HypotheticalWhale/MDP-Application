@@ -618,12 +618,12 @@ public class PixelGridView extends View {
 
         String direction = robot.getDirection();
 
-        int startX = (int) robot.getXArray()[0];
-        int startY = (int) robot.getYArray()[0];
-        int middleX = (int) robot.getXArray()[1];
-        int middleY = (int) robot.getYArray()[1];
-        int endX = (int) robot.getXArray()[2];
-        int endY = (int) robot.getYArray()[2];
+        float startX = robot.getXArray()[0];
+        float startY = robot.getYArray()[0];
+        float middleX = robot.getXArray()[1];
+        float middleY = robot.getYArray()[1];
+        float endX = robot.getXArray()[2];
+        float endY = robot.getYArray()[2];
 
         double X = 0, Y = 0;
 
