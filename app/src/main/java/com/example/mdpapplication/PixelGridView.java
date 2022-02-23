@@ -1386,9 +1386,9 @@ public class PixelGridView extends View {
 //                    } catch (JSONException e) {
 //                        e.printStackTrace();
 //                    }
-                try {
-                    Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
+                Log.d(TAG, "onReceive: EVENT_TARGET_SCANNED: " + intent.getStringExtra("key"));
 
+                try {
                     String[] message = intent.getStringExtra("key").split(",");
 
                     int obstacleNo = Integer.parseInt(message[1].replace(" ", ""));
