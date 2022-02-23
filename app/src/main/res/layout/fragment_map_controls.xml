@@ -94,7 +94,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_weight="1"
-                android:text="Find Distance Test" />
+                android:text="Find Distance Test"
+                android:visibility="invisible"
+                tools:visibility="invisible" />
 
         </LinearLayout>
 
