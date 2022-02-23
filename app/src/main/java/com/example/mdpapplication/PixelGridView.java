@@ -965,7 +965,7 @@ public class PixelGridView extends View {
 
     private boolean containACommand(String receivedMessage, List<String> Commands){
         for(String command : Commands){
-            if(receivedMessage.contains(command)){
+            if(receivedMessage.substring(0,1).equals(command)){
                 return true;
             }
         }
