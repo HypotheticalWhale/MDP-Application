@@ -151,7 +151,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         ArrayList<PixelGridView.Obstacle> obstacles = new ArrayList<>(pixelGrid.getObstacles());
         savedInstanceState.putParcelableArrayList(STATE_OBSTACLE, obstacles);
-        savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
+        savedInstanceState.putFloatArray(STATE_ROBOT, pixelGrid.getCurCoord());
         savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
         savedInstanceState.putInt(STATE_COUNTER, pixelGrid.getCounter());
         savedInstanceState.putString(ROBOT_STATUS, (String) robotStatus.getText());
