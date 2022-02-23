@@ -1254,6 +1254,7 @@ public class PixelGridView extends View {
                 int[] X = robot.getXArray().clone();
                 int[] Y = robot.getYArray().clone();
                 List<String> ValidRobotMovementCommands = Arrays.asList("f", "b");
+                List<String> ValidRobotRotationCommands = Arrays.asList("l", "r");
 
                 String direction = robot.getDirection();
 
@@ -1271,36 +1272,44 @@ public class PixelGridView extends View {
                     moveThread = new moveThread(X,Y,message,direction, distance);
                     finalRun.set(true);
                     handler.postDelayed(moveThread, 500);
-                } else if (message.equals("l")) {
-                    if (direction.equals("N")) {
-                        direction = "W";
-                    } else if (direction.equals("E")) {
-                        direction = "N";
-                    } else if (direction.equals("S")) {
-                        direction = "E";
-                    } else if (direction.equals("W")) {
-                        direction = "S";
+                } else if(containACommand(message, ValidRobotRotationCommands)) {
+                    int distance = 1;
+                    if(message.length() > 1){
+                        distance = Integer.parseInt(message.substring(1,4))/10;
+                        message = message.substring(0,1);
                     }
 
-                    finalRun.set(false);
-                    handler.removeCallbacks(moveThread);
+                    if (message.equals("l")) {
+                        if (direction.equals("N")) {
+                            direction = "W";
+                        } else if (direction.equals("E")) {
+                            direction = "N";
+                        } else if (direction.equals("S")) {
+                            direction = "E";
+                        } else if (direction.equals("W")) {
+                            direction = "S";
+                        }
 
-                    setCurCoord(X[0], Y[0], direction);
-                } else if (message.equals("r")) {
-                    if (direction.equals("N")) {
-                        direction = "E";
-                    } else if (direction.equals("E")) {
-                        direction = "S";
-                    } else if (direction.equals("S")) {
-                        direction = "W";
-                    } else if (direction.equals("W")) {
-                        direction = "N";
+                        finalRun.set(false);
+                        handler.removeCallbacks(moveThread);
+
+                        setCurCoord(X[0], Y[0], direction);
+                    } else if (message.equals("r")) {
+                        if (direction.equals("N")) {
+                            direction = "E";
+                        } else if (direction.equals("E")) {
+                            direction = "S";
+                        } else if (direction.equals("S")) {
+                            direction = "W";
+                        } else if (direction.equals("W")) {
+                            direction = "N";
+                        }
+
+                        finalRun.set(false);
+                        handler.removeCallbacks(moveThread);
+
+                        setCurCoord(X[0], Y[0], direction);
                     }
-
-                    finalRun.set(false);
-                    handler.removeCallbacks(moveThread);
-
-                    setCurCoord(X[0], Y[0], direction);
                 } else if (message.equals("s")){
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
