@@ -220,42 +220,42 @@ public class PixelGridView extends View {
     }
 
     public static class Robot {
-        int[] robotSize;
+        float[] robotSize;
         float[] xLength;
         float[] yLength;
         float[] X;
         float[] Y;
         String direction = "None";
 
-        private Robot(float X, float Y, @NonNull int[] robotSize) {
+        private Robot(float X, float Y, @NonNull float[] robotSize) {
             this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
 
-            this.X = new float[robotSize[0]];
+            this.X = new float[(int)Math.ceil(robotSize[0])];
             for (int i = 0; i < this.X.length; i++) {
                 this.X[i] = X + i;
             }
 
-            this.xLength =new float[robotSize[0]];
+            this.xLength = new float[(int)Math.ceil(robotSize[0])];
             for (int i = 0; i < this.xLength.length; i++) {
                 this.xLength[i] = i;
             }
 
-            this.Y = new float[robotSize[1]];
+            this.Y = new float[(int)Math.ceil(robotSize[1])];
             for (int i = 0; i < this.Y.length; i++) {
                 this.Y[i] = Y + i;
             }
 
-            this.yLength = new float[robotSize[1]];
+            this.yLength = new float[(int)Math.ceil(robotSize[1])];
             for (int i = 0; i < this.yLength.length; i++) {
                 this.yLength[i] = i;
             }
         }
 
-        public int[] getRobotSize() {
+        public float[] getRobotSize() {
             return robotSize;
         }
 
-        public void setRobotSize(int[] robotSize) {
+        public void setRobotSize(float[] robotSize) {
             this.robotSize = robotSize;
         }
 
@@ -411,7 +411,7 @@ public class PixelGridView extends View {
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
 
-        robot = new Robot(0, 0, new int[]{3, 3});
+        robot = new Robot(0, 0, new float[]{3f, 3f});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -483,7 +483,7 @@ public class PixelGridView extends View {
     public void resetGrid() {
         calculateDimensions();
 
-        robot = new Robot(0, 0, new int[]{3, 3});
+        robot = new Robot(0, 0, new float[]{3f, 3f});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -983,9 +983,10 @@ public class PixelGridView extends View {
 
         float col = robot.getX() + 1;
         float row = convertRow(robot.getY());
+        float[] robotSize = robot.getRobotSize().clone();
         String direction = robot.getDirection();
 
-        rect = new RectF(col * cellSize, (row - 3) * cellSize, (col + 3) * cellSize, row * cellSize);
+        rect = new RectF(col * cellSize, (row - robotSize[0]) * cellSize, (col + robotSize[1]) * cellSize, row * cellSize);
 
         Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 
