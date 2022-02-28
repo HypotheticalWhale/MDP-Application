@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -629,17 +630,17 @@ public class BluetoothConnectionHelper extends Service {
         @NonNull
         private final BluetoothSocket mmSocket;
         @Nullable
-        private final InputStream mmInStream;
+        private final BufferedInputStream mmInStream;
         @Nullable
-        private final BufferedOutputStream mmOutStream;
+        private final OutputStream mmOutStream;
 
         public ConnectedThread(@NonNull BluetoothSocket socket){
             mmSocket = socket;
-            InputStream tmpIn = null;
-            BufferedOutputStream tmpOut = null;
+            BufferedInputStream tmpIn = null;
+            OutputStream tmpOut = null;
             try{
-                tmpIn = socket.getInputStream();
-                tmpOut = (BufferedOutputStream) socket.getOutputStream();
+                tmpIn = (BufferedInputStream) socket.getInputStream();
+                tmpOut = socket.getOutputStream();
             }catch(IOException e){
             }
             mmInStream = tmpIn;
