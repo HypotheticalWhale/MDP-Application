@@ -1454,8 +1454,8 @@ public class PixelGridView extends View {
                         handler.postDelayed(moveThread, 500);
                     }
                 } else if (containACommand(message, ValidRobotRotationCommands)) {
-                    int distance = 3;
-                    float fDistance = 0;
+//                    int distance = 3;
+//                    float fDistance = 0;
 
                     if (message.length() > 1) {
 //                        distance = Integer.parseInt(message.substring(1,4))/10;
@@ -1467,12 +1467,18 @@ public class PixelGridView extends View {
                         message = message.substring(0, 1);
                     }
 
-                    if (message.equals("l")) {
-                        /**
-                         * X 30 cm
-                         * Y 30 cm
-                         */
+                    finalRun.set(false);
+                    handler.removeCallbacks(rotationThread);
+                    rotationThread = new rotationThread(X, Y, message, direction);
+                    finalRun.set(true);
+                    handler.postDelayed(rotationThread, 500);
 
+//                    if (message.equals("l")) {
+//                        /**
+//                         * X 30 cm
+//                         * Y 30 cm
+//                         */
+//
 //                        if (direction.equals("N")) {
 //                            direction = "W";
 //                        } else if (direction.equals("E")) {
@@ -1482,24 +1488,17 @@ public class PixelGridView extends View {
 //                        } else if (direction.equals("W")) {
 //                            direction = "S";
 //                        }
-
-                        finalRun.set(false);
-                        handler.removeCallbacks(rotationThread);
-                        rotationThread = new rotationThread(X, Y, message, direction);
-                        finalRun.set(true);
-                        handler.postDelayed(rotationThread, 500);
-
-
+//
 //                        finalRun.set(false);
 //                        handler.removeCallbacks(moveThread);
 //
 //                        setCurCoord(X[0]+3, Y[0]+3, direction);
-                    } else if (message.equals("r")) {
-                        /**
-                         * X 30 cm
-                         * Y 30 cm
-                         */
-
+//                    } else if (message.equals("r")) {
+//                        /**
+//                         * X 30 cm
+//                         * Y 30 cm
+//                         */
+//
 //                        if (direction.equals("N")) {
 //                            direction = "E";
 //                        } else if (direction.equals("E")) {
@@ -1509,18 +1508,12 @@ public class PixelGridView extends View {
 //                        } else if (direction.equals("W")) {
 //                            direction = "N";
 //                        }
-
-                        finalRun.set(false);
-                        handler.removeCallbacks(rotationThread);
-                        rotationThread = new rotationThread(X, Y, message, direction);
-                        finalRun.set(true);
-                        handler.postDelayed(rotationThread, 500);
-
+//
 //                        finalRun.set(false);
 //                        handler.removeCallbacks(moveThread);
 //
 //                        setCurCoord(X[0]+3, Y[0]+3, direction);
-                    }
+//                    }
                 } else if (message.equals("s")) {
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
