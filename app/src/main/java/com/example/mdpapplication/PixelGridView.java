@@ -57,7 +57,7 @@ public class PixelGridView extends View {
 
     private static int numColumns, numRows;
 
-    private int counter = 1;
+    private int counter = 0;
 
     private final Paint blackPaint = new Paint();
     private final Paint obstacleColor = new Paint();
@@ -91,6 +91,8 @@ public class PixelGridView extends View {
     private final AtomicBoolean finalRun = new AtomicBoolean(false);
     Handler handler = new Handler(Looper.getMainLooper());
     Runnable moveThread;
+
+    // Add explored cell
 
     /**
      * Stores data about obstacle
@@ -487,7 +489,7 @@ public class PixelGridView extends View {
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
-        counter = 1;
+        counter = 0;
 
         invalidate();
     }
@@ -1172,12 +1174,18 @@ public class PixelGridView extends View {
 
 //                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
+                            int deletedCount = touchedObstacle.id;
+                            fixCount(deletedCount);
+                            counter--;
                             obstacles.remove(touchedObstacle);
 //                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
                     if (touchedObstacle != null) {
+                        int deletedCount = touchedObstacle.id;
+                        fixCount(deletedCount);
+                        counter--;
                         obstacles.remove(touchedObstacle);
 //                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
@@ -1322,21 +1330,24 @@ public class PixelGridView extends View {
                     int distance = 1;
                     float fDistance = 0;
 
-                    if(message.length() > 1){
-                        distance = Integer.parseInt(message.substring(1,4))/10;
-                        fDistance = Float.parseFloat(message.substring(1,4))/10;
+                    if (message.length() > 1) {
+                        distance = Integer.parseInt(message.substring(1, 4)) / 10;
+                        fDistance = Float.parseFloat(message.substring(1, 4)) / 10;
+                        Log.d(TAG, "onReceive: distance: " + distance + " fdistance: " + fDistance);
                         fDistance = fDistance - distance;
-                        if(fDistance != 0){
-                            distance = distance+ 1;
+                        if (fDistance != 0) {
+                            distance = distance + 1;
                         }
-                        message = message.substring(0,1);
+                        message = message.substring(0, 1);
                     }
 
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
-                    moveThread = new moveThread(X,Y,message,direction, distance, fDistance);
-                    finalRun.set(true);
-                    handler.postDelayed(moveThread, 500);
+                    if (distance > 0) {
+                        moveThread = new moveThread(X, Y, message, direction, distance, fDistance);
+                        finalRun.set(true);
+                        handler.postDelayed(moveThread, 500);
+                    }
                 } else if(containACommand(message, ValidRobotRotationCommands)) {
                     int distance = 1;
                     float fDistance = 0;
@@ -1367,6 +1378,11 @@ public class PixelGridView extends View {
 
                         setCurCoord(X[0], Y[0], direction);
                     } else if (message.equals("r")) {
+                        /**
+                         * X 30 cm
+                         * Y 30 cm
+                         */
+
                         if (direction.equals("N")) {
                             direction = "E";
                         } else if (direction.equals("E")) {
@@ -1543,7 +1559,7 @@ public class PixelGridView extends View {
                 if (count == distance - 1 && fDistance != 0) {
                     handler.postDelayed(this, 250);
                 }
-                else if (count != distance) {
+                else if (count < distance) {
                     handler.postDelayed(this, 500);
                 }
             }
