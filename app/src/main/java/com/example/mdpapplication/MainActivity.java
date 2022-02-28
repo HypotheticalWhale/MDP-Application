@@ -72,7 +72,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
             // Restore value of members from saved state
             HashSet<PixelGridView.Obstacle> obstacles = new HashSet<>(savedInstanceState.getParcelableArrayList(STATE_OBSTACLE));
             pixelGrid.setObstacles(obstacles);
-            int[] curCoord = savedInstanceState.getIntArray(STATE_ROBOT);
+            float[] curCoord = savedInstanceState.getFloatArray(STATE_ROBOT);
             String direction = savedInstanceState.getString(STATE_ROBOT_DIRECTION);
             pixelGrid.setCurCoord(curCoord[0], curCoord[1], direction);
             pixelGrid.setCounter(savedInstanceState.getInt(STATE_COUNTER));
@@ -151,7 +151,7 @@ public class MainActivity<NameViewModel> extends AppCompatActivity {
     public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         ArrayList<PixelGridView.Obstacle> obstacles = new ArrayList<>(pixelGrid.getObstacles());
         savedInstanceState.putParcelableArrayList(STATE_OBSTACLE, obstacles);
-        savedInstanceState.putIntArray(STATE_ROBOT, pixelGrid.getCurCoord());
+        savedInstanceState.putFloatArray(STATE_ROBOT, pixelGrid.getCurCoord());
         savedInstanceState.putString(STATE_ROBOT_DIRECTION, pixelGrid.getRobotDirection());
         savedInstanceState.putInt(STATE_COUNTER, pixelGrid.getCounter());
         savedInstanceState.putString(ROBOT_STATUS, (String) robotStatus.getText());

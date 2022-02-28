@@ -127,8 +127,8 @@ public class MapControlsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try{
-                    int col = Integer.parseInt(x.replace(" ", ""));
-                    int row = Integer.parseInt(y.replace(" ", ""));
+                    float col = Float.parseFloat(x.replace(" ", ""));
+                    float row = Float.parseFloat(y.replace(" ", ""));
                     String direction = robotDirection.replace(" ", "").toUpperCase();
 
                     if (col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction)) {
@@ -189,7 +189,7 @@ public class MapControlsFragment extends Fragment {
     }
 
     private void updateTextInput() {
-        int[] curCoords = pixelGrid.getCurCoord();
+        float[] curCoords = pixelGrid.getCurCoord();
         x = String.valueOf(curCoords[0]);
         y = String.valueOf(curCoords[1]);
         robotDirection = pixelGrid.getRobotDirection();

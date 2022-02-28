@@ -55,9 +55,9 @@ public class PixelGridView extends View {
     private HashSet<Obstacle> obstacles;
     private SparseArray<Obstacle> obstaclePointer;
 
-    private int numColumns, numRows;
+    private static int numColumns, numRows;
 
-    private int counter = 1;
+    private int counter = 0;
 
     private final Paint blackPaint = new Paint();
     private final Paint obstacleColor = new Paint();
@@ -91,6 +91,8 @@ public class PixelGridView extends View {
     private final AtomicBoolean finalRun = new AtomicBoolean(false);
     Handler handler = new Handler(Looper.getMainLooper());
     Runnable moveThread;
+
+    // Add explored cell
 
     /**
      * Stores data about obstacle
@@ -220,61 +222,75 @@ public class PixelGridView extends View {
     }
 
     public static class Robot {
-        int[] robotSize;
-        int[] X;
-        int[] Y;
+        float[] robotSize;
+        float[] xLength;
+        float[] yLength;
+        float[] X;
+        float[] Y;
         String direction = "None";
 
-        private Robot(int X, int Y, @NonNull int[] robotSize) {
+        private Robot(float X, float Y, @NonNull float[] robotSize) {
             this.robotSize = Arrays.copyOf(robotSize, robotSize.length);
 
-            this.X = new int[robotSize[0]];
+            this.X = new float[(int)Math.ceil(robotSize[0])];
             for (int i = 0; i < this.X.length; i++) {
                 this.X[i] = X + i;
             }
 
-            this.Y = new int[robotSize[1]];
+            this.xLength = new float[(int)Math.ceil(robotSize[0])];
+            for (int i = 0; i < this.xLength.length; i++) {
+                this.xLength[i] = i;
+            }
+
+            this.Y = new float[(int)Math.ceil(robotSize[1])];
             for (int i = 0; i < this.Y.length; i++) {
                 this.Y[i] = Y + i;
             }
+
+            this.yLength = new float[(int)Math.ceil(robotSize[1])];
+            for (int i = 0; i < this.yLength.length; i++) {
+                this.yLength[i] = i;
+            }
         }
 
-        public int[] getRobotSize() {
+        public float[] getRobotSize() {
             return robotSize;
         }
 
-        public void setRobotSize(int[] robotSize) {
+        public void setRobotSize(float[] robotSize) {
             this.robotSize = robotSize;
         }
 
-        public int[] getXArray() {
+        public float[] getXArray() {
             return X;
         }
 
-        public void setXArray(int[] x) {
+        public void setXArray(float[] x) {
             X = x;
         }
 
-        public int[] getYArray() {
+        public float[] getYArray() {
             return Y;
         }
 
-        public void setYArray(int[] y) {
+        public void setYArray(float[] y) {
             Y = y;
         }
 
-        public int getX() {
+        public float getX() {
             return X[0];
         }
 
-        public void setX(int x) {
-            if (x == 18) {
+        public void setX(float x) {
+            if (x >= 17 && x < 18) {
+                Arrays.fill(this.X, x - (x % 1));
+            } else if (x >= 18 && x < 19) {
                 for (int i = 0; i < this.X.length; i++) {
-                    this.X[i] = x - (i + 1);
+                    this.X[i] = x - (i + 1) - (x % 1);
                 }
-            } else if (x == 19) {
+            } else if (x >= 19 && x < 20) {
                 for (int i = 0; i < this.X.length; i++) {
-                    this.X[i] = x - (i + 2);
+                    this.X[i] = x - (i + 2) - (x % 1);
                 }
             } else {
                 for (int i = 0; i < this.X.length; i++) {
@@ -283,18 +299,20 @@ public class PixelGridView extends View {
             }
         }
 
-        public int getY() {
+        public float getY() {
             return Y[0];
         }
 
-        public void setY(int y) {
-            if (y == 18) {
+        public void setY(float y) {
+            if (y >= 17 && y < 18) {
+                Arrays.fill(this.Y, y - (y % 1));
+            } else if (y >= 18 && y < 19) {
                 for (int i = 0; i < this.Y.length; i++) {
-                    this.Y[i] = y - (i + 1);
+                    this.Y[i] = y - (i + 1) - (y % 1);
                 }
-            } else if (y == 19) {
+            } else if (y >= 19 && y < 20) {
                 for (int i = 0; i < this.Y.length; i++) {
-                    this.Y[i] = y - (i + 2);
+                    this.Y[i] = y - (i + 2) - (y % 1);
                 }
             } else {
                 for (int i = 0; i < this.Y.length; i++) {
@@ -395,7 +413,7 @@ public class PixelGridView extends View {
 
         gestureDetector = new GestureDetectorCompat(context, new GestureListener());
 
-        robot = new Robot(0, 0, new int[]{3, 3});
+        robot = new Robot(0, 0, new float[]{3f, 3f});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
@@ -429,7 +447,7 @@ public class PixelGridView extends View {
         this.counter = counter;
     }
 
-    public void setCurCoord(int col, int row, String direction) {
+    public void setCurCoord(float col, float row, String direction) {
         Log.d(TAG, "setCurCoord: Column: " + col + " Row: " + row + " Direction: " + direction);
 
         robot.setX(col);
@@ -440,8 +458,8 @@ public class PixelGridView extends View {
     }
 
     @NonNull
-    public int[] getCurCoord() {
-        return new int[]{robot.getX(), robot.getY()};
+    public float[] getCurCoord() {
+        return new float[]{robot.getX(), robot.getY()};
     }
 
     public String getRobotDirection() {
@@ -467,11 +485,11 @@ public class PixelGridView extends View {
     public void resetGrid() {
         calculateDimensions();
 
-        robot = new Robot(0, 0, new int[]{3, 3});
+        robot = new Robot(0, 0, new float[]{3f, 3f});
         robot.setDirection("N");
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
-        counter = 1;
+        counter = 0;
 
         invalidate();
     }
@@ -602,12 +620,12 @@ public class PixelGridView extends View {
 
         String direction = robot.getDirection();
 
-        int startX = robot.getXArray()[0];
-        int startY = robot.getYArray()[0];
-        int middleX = robot.getXArray()[1];
-        int middleY = robot.getYArray()[1];
-        int endX = robot.getXArray()[2];
-        int endY = robot.getYArray()[2];
+        float startX = robot.getXArray()[0];
+        float startY = robot.getYArray()[0];
+        float middleX = robot.getXArray()[1];
+        float middleY = robot.getYArray()[1];
+        float endX = robot.getXArray()[2];
+        float endY = robot.getYArray()[2];
 
         double X = 0, Y = 0;
 
@@ -779,10 +797,37 @@ public class PixelGridView extends View {
         return touched;
     }
 
-    private boolean checkMovable(int[] X, int[] Y, @NonNull String direction, @NonNull String command) {
-        Log.d(TAG, "checkMovable: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
+    private boolean checkMovable(float[] fX, float[] fY, @NonNull String direction, @NonNull String command) {
+        int[] X = new int[fX.length];
+        int[] Y = new int[fY.length];
+
+        boolean roundUp = (command.equals("f") && direction.equals("N")) ||
+                (command.equals("b") && direction.equals("S")) ||
+                (command.equals("f") && direction.equals("E")) ||
+                (command.equals("b") && direction.equals("W"));
+
+        boolean roundDown = (command.equals("f") && direction.equals("S")) ||
+                (command.equals("b") && direction.equals("N")) ||
+                (command.equals("f") && direction.equals("W")) ||
+                (command.equals("b") && direction.equals("E"));
+
+        for(int i=0; i< fX.length;i++) {
+            if (roundUp) {
+                X[i] = Math.round(fX[i]);
+            } else if (roundDown) {
+                X[i] = (int) fX[i];
+            }
+        }
+        for(int i=0; i< fY.length;i++){
+            if (roundUp) {
+                Y[i] = Math.round(fY[i]);
+            } else if (roundDown) {
+                Y[i] = (int) fY[i];
+            }
+        }
 
         Obstacle[] obstacleArray = new Obstacle[X.length];
+        Log.d(TAG, "checkMovable: startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
 
         /**
          * startX = Left of robot when facing North, Back of robot when facing East, Right of robot when facing South, Front of robot when facing West
@@ -836,8 +881,18 @@ public class PixelGridView extends View {
     private boolean checkPlaceable(int X, int Y) {
         Log.d(TAG, "checkPlaceable: startX: " + X + " startY:" + Y);
 
-        int[] x = robot.getXArray().clone();
-        int[] y = robot.getYArray().clone();
+        float[] fX = robot.getXArray().clone();
+        float[] fY = robot.getYArray().clone();
+
+        int[] x = new int[fX.length];
+        int[] y = new int[fY.length];
+
+        for(int i=0; i< fX.length;i++){
+            x[i] = (int) fX[i];
+        }
+        for(int i=0; i< fY.length;i++){
+            y[i] = (int) fY[i];
+        }
 
         for(int i = 0; i < x.length; i++){
             for(int j = 0; j<y.length; j++){
@@ -928,15 +983,12 @@ public class PixelGridView extends View {
     private void drawRobot(@NonNull Canvas canvas) {
         RectF rect;
 
-        int col = robot.getX() + 1;
-        int row = convertRow(robot.getY());
-        int robotSizeX = robot.getRobotSize()[0];
-        int robotSizeY = robot.getRobotSize()[1];
-
-
+        float col = robot.getX() + 1;
+        float row = convertRow(robot.getY());
+        float[] robotSize = robot.getRobotSize().clone();
         String direction = robot.getDirection();
 
-        rect = new RectF(col * cellSize, (row - robotSizeX) * cellSize, (col + robotSizeY) * cellSize, row * cellSize);
+        rect = new RectF(col * cellSize, (row - robotSize[0]) * cellSize, (col + robotSize[1]) * cellSize, row * cellSize);
 
         Bitmap robotBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.robot);
 
@@ -961,6 +1013,10 @@ public class PixelGridView extends View {
 
             canvas.drawBitmap(rotatedRobotBitmap, null, rect, null);
         }
+    }
+
+    private float convertRow(float row) {
+        return (numRows - row);
     }
 
     private int convertRow(int row) {
@@ -1118,12 +1174,18 @@ public class PixelGridView extends View {
 
 //                            bluetooth.write("{X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         } else {
+                            int deletedCount = touchedObstacle.id;
+                            fixCount(deletedCount);
+                            counter--;
                             obstacles.remove(touchedObstacle);
 //                            bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                         }
                     }
                 } else {
                     if (touchedObstacle != null) {
+                        int deletedCount = touchedObstacle.id;
+                        fixCount(deletedCount);
+                        counter--;
                         obstacles.remove(touchedObstacle);
 //                        bluetooth.write("DELETE {X: " + touchedObstacle.xOnGrid + ", Y:" + touchedObstacle.yOnGrid + ", id:" + touchedObstacle.id + " }");
                     }
@@ -1255,8 +1317,8 @@ public class PixelGridView extends View {
                  * Y[2]: endY
                  */
 
-                int[] X = robot.getXArray().clone();
-                int[] Y = robot.getYArray().clone();
+                float[] X = robot.getXArray().clone();
+                float[] Y = robot.getYArray().clone();
                 List<String> ValidRobotMovementCommands = Arrays.asList("f", "b");
                 List<String> ValidRobotRotationCommands = Arrays.asList("l", "r");
 
@@ -1266,20 +1328,37 @@ public class PixelGridView extends View {
 
                 if (containACommand(message, ValidRobotMovementCommands)) {
                     int distance = 1;
-                    if(message.length() > 1){
-                        distance = Integer.parseInt(message.substring(1,4))/10;
-                        message = message.substring(0,1);
+                    float fDistance = 0;
+
+                    if (message.length() > 1) {
+                        distance = Integer.parseInt(message.substring(1, 4)) / 10;
+                        fDistance = Float.parseFloat(message.substring(1, 4)) / 10;
+                        Log.d(TAG, "onReceive: distance: " + distance + " fdistance: " + fDistance);
+                        fDistance = fDistance - distance;
+                        if (fDistance != 0) {
+                            distance = distance + 1;
+                        }
+                        message = message.substring(0, 1);
                     }
 
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
-                    moveThread = new moveThread(X,Y,message,direction, distance);
-                    finalRun.set(true);
-                    handler.postDelayed(moveThread, 500);
+                    if (distance > 0) {
+                        moveThread = new moveThread(X, Y, message, direction, distance, fDistance);
+                        finalRun.set(true);
+                        handler.postDelayed(moveThread, 500);
+                    }
                 } else if(containACommand(message, ValidRobotRotationCommands)) {
                     int distance = 1;
+                    float fDistance = 0;
+
                     if(message.length() > 1){
                         distance = Integer.parseInt(message.substring(1,4))/10;
+                        fDistance = Float.parseFloat(message.substring(1,4))/10;
+                        fDistance = fDistance - distance;
+                        if(fDistance != 0){
+                            distance = distance+ 1;
+                        }
                         message = message.substring(0,1);
                     }
 
@@ -1299,6 +1378,11 @@ public class PixelGridView extends View {
 
                         setCurCoord(X[0], Y[0], direction);
                     } else if (message.equals("r")) {
+                        /**
+                         * X 30 cm
+                         * Y 30 cm
+                         */
+
                         if (direction.equals("N")) {
                             direction = "E";
                         } else if (direction.equals("E")) {
@@ -1383,18 +1467,20 @@ public class PixelGridView extends View {
     };
 
     private class moveThread implements Runnable {
-        int[] X;
-        int[] Y;
+        float[] X;
+        float[] Y;
         String message;
         String direction;
         int distance;
+        float fDistance;
         int count;
 
-        public moveThread(int[] X, int[] Y, String message, String direction, int distance) {
+        public moveThread(float[] X, float[] Y, String message, String direction, int distance, float fDistance) {
             this.X = X.clone();
             this.Y = Y.clone();
             this.message = message;
             this.direction = direction;
+            this.fDistance = fDistance;
             this.distance = distance;
             count = 0;
         }
@@ -1405,7 +1491,11 @@ public class PixelGridView extends View {
                     (message.equals("sl") && direction.equals("E")) ||
                     (message.equals("sr") && direction.equals("W"))) {
                 for (int i = 0; i < Y.length; i++) {
-                    Y[i] = Y[i] + 1;
+                    if (count == distance - 1 && fDistance != 0) {
+                        Y[i] = Y[i] + fDistance;
+                    } else {
+                        Y[i] = Y[i] + 1;
+                    }
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
@@ -1417,7 +1507,11 @@ public class PixelGridView extends View {
                     (message.equals("sl") && direction.equals("S")) ||
                     (message.equals("sr") && direction.equals("N"))) {
                 for (int i = 0; i < X.length; i++) {
-                    X[i] = X[i] + 1;
+                    if (count == distance - 1 && fDistance != 0) {
+                        X[i] = X[i] + fDistance;
+                    } else {
+                        X[i] = X[i] + 1;
+                    }
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
@@ -1429,7 +1523,11 @@ public class PixelGridView extends View {
                     (message.equals("sl") && direction.equals("W")) ||
                     (message.equals("sr") && direction.equals("E"))) {
                 for (int i = 0; i < Y.length; i++) {
-                    Y[i] = Y[i] - 1;
+                    if (count == distance - 1 && fDistance != 0) {
+                        Y[i] = Y[i] - fDistance;
+                    } else {
+                        Y[i] = Y[i] - 1;
+                    }
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
@@ -1441,7 +1539,11 @@ public class PixelGridView extends View {
                     (message.equals("sl") && direction.equals("N")) ||
                     (message.equals("sr") && direction.equals("S"))) {
                 for (int i = 0; i < X.length; i++) {
-                    X[i] = X[i] - 1;
+                    if (count == distance - 1 && fDistance != 0) {
+                        X[i] = X[i] - fDistance;
+                    } else {
+                        X[i] = X[i] - 1;
+                    }
                 }
                 if (checkMovable(X, Y, direction, message)) {
                     setCurCoord(X[0], Y[0], direction);
@@ -1454,7 +1556,10 @@ public class PixelGridView extends View {
             Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
 
             if (finalRun.get()) {
-                if (count != distance) {
+                if (count == distance - 1 && fDistance != 0) {
+                    handler.postDelayed(this, 250);
+                }
+                else if (count < distance) {
                     handler.postDelayed(this, 500);
                 }
             }

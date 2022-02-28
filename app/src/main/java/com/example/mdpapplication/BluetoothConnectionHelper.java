@@ -105,7 +105,7 @@ public class BluetoothConnectionHelper extends Service {
     private static final List<String> ValidRobotCommands = Arrays.asList( "f", "b", "r",
             "l", "s");
 
-    private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Turning Right", "Turning Left", "Stop");
+    private static final List<String> ValidRobotStatus = Arrays.asList( "Ready to Start", "Moving", "Turning Right", "Turning Left", "Stop", "Looking for Target");
 
     /** Service Binding
      *
@@ -161,10 +161,31 @@ public class BluetoothConnectionHelper extends Service {
                             sendIntentBroadcastWithMsg(receivedMessage, EVENT_MULTIPLE_TARGET_SCANNED);
                             sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
                         }
-                        else if(containACommand(receivedMessage, ValidRobotCommands)) {
-                            sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
-                            sendIntentBroadcastWithMsg(receivedMessage,EVENT_MESSAGE_RECEIVED);
-                        }
+                       else if(containACommand(receivedMessage, ValidRobotCommands)) {
+                           sendIntentBroadcastWithMsg(receivedMessage, EVENT_SEND_MOVEMENT);
+                           sendIntentBroadcastWithMsg(receivedMessage, EVENT_MESSAGE_RECEIVED);
+
+                           if (receivedMessage.length() > 1) {
+                               String movement = receivedMessage.substring(0, 1);
+                               String status = "";
+                               switch (movement) {
+                                   case "f":
+                                   case "b":
+                                       status = "Moving";
+                                       break;
+                                   case "l":
+                                       status = "Turning Left";
+                                       break;
+                                   case "r":
+                                       status = "Turning Right";
+                                       break;
+                                   case "s":
+                                       status = "Stop";
+                                       break;
+                               }
+                               sendIntentBroadcastWithMsg(status, EVENT_ROBOT_STATUS);
+                           }
+                       }
 
                         break;
                     case MESSAGE_SENT:
