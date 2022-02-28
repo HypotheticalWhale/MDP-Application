@@ -332,12 +332,21 @@ public class PixelGridView extends View {
 
     private static class Cell {
         float startX, startY, endX, endY;
+        Boolean explored = false;
 
         private Cell(float startX, float startY, float endX, float endY) {
             this.startX = startX;
             this.startY = startY;
             this.endX = endX;
             this.endY = endY;
+        }
+
+        public Boolean getExplored(){
+            return this.explored;
+        }
+
+        public void setExplored(Boolean explored){
+            this.explored = explored;
         }
     }
 
@@ -453,6 +462,15 @@ public class PixelGridView extends View {
         robot.setX(col);
         robot.setY(row);
         robot.setDirection(direction);
+
+        float[] X = robot.getXArray();
+        float[] Y = robot.getYArray();
+
+        for(int i= 0; i < X.length; i++){
+            Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[i]);
+
+            cells[(int)X[i]+1][19-(int)Y[i]].setExplored(true);
+        }
 
         invalidate();
     }
@@ -914,8 +932,14 @@ public class PixelGridView extends View {
 
     private void drawIndividualCell(@NonNull Canvas canvas) {
         for (int x = 1; x <= numColumns; x++)
-            for (int y = 0; y < numRows; y++)
-                canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, unexploredColor);
+            for (int y = 0; y < numRows; y++) {
+                if (cells[x][y].getExplored()) {
+                    canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, exploredColor);
+                } else {
+                    canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, unexploredColor);
+
+                }
+            }
     }
 
     private void drawGrid(@NonNull Canvas canvas) {
@@ -1363,6 +1387,11 @@ public class PixelGridView extends View {
                     }
 
                     if (message.equals("l")) {
+                        /**
+                         * X 30 cm
+                         * Y 30 cm
+                         */
+
                         if (direction.equals("N")) {
                             direction = "W";
                         } else if (direction.equals("E")) {
@@ -1376,7 +1405,7 @@ public class PixelGridView extends View {
                         finalRun.set(false);
                         handler.removeCallbacks(moveThread);
 
-                        setCurCoord(X[0], Y[0], direction);
+                        setCurCoord(X[0]+3, Y[0]+3, direction);
                     } else if (message.equals("r")) {
                         /**
                          * X 30 cm
@@ -1396,7 +1425,7 @@ public class PixelGridView extends View {
                         finalRun.set(false);
                         handler.removeCallbacks(moveThread);
 
-                        setCurCoord(X[0], Y[0], direction);
+                        setCurCoord(X[0]+3, Y[0]+3, direction);
                     }
                 } else if (message.equals("s")){
                     finalRun.set(false);
@@ -1561,6 +1590,9 @@ public class PixelGridView extends View {
                 }
                 else if (count < distance) {
                     handler.postDelayed(this, 500);
+                }
+                else{
+                    finalRun.set(false);
                 }
             }
         }
