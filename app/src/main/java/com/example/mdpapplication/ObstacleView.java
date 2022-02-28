@@ -17,6 +17,9 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +33,8 @@ public class ObstacleView extends View {
     private final Paint whitePaint = new Paint();
     private final Paint yellowPaint = new Paint();
     private final Paint targetScannedColor = new Paint();
+
+    private boolean showTargetID;
 
     @NonNull
     private final GestureDetector gestureDetector;
@@ -47,6 +52,47 @@ public class ObstacleView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
+    JSONObject targetIdJSON;
+
+    {
+        try {
+            targetIdJSON = new JSONObject("{\n" +
+                    "    \"Alphabet_A\": 20,\n" +
+                    "    \"Alphabet_B\": 21,\n" +
+                    "    \"Alphabet_C\": 22,\n" +
+                    "    \"Alphabet_D\": 23,\n" +
+                    "    \"Alphabet_E\": 24,\n" +
+                    "    \"Alphabet_F\": 25,\n" +
+                    "    \"Alphabet_G\": 26,\n" +
+                    "    \"Alphabet_H\": 27,\n" +
+                    "    \"Alphabet_S\": 28,\n" +
+                    "    \"Alphabet_T\": 29,\n" +
+                    "    \"Alphabet_U\": 30,\n" +
+                    "    \"Alphabet_V\": 31,\n" +
+                    "    \"Alphabet_W\": 32,\n" +
+                    "    \"Alphabet_X\": 33,\n" +
+                    "    \"Alphabet_Y\": 34,\n" +
+                    "    \"Alphabet_Z\": 35,\n" +
+                    "    \"down_arrow\": 37,\n" +
+                    "    \"eight\": 18,\n" +
+                    "    \"five\": 15,\n" +
+                    "    \"four\": 14,\n" +
+                    "    \"left_arrow\": 39,\n" +
+                    "    \"nine\": 19,\n" +
+                    "    \"one\": 11,\n" +
+                    "    \"right_arrow\": 38,\n" +
+                    "    \"seven\": 17,\n" +
+                    "    \"six\": 16,\n" +
+                    "    \"stop\": 40,\n" +
+                    "    \"three\": 13,\n" +
+                    "    \"two\": 12,\n" +
+                    "    \"up_arrow\": 36\n" +
+                    "}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @NonNull
     private final Context cachedContext;
 
@@ -61,6 +107,7 @@ public class ObstacleView extends View {
                 0, 0);
         this.numColumns = typedArray.getInt(R.styleable.PixelGridView_columns, 0);
         this.numRows = typedArray.getInt(R.styleable.PixelGridView_rows, 0);
+
         typedArray.recycle();
 
         blackPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -76,6 +123,10 @@ public class ObstacleView extends View {
         gestureDetector = new GestureDetector(context, new GestureListener());
 
         cachedContext = context;
+    }
+
+    public void setShowTargetID(boolean showTargetID) {
+        this.showTargetID = showTargetID;
     }
 
     public void setObstacle(PixelGridView.Obstacle obstacle) {
@@ -127,10 +178,20 @@ public class ObstacleView extends View {
                 canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
                 canvas.drawText(String.valueOf(obstacle.id), 0.5f * cellWidth, 0.65f * cellHeight, whitePaint);
             } else if (ValidTargetStrings.contains(obstacle.targetID)) {
-                RectF rect = new RectF(0, 0, cellWidth, cellHeight);
-                int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
-                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
-                canvas.drawBitmap(obstacleBitmap, null, rect, null);
+                if(showTargetID){
+                    try {
+                        canvas.drawRect(0, 0, cellWidth, cellHeight, blackPaint);
+                        canvas.drawText(String.valueOf(targetIdJSON.getInt(obstacle.targetID)), 0.5f * cellWidth, 0.65f * cellHeight, targetScannedColor);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    RectF rect = new RectF(0, 0, cellWidth, cellHeight);
+                    int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                    Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
+                    canvas.drawBitmap(obstacleBitmap, null, rect, null);
+                }
             }
 
             if (obstacle.direction.equals("N")) {

@@ -1,12 +1,16 @@
 package com.example.mdpapplication;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
@@ -19,6 +23,7 @@ import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.Toast;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -41,6 +46,7 @@ public class MapControlsFragment extends Fragment {
     PixelGridView pixelGrid;
     Button btn_reset, btn_set, btn_obstacles, btn_test;
     String x, y, robotDirection;
+    SwitchMaterial sw_target;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -55,6 +61,7 @@ public class MapControlsFragment extends Fragment {
         btn_set = view.findViewById(R.id.btn_set);
         btn_obstacles = view.findViewById(R.id.btn_obstacles);
         btn_test = view.findViewById(R.id.btn_test);
+        sw_target = view.findViewById(R.id.sw_target);
 
         xInput = view.findViewById(R.id.xInput);
         yInput = view.findViewById(R.id.yInput);
@@ -186,6 +193,13 @@ public class MapControlsFragment extends Fragment {
             }
         });
 
+        sw_target.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.setShowTargetID(sw_target.isChecked());
+            }
+        });
+
     }
 
     private void updateTextInput() {
@@ -218,12 +232,14 @@ public class MapControlsFragment extends Fragment {
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
+        updateTextInput();
         super.onStart();
     }
 
     @Override
     public void onResume() {
         Log.d(TAG, "onResume: ");
+        updateTextInput();
         super.onResume();
     }
 

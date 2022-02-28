@@ -7,6 +7,34 @@
     android:layout_height="match_parent"
     tools:context=".BluetoothActivity">
 
+    <TextView
+        android:id="@+id/r_status"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="156dp"
+        android:layout_weight="1"
+        android:text="Robot Status:"
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/pixelGrid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/robotStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Disconnected"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.318"
+        app:layout_constraintStart_toEndOf="@+id/pixelGrid"
+        app:layout_constraintTop_toBottomOf="@+id/r_status" />
 
     <com.example.mdpapplication.PixelGridView
         android:id="@+id/pixelGrid"

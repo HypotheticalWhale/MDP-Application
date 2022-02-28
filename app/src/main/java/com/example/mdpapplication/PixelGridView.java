@@ -31,6 +31,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +49,7 @@ public class PixelGridView extends View {
     public static final String EVENT_ROBOT_MOVES = "com.event.EVENT_ROBOT_MOVES";
 
     private boolean mapDrawn = false;
+    private boolean showTargetID = false;
 
     private static float cellSize;
     private static Cell[][] cells;
@@ -85,14 +89,53 @@ public class PixelGridView extends View {
             "nine", "one", "right_arrow", "seven",
             "six", "stop", "three", "two", "up_arrow");
 
+    JSONObject targetIdJSON;
+
+    {
+        try {
+            targetIdJSON = new JSONObject("{\n" +
+                    "    \"Alphabet_A\": 20,\n" +
+                    "    \"Alphabet_B\": 21,\n" +
+                    "    \"Alphabet_C\": 22,\n" +
+                    "    \"Alphabet_D\": 23,\n" +
+                    "    \"Alphabet_E\": 24,\n" +
+                    "    \"Alphabet_F\": 25,\n" +
+                    "    \"Alphabet_G\": 26,\n" +
+                    "    \"Alphabet_H\": 27,\n" +
+                    "    \"Alphabet_S\": 28,\n" +
+                    "    \"Alphabet_T\": 29,\n" +
+                    "    \"Alphabet_U\": 30,\n" +
+                    "    \"Alphabet_V\": 31,\n" +
+                    "    \"Alphabet_W\": 32,\n" +
+                    "    \"Alphabet_X\": 33,\n" +
+                    "    \"Alphabet_Y\": 34,\n" +
+                    "    \"Alphabet_Z\": 35,\n" +
+                    "    \"down_arrow\": 37,\n" +
+                    "    \"eight\": 18,\n" +
+                    "    \"five\": 15,\n" +
+                    "    \"four\": 14,\n" +
+                    "    \"left_arrow\": 39,\n" +
+                    "    \"nine\": 19,\n" +
+                    "    \"one\": 11,\n" +
+                    "    \"right_arrow\": 38,\n" +
+                    "    \"seven\": 17,\n" +
+                    "    \"six\": 16,\n" +
+                    "    \"stop\": 40,\n" +
+                    "    \"three\": 13,\n" +
+                    "    \"two\": 12,\n" +
+                    "    \"up_arrow\": 36\n" +
+                    "}");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @NonNull
     private final Context cachedContext;
 
     private final AtomicBoolean finalRun = new AtomicBoolean(false);
     Handler handler = new Handler(Looper.getMainLooper());
-    Runnable moveThread;
-
-    // Add explored cell
+    Runnable moveThread, rotationThread;
 
     /**
      * Stores data about obstacle
@@ -332,7 +375,7 @@ public class PixelGridView extends View {
 
     private static class Cell {
         float startX, startY, endX, endY;
-        Boolean explored = false;
+        boolean explored = false;
 
         private Cell(float startX, float startY, float endX, float endY) {
             this.startX = startX;
@@ -341,11 +384,11 @@ public class PixelGridView extends View {
             this.endY = endY;
         }
 
-        public Boolean getExplored(){
+        public boolean getExplored(){
             return this.explored;
         }
 
-        public void setExplored(Boolean explored){
+        public void setExplored(boolean explored){
             this.explored = explored;
         }
     }
@@ -458,20 +501,39 @@ public class PixelGridView extends View {
 
     public void setCurCoord(float col, float row, String direction) {
         Log.d(TAG, "setCurCoord: Column: " + col + " Row: " + row + " Direction: " + direction);
+        float[] X = robot.getXArray().clone();
+        float[] Y = robot.getYArray().clone();
+
+        for(int i= 0; i < X.length; i++){
+            for (int j = 0; j < Y.length; j++) {
+                Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[j]);
+                cells[(int)X[i]+1][19-(int)Y[j]].setExplored(true);
+            }
+        }
 
         robot.setX(col);
         robot.setY(row);
         robot.setDirection(direction);
 
-        float[] X = robot.getXArray();
-        float[] Y = robot.getYArray();
+        X = robot.getXArray().clone();
+        Y = robot.getYArray().clone();
 
         for(int i= 0; i < X.length; i++){
-            Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[i]);
-
-            cells[(int)X[i]+1][19-(int)Y[i]].setExplored(true);
+            for (int j = 0; j < Y.length; j++) {
+                Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[j]);
+                cells[(int)X[i]+1][19-(int)Y[j]].setExplored(true);
+            }
         }
 
+        invalidate();
+    }
+
+    public boolean getShowTargetID(){
+        return this.showTargetID;
+    }
+
+    public void setShowTargetID(boolean showTargetID){
+        this.showTargetID = showTargetID;
         invalidate();
     }
 
@@ -508,6 +570,12 @@ public class PixelGridView extends View {
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
         counter = 0;
+
+        for (int x = 1; x <= numColumns; x++){
+            for (int y = 0; y < numRows; y++) {
+                cells[x][y].setExplored(false);
+            }
+        }
 
         invalidate();
     }
@@ -931,7 +999,7 @@ public class PixelGridView extends View {
     }
 
     private void drawIndividualCell(@NonNull Canvas canvas) {
-        for (int x = 1; x <= numColumns; x++)
+        for (int x = 1; x <= numColumns; x++){
             for (int y = 0; y < numRows; y++) {
                 if (cells[x][y].getExplored()) {
                     canvas.drawRect(cells[x][y].startX, cells[x][y].startY, cells[x][y].endX, cells[x][y].endY, exploredColor);
@@ -940,6 +1008,7 @@ public class PixelGridView extends View {
 
                 }
             }
+        }
     }
 
     private void drawGrid(@NonNull Canvas canvas) {
@@ -986,10 +1055,20 @@ public class PixelGridView extends View {
                 canvas.drawRect(startX, startY, endX, endY, obstacleColor);
                 canvas.drawText(String.valueOf(obstacle.id), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, whitePaint);
             } else if (ValidTargetStrings.contains(obstacle.targetID)) {
-                RectF rect = new RectF(startX, startY, endX, endY);
-                int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
-                Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
-                canvas.drawBitmap(obstacleBitmap, null, rect, null);
+                if(showTargetID){
+                    try {
+                        canvas.drawRect(startX, startY, endX, endY, obstacleColor);
+                        canvas.drawText(String.valueOf(targetIdJSON.getInt(obstacle.targetID)), (obstacle.X + (float) 0.5) * cellSize, (obstacle.Y + (float) 0.65) * cellSize, targetScannedColor);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    RectF rect = new RectF(startX, startY, endX, endY);
+                    int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                    Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
+                    canvas.drawBitmap(obstacleBitmap, null, rect, null);
+                }
             }
 
             if (obstacle.direction.equals("N")) {
@@ -1307,7 +1386,9 @@ public class PixelGridView extends View {
 
                     ObstacleView obstacleGrid = popupView.findViewById(R.id.obstacleGrid);
                     obstacleGrid.setObstacle(obstacle[0]);
+                    obstacleGrid.setShowTargetID(showTargetID);
                     obstacleGrid.setPopupWindow(popupWindow);
+
 
                     popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
                         @Override
@@ -1372,18 +1453,18 @@ public class PixelGridView extends View {
                         finalRun.set(true);
                         handler.postDelayed(moveThread, 500);
                     }
-                } else if(containACommand(message, ValidRobotRotationCommands)) {
-                    int distance = 1;
+                } else if (containACommand(message, ValidRobotRotationCommands)) {
+                    int distance = 3;
                     float fDistance = 0;
 
-                    if(message.length() > 1){
-                        distance = Integer.parseInt(message.substring(1,4))/10;
-                        fDistance = Float.parseFloat(message.substring(1,4))/10;
-                        fDistance = fDistance - distance;
-                        if(fDistance != 0){
-                            distance = distance+ 1;
-                        }
-                        message = message.substring(0,1);
+                    if (message.length() > 1) {
+//                        distance = Integer.parseInt(message.substring(1,4))/10;
+//                        fDistance = Float.parseFloat(message.substring(1,4))/10;
+//                        fDistance = fDistance - distance;
+//                        if(fDistance != 0){
+//                            distance = distance+ 1;
+//                        }
+                        message = message.substring(0, 1);
                     }
 
                     if (message.equals("l")) {
@@ -1392,42 +1473,55 @@ public class PixelGridView extends View {
                          * Y 30 cm
                          */
 
-                        if (direction.equals("N")) {
-                            direction = "W";
-                        } else if (direction.equals("E")) {
-                            direction = "N";
-                        } else if (direction.equals("S")) {
-                            direction = "E";
-                        } else if (direction.equals("W")) {
-                            direction = "S";
-                        }
+//                        if (direction.equals("N")) {
+//                            direction = "W";
+//                        } else if (direction.equals("E")) {
+//                            direction = "N";
+//                        } else if (direction.equals("S")) {
+//                            direction = "E";
+//                        } else if (direction.equals("W")) {
+//                            direction = "S";
+//                        }
 
                         finalRun.set(false);
-                        handler.removeCallbacks(moveThread);
+                        handler.removeCallbacks(rotationThread);
+                        rotationThread = new rotationThread(X, Y, message, direction);
+                        finalRun.set(true);
+                        handler.postDelayed(rotationThread, 500);
 
-                        setCurCoord(X[0]+3, Y[0]+3, direction);
+
+//                        finalRun.set(false);
+//                        handler.removeCallbacks(moveThread);
+//
+//                        setCurCoord(X[0]+3, Y[0]+3, direction);
                     } else if (message.equals("r")) {
                         /**
                          * X 30 cm
                          * Y 30 cm
                          */
 
-                        if (direction.equals("N")) {
-                            direction = "E";
-                        } else if (direction.equals("E")) {
-                            direction = "S";
-                        } else if (direction.equals("S")) {
-                            direction = "W";
-                        } else if (direction.equals("W")) {
-                            direction = "N";
-                        }
+//                        if (direction.equals("N")) {
+//                            direction = "E";
+//                        } else if (direction.equals("E")) {
+//                            direction = "S";
+//                        } else if (direction.equals("S")) {
+//                            direction = "W";
+//                        } else if (direction.equals("W")) {
+//                            direction = "N";
+//                        }
 
                         finalRun.set(false);
-                        handler.removeCallbacks(moveThread);
+                        handler.removeCallbacks(rotationThread);
+                        rotationThread = new rotationThread(X, Y, message, direction);
+                        finalRun.set(true);
+                        handler.postDelayed(rotationThread, 500);
 
-                        setCurCoord(X[0]+3, Y[0]+3, direction);
+//                        finalRun.set(false);
+//                        handler.removeCallbacks(moveThread);
+//
+//                        setCurCoord(X[0]+3, Y[0]+3, direction);
                     }
-                } else if (message.equals("s")){
+                } else if (message.equals("s")) {
                     finalRun.set(false);
                     handler.removeCallbacks(moveThread);
                 }
@@ -1592,6 +1686,98 @@ public class PixelGridView extends View {
                     handler.postDelayed(this, 500);
                 }
                 else{
+                    finalRun.set(false);
+                }
+            }
+        }
+    }
+
+    private class rotationThread implements Runnable {
+        float[] X;
+        float[] Y;
+        String rotation;
+        String direction;
+        int count;
+
+        public rotationThread(float[] X, float[] Y, String rotation, String direction) {
+            this.X = X.clone();
+            this.Y = Y.clone();
+            this.rotation = rotation;
+            this.direction = direction;
+            count = 0;
+        }
+
+        public void run() {
+
+            if (count == 2) {
+                if (rotation.equals("l")) {
+                    if (direction.equals("N")) {
+                        direction = "W";
+                    } else if (direction.equals("E")) {
+                        direction = "N";
+                    } else if (direction.equals("S")) {
+                        direction = "E";
+                    } else if (direction.equals("W")) {
+                        direction = "S";
+                    }
+                } else if (rotation.equals("r")) {
+                    if (direction.equals("N")) {
+                        direction = "E";
+                    } else if (direction.equals("E")) {
+                        direction = "S";
+                    } else if (direction.equals("S")) {
+                        direction = "W";
+                    } else if (direction.equals("W")) {
+                        direction = "N";
+                    }
+                }
+            }
+
+            if (direction.equals("N")) {
+                for (int i = 0; i < Y.length; i++) {
+                    Y[i] = Y[i] + 1;
+                }
+                if (checkMovable(X, Y, direction, "f")) {
+                    setCurCoord(X[0], Y[0], direction);
+                } else {
+                    finalRun.set(false);
+                }
+            } else if (direction.equals("E")) {
+                for (int i = 0; i < X.length; i++) {
+                    X[i] = X[i] + 1;
+                }
+                if (checkMovable(X, Y, direction, "f")) {
+                    setCurCoord(X[0], Y[0], direction);
+                } else {
+                    finalRun.set(false);
+                }
+            } else if (direction.equals("S")) {
+                for (int i = 0; i < Y.length; i++) {
+                    Y[i] = Y[i] - 1;
+                }
+                if (checkMovable(X, Y, direction, "f")) {
+                    setCurCoord(X[0], Y[0], direction);
+                } else {
+                    finalRun.set(false);
+                }
+            } else if (direction.equals("W")) {
+                for (int i = 0; i < X.length; i++) {
+                    X[i] = X[i] - 1;
+                }
+                if (checkMovable(X, Y, direction, "f")) {
+                    setCurCoord(X[0], Y[0], direction);
+                } else {
+                    finalRun.set(false);
+                }
+            }
+
+            count++;
+            Log.d(TAG, "run: Count: " + count + " direction:" + direction);
+
+            if (finalRun.get()) {
+                if (count < 6) {
+                    handler.postDelayed(this, 500);
+                } else {
                     finalRun.set(false);
                 }
             }
