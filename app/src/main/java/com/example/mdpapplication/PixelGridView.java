@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -547,6 +548,12 @@ public class PixelGridView extends View {
         robot.setX(col);
         robot.setY(row);
         robot.setDirection(direction);
+
+        for (int x = 1; x <= numColumns; x++){
+            for (int y = 0; y < numRows; y++) {
+                cells[x][y].setExplored(false);
+            }
+        }
 
         invalidate();
     }
@@ -1088,7 +1095,7 @@ public class PixelGridView extends View {
                 }
                 else{
                     RectF rect = new RectF(startX, startY, endX, endY);
-                    int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                    int resID = getResources().getIdentifier(obstacle.targetID.toLowerCase(Locale.ROOT), "drawable", cachedContext.getPackageName());
                     Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
                     canvas.drawBitmap(obstacleBitmap, null, rect, null);
                 }
@@ -1645,7 +1652,7 @@ public class PixelGridView extends View {
 
                             if (direction.equals("N")) {
                                 for (int i = 0; i < Y.length; i++) {
-                                    if (count == 2) {
+                                    if (count == 5) {
                                         Y[i] = Y[i] + 0.7f;
                                     } else {
                                         Y[i] = Y[i] + 1;
@@ -1658,7 +1665,7 @@ public class PixelGridView extends View {
                                 }
                             } else if (direction.equals("E")) {
                                 for (int i = 0; i < X.length; i++) {
-                                    if (count == 2) {
+                                    if (count == 5) {
                                         X[i] = X[i] + 0.7f;
                                     } else {
                                         X[i] = X[i] + 1;
@@ -1671,7 +1678,7 @@ public class PixelGridView extends View {
                                 }
                             } else if (direction.equals("S")) {
                                 for (int i = 0; i < Y.length; i++) {
-                                    if (count == 2) {
+                                    if (count == 5) {
                                         Y[i] = Y[i] - 0.7f;
                                     } else {
                                         Y[i] = Y[i] - 1;
@@ -1684,7 +1691,7 @@ public class PixelGridView extends View {
                                 }
                             } else if (direction.equals("W")) {
                                 for (int i = 0; i < X.length; i++) {
-                                    if (count == 2) {
+                                    if (count == 5) {
                                         X[i] = X[i] - 0.7f;
                                     } else {
                                         X[i] = X[i] - 1;
@@ -1700,7 +1707,7 @@ public class PixelGridView extends View {
                             Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
 
                             try {
-                                Thread.sleep(500);
+                                Thread.sleep(250);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
