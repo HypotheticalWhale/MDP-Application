@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class ObstacleView extends View {
     private static final String TAG = "ObstacleGrid";
@@ -188,7 +189,7 @@ public class ObstacleView extends View {
                 }
                 else{
                     RectF rect = new RectF(0, 0, cellWidth, cellHeight);
-                    int resID = getResources().getIdentifier(obstacle.targetID, "drawable", cachedContext.getPackageName());
+                    int resID = getResources().getIdentifier(obstacle.targetID.toLowerCase(Locale.ROOT), "drawable", cachedContext.getPackageName());
                     Bitmap obstacleBitmap = BitmapFactory.decodeResource(getResources(), resID);
                     canvas.drawBitmap(obstacleBitmap, null, rect, null);
                 }
