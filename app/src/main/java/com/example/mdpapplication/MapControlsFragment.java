@@ -139,7 +139,7 @@ public class MapControlsFragment extends Fragment {
                     String direction = robotDirection.replace(" ", "").toUpperCase();
 
                     if (col >= 0 && col < 20 && row >= 0 && row < 20 && ValidDirection.contains(direction)) {
-                        pixelGrid.setCurCoord(col, row, direction);
+                        pixelGrid.setRobot(col, row, direction);
                     } else {
                         showToast("Invalid Input!");
                     }

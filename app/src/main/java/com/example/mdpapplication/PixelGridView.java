@@ -39,7 +39,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PixelGridView extends View {
@@ -58,6 +60,7 @@ public class PixelGridView extends View {
 
     private HashSet<Obstacle> obstacles;
     private SparseArray<Obstacle> obstaclePointer;
+    private Queue<String> robotCommands;
 
     private static int numColumns, numRows;
 
@@ -133,9 +136,8 @@ public class PixelGridView extends View {
     @NonNull
     private final Context cachedContext;
 
-    private final AtomicBoolean finalRun = new AtomicBoolean(false);
-    Handler handler = new Handler(Looper.getMainLooper());
-    Runnable moveThread, rotationThread;
+    private List<String> ValidRobotMovementCommands = Arrays.asList("f", "b");
+    private List<String> ValidRobotRotationCommands = Arrays.asList("l", "r");
 
     /**
      * Stores data about obstacle
@@ -294,7 +296,9 @@ public class PixelGridView extends View {
             for (int i = 0; i < this.yLength.length; i++) {
                 this.yLength[i] = i;
             }
+
         }
+
 
         public float[] getRobotSize() {
             return robotSize;
@@ -326,14 +330,17 @@ public class PixelGridView extends View {
 
         public void setX(float x) {
             if (x >= 17 && x < 18) {
-                Arrays.fill(this.X, x - (x % 1));
+                for (int i = 0; i < this.X.length; i++) {
+                    this.X[i] = x + i - (x % 1);
+                }
+//                Arrays.fill(this.X, x - (x % 1));
             } else if (x >= 18 && x < 19) {
                 for (int i = 0; i < this.X.length; i++) {
-                    this.X[i] = x - (i + 1) - (x % 1);
+                    this.X[i] = x  + i - 1 - (x % 1);
                 }
             } else if (x >= 19 && x < 20) {
                 for (int i = 0; i < this.X.length; i++) {
-                    this.X[i] = x - (i + 2) - (x % 1);
+                    this.X[i] = x + i - 2 - (x % 1);
                 }
             } else {
                 for (int i = 0; i < this.X.length; i++) {
@@ -348,14 +355,16 @@ public class PixelGridView extends View {
 
         public void setY(float y) {
             if (y >= 17 && y < 18) {
-                Arrays.fill(this.Y, y - (y % 1));
+                for (int i = 0; i < this.Y.length; i++) {
+                    this.Y[i] = y + i - (y % 1);
+                }
             } else if (y >= 18 && y < 19) {
                 for (int i = 0; i < this.Y.length; i++) {
-                    this.Y[i] = y - (i + 1) - (y % 1);
+                    this.Y[i] = y  + i - 1 - (y % 1);
                 }
             } else if (y >= 19 && y < 20) {
                 for (int i = 0; i < this.Y.length; i++) {
-                    this.Y[i] = y - (i + 2) - (y % 1);
+                    this.Y[i] = y + i - 2 - (y % 1);
                 }
             } else {
                 for (int i = 0; i < this.Y.length; i++) {
@@ -470,6 +479,9 @@ public class PixelGridView extends View {
         obstacles = new HashSet<>(numColumns * numRows);
         obstaclePointer = new SparseArray<>(numColumns * numRows);
 
+        robotCommands = new LinkedList<>();
+        new robotCommandThread().start();
+
         cachedContext = context;
     }
 
@@ -501,13 +513,14 @@ public class PixelGridView extends View {
 
     public void setCurCoord(float col, float row, String direction) {
         Log.d(TAG, "setCurCoord: Column: " + col + " Row: " + row + " Direction: " + direction);
+
         float[] X = robot.getXArray().clone();
         float[] Y = robot.getYArray().clone();
 
-        for(int i= 0; i < X.length; i++){
-            for (int j = 0; j < Y.length; j++) {
-                Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[j]);
-                cells[(int)X[i]+1][19-(int)Y[j]].setExplored(true);
+        for (int i = 0; i < X.length; i++) {
+            for (float y : Y) {
+                Log.d(TAG, "setCurCoord: i:" + i + " X:" + X[i] + " Y:" + y);
+                cells[(int) X[i] + 1][19 - (int) y].setExplored(true);
             }
         }
 
@@ -518,12 +531,22 @@ public class PixelGridView extends View {
         X = robot.getXArray().clone();
         Y = robot.getYArray().clone();
 
-        for(int i= 0; i < X.length; i++){
-            for (int j = 0; j < Y.length; j++) {
-                Log.d(TAG, "setCurCoord: " + X[i] + " Y:" + Y[j]);
-                cells[(int)X[i]+1][19-(int)Y[j]].setExplored(true);
+        for (int i = 0; i < X.length; i++) {
+            for (float y : Y) {
+                Log.d(TAG, "setCurCoord: i:" + i + " X:" + X[i] + " Y:" + y);
+                cells[(int) X[i] + 1][19 - (int) y].setExplored(true);
             }
         }
+
+        invalidate();
+    }
+
+    public void setRobot(float col, float row, String direction) {
+        Log.d(TAG, "setRobot: Column: " + col + " Row: " + row + " Direction: " + direction);
+
+        robot.setX(col);
+        robot.setY(row);
+        robot.setDirection(direction);
 
         invalidate();
     }
@@ -1412,112 +1435,7 @@ public class PixelGridView extends View {
             if (intent.getAction().equals(EVENT_SEND_MOVEMENT)) {
                 String message = intent.getStringExtra("key");
 
-                /**
-                 * X[0]: startX
-                 * X[1]: middleX
-                 * X[2]: endX
-                 *
-                 * Y[0]: startY
-                 * Y[1]: middleY
-                 * Y[2]: endY
-                 */
-
-                float[] X = robot.getXArray().clone();
-                float[] Y = robot.getYArray().clone();
-                List<String> ValidRobotMovementCommands = Arrays.asList("f", "b");
-                List<String> ValidRobotRotationCommands = Arrays.asList("l", "r");
-
-                String direction = robot.getDirection();
-
-                Log.d(TAG, "onReceive: EVENT_SEND_MOVEMENT startX: " + X[0] + " middleX: " + X[1] + " endX: " + X[2] + " startY: " + Y[0] + " middleY: " + Y[1] + " endY: " + Y[2] + " Direction: " + direction);
-
-                if (containACommand(message, ValidRobotMovementCommands)) {
-                    int distance = 1;
-                    float fDistance = 0;
-
-                    if (message.length() > 1) {
-                        distance = Integer.parseInt(message.substring(1, 4)) / 10;
-                        fDistance = Float.parseFloat(message.substring(1, 4)) / 10;
-                        Log.d(TAG, "onReceive: distance: " + distance + " fdistance: " + fDistance);
-                        fDistance = fDistance - distance;
-                        if (fDistance != 0) {
-                            distance = distance + 1;
-                        }
-                        message = message.substring(0, 1);
-                    }
-
-                    finalRun.set(false);
-                    handler.removeCallbacks(moveThread);
-                    if (distance > 0) {
-                        moveThread = new moveThread(X, Y, message, direction, distance, fDistance);
-                        finalRun.set(true);
-                        handler.postDelayed(moveThread, 500);
-                    }
-                } else if (containACommand(message, ValidRobotRotationCommands)) {
-//                    int distance = 3;
-//                    float fDistance = 0;
-
-                    if (message.length() > 1) {
-//                        distance = Integer.parseInt(message.substring(1,4))/10;
-//                        fDistance = Float.parseFloat(message.substring(1,4))/10;
-//                        fDistance = fDistance - distance;
-//                        if(fDistance != 0){
-//                            distance = distance+ 1;
-//                        }
-                        message = message.substring(0, 1);
-                    }
-
-                    finalRun.set(false);
-                    handler.removeCallbacks(rotationThread);
-                    rotationThread = new rotationThread(X, Y, message, direction);
-                    finalRun.set(true);
-                    handler.postDelayed(rotationThread, 500);
-
-//                    if (message.equals("l")) {
-//                        /**
-//                         * X 30 cm
-//                         * Y 30 cm
-//                         */
-//
-//                        if (direction.equals("N")) {
-//                            direction = "W";
-//                        } else if (direction.equals("E")) {
-//                            direction = "N";
-//                        } else if (direction.equals("S")) {
-//                            direction = "E";
-//                        } else if (direction.equals("W")) {
-//                            direction = "S";
-//                        }
-//
-//                        finalRun.set(false);
-//                        handler.removeCallbacks(moveThread);
-//
-//                        setCurCoord(X[0]+3, Y[0]+3, direction);
-//                    } else if (message.equals("r")) {
-//                        /**
-//                         * X 30 cm
-//                         * Y 30 cm
-//                         */
-//
-//                        if (direction.equals("N")) {
-//                            direction = "E";
-//                        } else if (direction.equals("E")) {
-//                            direction = "S";
-//                        } else if (direction.equals("S")) {
-//                            direction = "W";
-//                        } else if (direction.equals("W")) {
-//                            direction = "N";
-//                        }
-//
-//                        finalRun.set(false);
-//                        handler.removeCallbacks(moveThread);
-//
-//                        setCurCoord(X[0]+3, Y[0]+3, direction);
-//                    }
-                } else if (message.equals("s")) {
-                    finalRun.set(false);
-                    handler.removeCallbacks(moveThread);
-                }
+                robotCommands.add(message);
 
             } else if (intent.getAction().equals(EVENT_TARGET_SCANNED)) {
 //                String message = intent.getStringExtra("key");
@@ -1582,200 +1500,220 @@ public class PixelGridView extends View {
         }
     };
 
-    private class moveThread implements Runnable {
-        float[] X;
-        float[] Y;
-        String message;
-        String direction;
-        int distance;
-        float fDistance;
-        int count;
+    private class robotCommandThread extends Thread {
 
-        public moveThread(float[] X, float[] Y, String message, String direction, int distance, float fDistance) {
-            this.X = X.clone();
-            this.Y = Y.clone();
-            this.message = message;
-            this.direction = direction;
-            this.fDistance = fDistance;
-            this.distance = distance;
-            count = 0;
+        public robotCommandThread() {
         }
 
         public void run() {
-            if ((message.equals("f") && direction.equals("N")) ||
-                    (message.equals("b") && direction.equals("S")) ||
-                    (message.equals("sl") && direction.equals("E")) ||
-                    (message.equals("sr") && direction.equals("W"))) {
-                for (int i = 0; i < Y.length; i++) {
-                    if (count == distance - 1 && fDistance != 0) {
-                        Y[i] = Y[i] + fDistance;
-                    } else {
-                        Y[i] = Y[i] + 1;
-                    }
-                }
-                if (checkMovable(X, Y, direction, message)) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if ((message.equals("f") && direction.equals("E")) ||
-                    (message.equals("b") && direction.equals("W")) ||
-                    (message.equals("sl") && direction.equals("S")) ||
-                    (message.equals("sr") && direction.equals("N"))) {
-                for (int i = 0; i < X.length; i++) {
-                    if (count == distance - 1 && fDistance != 0) {
-                        X[i] = X[i] + fDistance;
-                    } else {
-                        X[i] = X[i] + 1;
-                    }
-                }
-                if (checkMovable(X, Y, direction, message)) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if ((message.equals("f") && direction.equals("S")) ||
-                    (message.equals("b") && direction.equals("N")) ||
-                    (message.equals("sl") && direction.equals("W")) ||
-                    (message.equals("sr") && direction.equals("E"))) {
-                for (int i = 0; i < Y.length; i++) {
-                    if (count == distance - 1 && fDistance != 0) {
-                        Y[i] = Y[i] - fDistance;
-                    } else {
-                        Y[i] = Y[i] - 1;
-                    }
-                }
-                if (checkMovable(X, Y, direction, message)) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if ((message.equals("f") && direction.equals("W")) ||
-                    (message.equals("b") && direction.equals("E")) ||
-                    (message.equals("sl") && direction.equals("N")) ||
-                    (message.equals("sr") && direction.equals("S"))) {
-                for (int i = 0; i < X.length; i++) {
-                    if (count == distance - 1 && fDistance != 0) {
-                        X[i] = X[i] - fDistance;
-                    } else {
-                        X[i] = X[i] - 1;
-                    }
-                }
-                if (checkMovable(X, Y, direction, message)) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            }
+            while (true) {
+                if (!robotCommands.isEmpty()) {
+                    /**
+                     * X[0]: startX
+                     * X[1]: middleX
+                     * X[2]: endX
+                     *
+                     * Y[0]: startY
+                     * Y[1]: middleY
+                     * Y[2]: endY
+                     */
 
-            count++;
-            Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
+                    String message = robotCommands.remove();
 
-            if (finalRun.get()) {
-                if (count == distance - 1 && fDistance != 0) {
-                    handler.postDelayed(this, 250);
-                }
-                else if (count < distance) {
-                    handler.postDelayed(this, 500);
-                }
-                else{
-                    finalRun.set(false);
+                    int distance = 1;
+                    float fDistance = 0;
+                    float[] X = robot.getXArray().clone();
+                    float[] Y = robot.getYArray().clone();
+
+                    String direction = robot.getDirection();
+
+                    if (message.length() > 1) {
+                        distance = Integer.parseInt(message.substring(1, 4)) / 10;
+                        fDistance = Float.parseFloat(message.substring(1, 4)) / 10;
+                        Log.d(TAG, "onReceive: distance: " + distance + " fdistance: " + fDistance);
+                        fDistance = fDistance - distance;
+                        if (fDistance != 0) {
+                            distance = distance + 1;
+                        }
+                        message = message.substring(0, 1);
+                    }
+
+                    if (containACommand(message, ValidRobotMovementCommands)) {
+                        if (distance != 0){
+                            for (int count = 0; count < distance; count++) {
+                                if ((message.equals("f") && direction.equals("N")) ||
+                                        (message.equals("b") && direction.equals("S")) ||
+                                        (message.equals("sl") && direction.equals("E")) ||
+                                        (message.equals("sr") && direction.equals("W"))) {
+                                    for (int i = 0; i < Y.length; i++) {
+                                        if (count == distance - 1 && fDistance != 0) {
+                                            Y[i] = Y[i] + fDistance;
+                                        } else {
+                                            Y[i] = Y[i] + 1;
+                                        }
+                                    }
+                                    if (checkMovable(X, Y, direction, message)) {
+                                        setCurCoord(X[0], Y[0], direction);
+                                    } else {
+                                        break;
+                                    }
+                                } else if ((message.equals("f") && direction.equals("E")) ||
+                                        (message.equals("b") && direction.equals("W")) ||
+                                        (message.equals("sl") && direction.equals("S")) ||
+                                        (message.equals("sr") && direction.equals("N"))) {
+                                    for (int i = 0; i < X.length; i++) {
+                                        if (count == distance - 1 && fDistance != 0) {
+                                            X[i] = X[i] + fDistance;
+                                        } else {
+                                            X[i] = X[i] + 1;
+                                        }
+                                    }
+                                    if (checkMovable(X, Y, direction, message)) {
+                                        setCurCoord(X[0], Y[0], direction);
+                                    } else {
+                                        break;
+                                    }
+                                } else if ((message.equals("f") && direction.equals("S")) ||
+                                        (message.equals("b") && direction.equals("N")) ||
+                                        (message.equals("sl") && direction.equals("W")) ||
+                                        (message.equals("sr") && direction.equals("E"))) {
+                                    for (int i = 0; i < Y.length; i++) {
+                                        if (count == distance - 1 && fDistance != 0) {
+                                            Y[i] = Y[i] - fDistance;
+                                        } else {
+                                            Y[i] = Y[i] - 1;
+                                        }
+                                    }
+                                    if (checkMovable(X, Y, direction, message)) {
+                                        setCurCoord(X[0], Y[0], direction);
+                                    } else {
+                                        break;
+                                    }
+                                } else if ((message.equals("f") && direction.equals("W")) ||
+                                        (message.equals("b") && direction.equals("E")) ||
+                                        (message.equals("sl") && direction.equals("N")) ||
+                                        (message.equals("sr") && direction.equals("S"))) {
+                                    for (int i = 0; i < X.length; i++) {
+                                        if (count == distance - 1 && fDistance != 0) {
+                                            X[i] = X[i] - fDistance;
+                                        } else {
+                                            X[i] = X[i] - 1;
+                                        }
+                                    }
+                                    if (checkMovable(X, Y, direction, message)) {
+                                        setCurCoord(X[0], Y[0], direction);
+                                    } else {
+                                        break;
+                                    }
+                                }
+
+                                Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
+
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    } else if (containACommand(message, ValidRobotRotationCommands)) {
+                        for (int count = 0; count < 6; count++) {
+
+                            if (count == 3) {
+                                if (message.equals("l")) {
+                                    if (direction.equals("N")) {
+                                        direction = "W";
+                                    } else if (direction.equals("E")) {
+                                        direction = "N";
+                                    } else if (direction.equals("S")) {
+                                        direction = "E";
+                                    } else if (direction.equals("W")) {
+                                        direction = "S";
+                                    }
+                                } else if (message.equals("r")) {
+                                    if (direction.equals("N")) {
+                                        direction = "E";
+                                    } else if (direction.equals("E")) {
+                                        direction = "S";
+                                    } else if (direction.equals("S")) {
+                                        direction = "W";
+                                    } else if (direction.equals("W")) {
+                                        direction = "N";
+                                    }
+                                }
+                            }
+
+                            if (direction.equals("N")) {
+                                for (int i = 0; i < Y.length; i++) {
+                                    if (count == 2) {
+                                        Y[i] = Y[i] + 0.7f;
+                                    } else {
+                                        Y[i] = Y[i] + 1;
+                                    }
+                                }
+                                if (checkMovable(X, Y, direction, "f")) {
+                                    setCurCoord(X[0], Y[0], direction);
+                                } else {
+                                    break;
+                                }
+                            } else if (direction.equals("E")) {
+                                for (int i = 0; i < X.length; i++) {
+                                    if (count == 2) {
+                                        X[i] = X[i] + 0.7f;
+                                    } else {
+                                        X[i] = X[i] + 1;
+                                    }
+                                }
+                                if (checkMovable(X, Y, direction, "f")) {
+                                    setCurCoord(X[0], Y[0], direction);
+                                } else {
+                                    break;
+                                }
+                            } else if (direction.equals("S")) {
+                                for (int i = 0; i < Y.length; i++) {
+                                    if (count == 2) {
+                                        Y[i] = Y[i] - 0.7f;
+                                    } else {
+                                        Y[i] = Y[i] - 1;
+                                    }
+                                }
+                                if (checkMovable(X, Y, direction, "f")) {
+                                    setCurCoord(X[0], Y[0], direction);
+                                } else {
+                                    break;
+                                }
+                            } else if (direction.equals("W")) {
+                                for (int i = 0; i < X.length; i++) {
+                                    if (count == 2) {
+                                        X[i] = X[i] - 0.7f;
+                                    } else {
+                                        X[i] = X[i] - 1;
+                                    }
+                                }
+                                if (checkMovable(X, Y, direction, "f")) {
+                                    setCurCoord(X[0], Y[0], direction);
+                                } else {
+                                    break;
+                                }
+                            }
+
+                            Log.d(TAG, "run: Count: " + count + " Distance: " + distance);
+
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } else if (message.equals("s")) {
+
+                    }
                 }
             }
         }
     }
 
-    private class rotationThread implements Runnable {
-        float[] X;
-        float[] Y;
-        String rotation;
-        String direction;
-        int count;
 
-        public rotationThread(float[] X, float[] Y, String rotation, String direction) {
-            this.X = X.clone();
-            this.Y = Y.clone();
-            this.rotation = rotation;
-            this.direction = direction;
-            count = 0;
-        }
-
-        public void run() {
-
-            if (count == 2) {
-                if (rotation.equals("l")) {
-                    if (direction.equals("N")) {
-                        direction = "W";
-                    } else if (direction.equals("E")) {
-                        direction = "N";
-                    } else if (direction.equals("S")) {
-                        direction = "E";
-                    } else if (direction.equals("W")) {
-                        direction = "S";
-                    }
-                } else if (rotation.equals("r")) {
-                    if (direction.equals("N")) {
-                        direction = "E";
-                    } else if (direction.equals("E")) {
-                        direction = "S";
-                    } else if (direction.equals("S")) {
-                        direction = "W";
-                    } else if (direction.equals("W")) {
-                        direction = "N";
-                    }
-                }
-            }
-
-            if (direction.equals("N")) {
-                for (int i = 0; i < Y.length; i++) {
-                    Y[i] = Y[i] + 1;
-                }
-                if (checkMovable(X, Y, direction, "f")) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if (direction.equals("E")) {
-                for (int i = 0; i < X.length; i++) {
-                    X[i] = X[i] + 1;
-                }
-                if (checkMovable(X, Y, direction, "f")) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if (direction.equals("S")) {
-                for (int i = 0; i < Y.length; i++) {
-                    Y[i] = Y[i] - 1;
-                }
-                if (checkMovable(X, Y, direction, "f")) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            } else if (direction.equals("W")) {
-                for (int i = 0; i < X.length; i++) {
-                    X[i] = X[i] - 1;
-                }
-                if (checkMovable(X, Y, direction, "f")) {
-                    setCurCoord(X[0], Y[0], direction);
-                } else {
-                    finalRun.set(false);
-                }
-            }
-
-            count++;
-            Log.d(TAG, "run: Count: " + count + " direction:" + direction);
-
-            if (finalRun.get()) {
-                if (count < 6) {
-                    handler.postDelayed(this, 500);
-                } else {
-                    finalRun.set(false);
-                }
-            }
-        }
-    }
 
     @Override
     protected void onDetachedFromWindow() {

@@ -630,18 +630,18 @@ public class BluetoothConnectionHelper extends Service {
         @NonNull
         private final BluetoothSocket mmSocket;
         @Nullable
-        private final BufferedInputStream mmInStream;
+        private final InputStream mmInStream;
         @Nullable
         private final OutputStream mmOutStream;
 
-        public ConnectedThread(@NonNull BluetoothSocket socket){
+        public ConnectedThread(@NonNull BluetoothSocket socket) {
             mmSocket = socket;
-            BufferedInputStream tmpIn = null;
+            InputStream tmpIn = null;
             OutputStream tmpOut = null;
-            try{
-                tmpIn = (BufferedInputStream) socket.getInputStream();
+            try {
+                tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
-            }catch(IOException e){
+            } catch (IOException e) {
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
