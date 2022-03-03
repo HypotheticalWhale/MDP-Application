@@ -983,11 +983,11 @@ public class PixelGridView extends View {
                 }
             }
 
-            for (Obstacle obstacle : obstacleArray) {
-                Log.d(TAG, "checkMovable: " + obstacle);
-                if (obstacle != null)
-                    return false;
-            }
+//            for (Obstacle obstacle : obstacleArray) {
+//                Log.d(TAG, "checkMovable: " + obstacle);
+//                if (obstacle != null)
+//                    return false;
+//            }
             return true;
 
         }
