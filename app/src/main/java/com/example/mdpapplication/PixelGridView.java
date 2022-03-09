@@ -610,6 +610,26 @@ public class PixelGridView extends View {
         invalidate();
     }
 
+    public void resetRobot() {
+        robot = new Robot(0, 0, new float[]{3f, 3f});
+        robot.setDirection("N");
+
+        for (int x = 1; x <= numColumns; x++){
+            for (int y = 0; y < numRows; y++) {
+                cells[x][y].setExplored(false);
+            }
+        }
+
+        invalidate();
+    }
+
+    public void resetTarget() {
+        for (Obstacle obstacle : obstacles) {
+            obstacle.setTargetID(null);
+        }
+        invalidate();
+    }
+
     private void calculateDimensions() {
         if (numColumns < 1 || numRows < 1) {
             return;

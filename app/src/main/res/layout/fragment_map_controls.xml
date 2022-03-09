@@ -65,14 +65,6 @@
                 android:layout_marginLeft="8dp"
                 android:text="@string/plot_robot" />
 
-            <Button
-                android:id="@+id/btn_reset"
-                style="@style/Widget.Material3.Button.TonalButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="@string/reset" />
-
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/sw_target"
                 android:layout_width="wrap_content"
@@ -81,6 +73,38 @@
                 android:layout_marginRight="24dp"
                 android:layout_weight="1"
                 android:text="Show TargetID" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_reset"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/reset" />
+
+            <Button
+                android:id="@+id/btn_resetRobot"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="Reset Robot" />
+
+            <Button
+                android:id="@+id/btn_resetTarget"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="Reset Scanned Target" />
+
 
         </LinearLayout>
 

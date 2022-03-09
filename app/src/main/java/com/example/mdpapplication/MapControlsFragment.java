@@ -44,7 +44,7 @@ public class MapControlsFragment extends Fragment {
     BluetoothConnectionHelper bluetooth;
     TextInputLayout xInput, yInput, directionInput;
     PixelGridView pixelGrid;
-    Button btn_reset, btn_set, btn_obstacles, btn_test;
+    Button btn_reset, btn_set, btn_obstacles, btn_test, btn_resetRobot, btn_resetTarget;
     String x, y, robotDirection;
     SwitchMaterial sw_target;
 
@@ -58,6 +58,8 @@ public class MapControlsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 
         btn_reset = view.findViewById(R.id.btn_reset);
+        btn_resetRobot = view.findViewById(R.id.btn_resetRobot);
+        btn_resetTarget = view.findViewById(R.id.btn_resetTarget);
         btn_set = view.findViewById(R.id.btn_set);
         btn_obstacles = view.findViewById(R.id.btn_obstacles);
         btn_test = view.findViewById(R.id.btn_test);
@@ -127,6 +129,21 @@ public class MapControlsFragment extends Fragment {
             public void onClick(View v) {
                 pixelGrid.resetGrid();
                 updateTextInput();
+            }
+        });
+
+        btn_resetRobot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.resetRobot();
+                updateTextInput();
+            }
+        });
+
+        btn_resetTarget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pixelGrid.resetTarget();
             }
         });
 
